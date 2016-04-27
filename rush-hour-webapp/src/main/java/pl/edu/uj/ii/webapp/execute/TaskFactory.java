@@ -7,14 +7,15 @@ import java.util.Map;
  * Created by gauee on 4/7/16.
  */
 public class TaskFactory {
+    private final Map<SupportedLang, Task> supportedTask;
 
-    private final Map<SupportedLang, Compilable> supportedTask;
-
-    public TaskFactory(Map<SupportedLang, Compilable> supportedTask) {
+    public TaskFactory(Map<SupportedLang, Task> supportedTask) {
         this.supportedTask = supportedTask;
     }
 
-    public Task resolveTask(Param param) throws IOException, ClassNotFoundException {
-        return supportedTask.get(param.getSupportedLang()).compile(param.getUploadFile());
+    public Task createTask(Param param) throws IOException, ClassNotFoundException {
+        Task task = supportedTask.get(param.getSupportedLang());
+
+        return task.processUpload(param.getUploadFile());
     }
 }

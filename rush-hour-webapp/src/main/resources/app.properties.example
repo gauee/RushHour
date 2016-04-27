@@ -1,5 +1,5 @@
-java.7.home=/opt/jdk1.7.0_51
-java.8.home=/opt/jdk1.8.0_25
+java.7.home=/usr/bin/java
+java.8.home=/usr/bin/java
 python.2.interpreter=/usr/bin/python2.7
 python.3.interpreter=/usr/bin/python3.4
 compiled.file.dir.java.7=jdk1_7

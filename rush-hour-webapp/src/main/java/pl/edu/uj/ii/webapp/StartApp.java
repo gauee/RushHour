@@ -40,7 +40,7 @@ public class StartApp {
 
     private void init() throws IOException {
         initRoutes();
-        rushHourExecutor = new RushHourExecutor(new TaskFactory(initLanguageCompilers()));
+        rushHourExecutor = new RushHourExecutor(new TaskFactory(initLanguages()));
     }
 
     private void initRoutes() {
@@ -49,8 +49,8 @@ public class StartApp {
         post("/submit", "multipart/form-data", (req, res) -> processNewSolution(req), templateEngine);
     }
 
-    private Map<SupportedLang, Compilable> initLanguageCompilers() {
-        Map<SupportedLang, Compilable> languageCompilers = Maps.newHashMap();
+    private Map<SupportedLang, Task> initLanguages() {
+        Map<SupportedLang, Task> languageCompilers = Maps.newHashMap();
         languageCompilers.put(SupportedLang.JAVA_7, new JavaTask(CONFIG.getCompiledFileDirForJava7(), CONFIG.getJava7Home()));
         languageCompilers.put(SupportedLang.JAVA_8, new JavaTask(CONFIG.getCompiledFileDirForJava8(), CONFIG.getJava8Home()));
         languageCompilers.put(SupportedLang.PYTHON_2, new PythonTask());
@@ -61,14 +61,17 @@ public class StartApp {
     private ModelAndView processNewSolution(Request req) {
         Param param = createParam(req);
         ModelAndView modelAndView = uploadPageView();
+
         LOGGER.debug("Request param: " + param);
+
         try {
-            List<TestResult> testResults = rushHourExecutor.resolveAllTestCases(param);
+            List<TestResult> testResults = rushHourExecutor.runAllTestCases(param);
             appendToModel(modelAndView, "testResults", testResults);
         } catch (Exception e) {
             LOGGER.error("Cannot retrieve output", e);
             return setMessage(modelAndView, "Cannot execute all testCases:\n" + e.getMessage());
         }
+
         return setMessage(modelAndView, "File uploaded.");
     }
 

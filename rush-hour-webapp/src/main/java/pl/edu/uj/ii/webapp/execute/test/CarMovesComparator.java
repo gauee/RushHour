@@ -29,4 +29,9 @@ public class CarMovesComparator {
     public boolean isPassed() {
         return passed;
     }
+
+    @Override
+    public String toString() {
+        return this.passed ? "." : "F";
+    }
 }

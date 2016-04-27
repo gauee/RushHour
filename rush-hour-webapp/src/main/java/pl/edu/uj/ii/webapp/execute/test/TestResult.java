@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import pl.edu.uj.ii.model.CarMove;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 
@@ -17,6 +18,7 @@ public class TestResult {
     public TestResult(String testCaseId, List<List<CarMove>> currentMoves, List<List<CarMove>> expectedMoves) {
         this.testCaseId = testCaseId;
         this.results = Lists.newLinkedList();
+
         for (int i = 0; i < expectedMoves.size(); i++) {
             List<CarMove> expected = expectedMoves.get(i);
             List<CarMove> current = i < currentMoves.size() ? currentMoves.get(i) : emptyList();
@@ -32,4 +34,8 @@ public class TestResult {
         return results;
     }
 
+    @Override
+    public String toString() {
+        return this.results.stream().map(r -> r.toString()).collect(Collectors.joining(", "));
+    }
 }

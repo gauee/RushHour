@@ -35,20 +35,28 @@ public class RushHourExecutor {
 
     public RushHourExecutor(TaskFactory taskFactory) {
         this.taskFactory = taskFactory;
-        testCases = loadTestCases();
+        this.testCases = this.loadTestCases();
     }
 
-    public List<TestResult> resolveAllTestCases(final Param param) {
+    public List<TestResult> runAllTestCases(final Param param) {
         try {
-            Task task = taskFactory.resolveTask(param);
-            return testCases.entrySet()
+            Task task = this.taskFactory.createTask(param);
+
+            LOGGER.debug(String.format("Running %d tests", this.testCases.size()));
+
+            List<TestResult> results = this.testCases.entrySet()
                     .stream()
-                    .map(entry -> of(entry, task.resolveTestCases(entry.getKey())))
+                    .map(entry -> of(entry, task.getOutputFor(entry.getKey())))
                     .map(pair -> new TestResult(pair.getLeft().getKey().getId(), pair.getRight(), pair.getLeft().getValue()))
                     .collect(Collectors.toList());
+
+            LOGGER.debug(String.format("RESULTS: %s", results));
+
+            return results;
         } catch (ClassNotFoundException | IOException e) {
             LOGGER.warn("Cannot execute code " + param, e);
         }
+
         return emptyList();
     }
 
@@ -67,21 +75,25 @@ public class RushHourExecutor {
                     ))
                     .collect(Collectors.toMap(pair -> pair.getLeft(), pair -> pair.getRight()));
         } catch (IOException | URISyntaxException e) {
-            LOGGER.warn("Cannot load testcases from dir " + CONFIG.getTestCasesDir(), e);
+            LOGGER.warn(String.format("Cannot load test cases from %s", CONFIG.getTestCasesDir()), e);
         }
+
         return emptyMap();
     }
 
     private List<List<CarMove>> loadExpectedCarMoves(File expectedResult) {
         List<String> lines = Lists.newLinkedList();
+
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(expectedResult))) {
             String line;
+
             while ((line = bufferedReader.readLine()) != null) {
                 lines.add(line);
             }
         } catch (IllegalArgumentException | IOException e) {
             LOGGER.error("Cannot load file " + expectedResult.getAbsolutePath(), e);
         }
+
         return parseOutputLines(lines);
     }
 }
