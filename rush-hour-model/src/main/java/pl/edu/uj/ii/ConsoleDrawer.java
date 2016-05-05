@@ -1,21 +1,23 @@
 package pl.edu.uj.ii;
 
 import pl.edu.uj.ii.model.Board;
+import pl.edu.uj.ii.model.Car;
 
-import java.awt.*;
+import java.awt.Point;
+
+import static pl.edu.uj.ii.model.Position.H;
+import static pl.edu.uj.ii.model.Position.V;
 
 /**
  * Created by gauee on 3/31/16.
  */
 public class ConsoleDrawer {
 
-    public static final Integer ZERO = Integer.valueOf(0);
-
     public void print(Board board) {
         System.out.println();
         char[][] positionOfCars = generatePositionOfCars(board);
         printNewLine(board);
-        for (int i = 0; i < board.getHeight(); i++) {
+        for (int i = board.getHeight(); i-- > 0; ) {
             System.out.print("|");
             for (int j = 0; j < board.getWidth(); j++) {
                 System.out.print(positionOfCars[j][i] + "|");
@@ -33,23 +35,17 @@ public class ConsoleDrawer {
             }
         }
 
-        board.getCars()
-                .stream()
-                .forEach(c -> {
-                    Point startPoint = c.getStartPoint();
-                    Point direction = c.getDirection();
-                    for (int i = 0; i <= Math.abs(direction.y); i++) {
-                        for (int j = 0; j <= Math.abs(direction.x); j++) {
-                            positionOfCars[startPoint.x + j * sign(direction.x)][startPoint.y + i * sign(direction.y)] = c.getId().getId();
-                        }
-                    }
-                });
-
+        for (Car car : board.getCars()) {
+            try {
+                Point startPoint = car.getStartPoint();
+                for (int i = 0; i < car.getLength(); i++) {
+                    positionOfCars[startPoint.x + (H == car.getPosition() ? i : 0)][startPoint.y + (V == car.getPosition() ? i : 0)] = car.getId().getId();
+                }
+            } catch (IndexOutOfBoundsException e) {
+                throw new IllegalArgumentException("Invalid car declaration " + car, e);
+            }
+        }
         return positionOfCars;
-    }
-
-    private int sign(int x) {
-        return -ZERO.compareTo(x);
     }
 
     private void printNewLine(Board board) {
