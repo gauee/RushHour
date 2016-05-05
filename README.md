@@ -31,9 +31,9 @@ Pod uwagę będzie brana również pojedyncza liczba przesunięć każdego samoc
 **Dane do zadania są przekazywane przez standardowe wejście.**
 
 Algorytm jest uruchamiany kilkukrotnie z przykładami testowymi o różnej trudności.
-Pierwsza linia zawiera liczbę przypadków testowych
-Każdy przypadek testowy rozpoczyna się od liczby n samochodów na planszy.
-Kolejne n lini zawierają opis każdego samochodu w postaci:
+Pierwsza linia zawiera liczbę `T` przypadków testowych.
+Każdy przypadek testowy rozpoczyna się od liczby `N` samochodów na planszy.
+Kolejne `N` lini zawierają opis każdego samochodu w postaci:
 
     [id] [start point] [direction] [length]
 
@@ -48,6 +48,10 @@ Dla każdego przypadku testowego należy wyświetlić w jednej lini liczbę n kr
 **Liczba kroków oraz kroki powinny zostać przekazana na standardowe wyjście.** 
 
 # Limits
+
+1 <= **T** <= 15
+
+1 <= **N** <= 15
 
 Ograniczenie na czas wykonania programu - `30 sec`.
 
