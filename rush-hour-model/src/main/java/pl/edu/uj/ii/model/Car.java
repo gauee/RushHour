@@ -1,6 +1,8 @@
 package pl.edu.uj.ii.model;
 
-import java.awt.*;
+import com.google.common.base.MoreObjects;
+
+import java.awt.Point;
 
 /**
  * Created by gauee on 3/31/16.
@@ -8,12 +10,14 @@ import java.awt.*;
 public class Car {
     private final CarId id;
     private final Point startPoint;
-    private final Point direction;
+    private final Position position;
+    private final int length;
 
-    public Car(CarId id, Point startPoint, Point endPoint) {
+    public Car(CarId id, Point startPoint, Position position, int length) {
         this.id = id;
         this.startPoint = startPoint;
-        this.direction = new Point(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
+        this.position = position;
+        this.length = length;
     }
 
     public CarId getId() {
@@ -24,7 +28,22 @@ public class Car {
         return startPoint;
     }
 
-    public Point getDirection() {
-        return direction;
+    public Position getPosition() {
+        return position;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("startPoint", startPoint)
+                .add("position", position)
+                .add("length", length)
+                .toString();
     }
 }
