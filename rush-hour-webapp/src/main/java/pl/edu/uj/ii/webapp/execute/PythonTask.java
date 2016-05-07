@@ -26,4 +26,9 @@ public class PythonTask extends Task {
     public List<List<CarMove>> getOutputFor(TestCase testCase) {
         return Collections.emptyList();
     }
+
+    @Override
+    ProcessBuilder createExecutionProcess() {
+        return null;
+    }
 }

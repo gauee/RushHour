@@ -37,6 +37,9 @@ public abstract class Task {
     protected Path sourceFile;
     protected String sourceCode;
 
+
+    abstract ProcessBuilder createExecutionProcess();
+
     abstract String getExecuteCommand();
 
     abstract String getTempFileName();
@@ -46,10 +49,8 @@ public abstract class Task {
     }
 
     protected List<String> runWithInput(File inputFile) {
-        ProcessBuilder processBuilder = new ProcessBuilder(this.getExecuteCommand().split("\\s+"));
-
+        ProcessBuilder processBuilder = createExecutionProcess();
         processBuilder.redirectErrorStream(true);
-        processBuilder.directory(inputFile.getParentFile().getParentFile());
         processBuilder.redirectInput(inputFile);
 
         List<String> lines = Lists.newLinkedList();
@@ -74,7 +75,7 @@ public abstract class Task {
         try {
             Files.write(this.sourceFile, newCode.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            System.out.printf(String.format("Can not update source code: %s", e.getMessage()));
+            LOGGER.error("Can not update source code", e);
         }
     }
 

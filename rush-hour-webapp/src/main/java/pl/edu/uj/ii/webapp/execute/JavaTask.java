@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
+
 /**
  * Created by gauee on 4/7/16.
  */
@@ -15,7 +17,6 @@ public class JavaTask extends CompilableTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(JavaTask.class);
     private final String compiledFileDir;
     private final String jdkDir;
-    private String compiledFilePath;
     private String packageDir;
 
     public JavaTask(String compiledFileDir, String jdkDir) {
@@ -35,7 +36,7 @@ public class JavaTask extends CompilableTask {
         String newCode = changePackageInsideSolution(filePackage);
         this.updateSourceCode(newCode);
         String sourceFile = this.sourceFile.toFile().toString();
-        ProcessBuilder processBuilder = createProcessBuilder(getCompileCommand(), sourceFile);
+        ProcessBuilder processBuilder = createProcessBuilder(this.jdkDir + "/bin/javac", sourceFile);
         StringBuilder compilerOut = new StringBuilder();
 
         try {
@@ -55,13 +56,12 @@ public class JavaTask extends CompilableTask {
             LOGGER.error("Cannot execute process.", e);
         }
         LOGGER.info("Compilation finished. " + compilerOut.toString());
-        this.compiledFilePath = filePackage + "." + className;
         return this;
     }
 
-    private ProcessBuilder createProcessBuilder(String command, String sourceFile) {
-        LOGGER.info("Execute compiler: " + command + ", file: " + sourceFile);
-        ProcessBuilder processBuilder = new ProcessBuilder(command, sourceFile);
+    private ProcessBuilder createProcessBuilder(String command, String args) {
+        LOGGER.info("Execute compiler: " + command + ", file: " + args);
+        ProcessBuilder processBuilder = new ProcessBuilder(command, args);
         processBuilder.redirectErrorStream(true);
         return processBuilder;
     }
@@ -70,15 +70,19 @@ public class JavaTask extends CompilableTask {
         return this.sourceCode.replaceFirst("package\\s+.*?;", String.format("package %s;", filePackage));
     }
 
-    protected String getExecuteCommand() {
-        return String.format("%s/bin/java %s", this.jdkDir, this.compiledFilePath);
-    }
-
-    protected String getCompileCommand() {
-        return String.format("%s/bin/javac", this.jdkDir, this.compiledFilePath);
+    @Override
+    ProcessBuilder createExecutionProcess() {
+        ProcessBuilder processBuilder = createProcessBuilder(this.jdkDir + "/bin/java", packageDir + File.separator + baseFileName);
+        processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
+        return processBuilder;
     }
 
     private String generateNewPackagePath() {
         return String.format("runtimeCompiled/%s/_%d", this.compiledFileDir, System.currentTimeMillis());
+    }
+
+    @Override
+    String getExecuteCommand() {
+        return null;
     }
 }
