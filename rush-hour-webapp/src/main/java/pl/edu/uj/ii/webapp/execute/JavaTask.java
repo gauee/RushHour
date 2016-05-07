@@ -31,11 +31,10 @@ public class JavaTask extends CompilableTask {
 
     @Override
     public Task compile() throws IOException, ClassNotFoundException {
-        String className = this.baseFileName.split("\\.")[0];
         String filePackage = this.packageDir.replaceAll("\\" + File.separator, ".");
         String newCode = changePackageInsideSolution(filePackage);
         this.updateSourceCode(newCode);
-        String sourceFile = this.sourceFile.toFile().toString();
+        String sourceFile = this.sourceFile.toFile().getAbsolutePath();
         ProcessBuilder processBuilder = createProcessBuilder(this.jdkDir + "/bin/javac", sourceFile);
         StringBuilder compilerOut = new StringBuilder();
 
