@@ -59,7 +59,7 @@ public class JavaTask extends CompilableTask {
     }
 
     private String getCompilerCommand() {
-        return new File(this.jdkDir + "/bin/javac").getAbsolutePath();
+        return this.jdkDir + "/bin/javac";
     }
 
     private ProcessBuilder createProcessBuilder(String command, String args) {
