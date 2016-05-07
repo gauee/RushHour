@@ -2,7 +2,8 @@ package pl.edu.uj.ii.webapp.execute;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.edu.uj.ii.DataConverter;
 import pl.edu.uj.ii.model.CarMove;
 import pl.edu.uj.ii.webapp.execute.test.TestCase;
@@ -17,7 +18,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
@@ -25,7 +32,7 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
  * Created by shybovycha on 22/04/16.
  */
 public abstract class Task {
-    protected static final Logger LOGGER = Logger.getLogger(JavaTask.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(JavaTask.class);
     protected static final Duration RUN_TIMEOUT = Duration.ofSeconds(30);
 
     protected String baseFileName;

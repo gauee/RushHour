@@ -2,11 +2,20 @@ package pl.edu.uj.ii.webapp;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import pl.edu.uj.ii.webapp.execute.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pl.edu.uj.ii.webapp.execute.JavaTask;
+import pl.edu.uj.ii.webapp.execute.Param;
+import pl.edu.uj.ii.webapp.execute.PythonTask;
+import pl.edu.uj.ii.webapp.execute.RushHourExecutor;
+import pl.edu.uj.ii.webapp.execute.SupportedLang;
+import pl.edu.uj.ii.webapp.execute.Task;
+import pl.edu.uj.ii.webapp.execute.TaskFactory;
+import pl.edu.uj.ii.webapp.execute.UploadFile;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
 import spark.ModelAndView;
 import spark.Request;
+import spark.servlet.SparkApplication;
 import spark.template.velocity.VelocityTemplateEngine;
 
 import javax.servlet.MultipartConfigElement;
@@ -27,18 +36,24 @@ import static spark.Spark.post;
 /**
  * Created by gauee on 4/7/16.
  */
-public class StartApp {
+public class StartApp implements SparkApplication {
     public static final String PARAM_SUPPORTED_LANG = "supportedLang";
     public static final String PARAM_FILE_CONTENT = "fileContent";
-    private static final Logger LOGGER = Logger.getLogger(StartApp.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StartApp.class);
     private RushHourExecutor rushHourExecutor;
 
-    public static void main(String[] args) throws IOException {
-        StartApp startApp = new StartApp();
-        startApp.init();
+    public static void main(String[] args) {
+        try {
+            StartApp startApp = new StartApp();
+            startApp.init();
+        } catch (Exception e) {
+            LOGGER.error("Main thread throw exception.", e);
+        }
     }
 
-    private void init() throws IOException {
+    @Override
+    public void init() {
+        LOGGER.info("Starting application RushHour");
         initRoutes();
         rushHourExecutor = new RushHourExecutor(new TaskFactory(initLanguages()));
     }

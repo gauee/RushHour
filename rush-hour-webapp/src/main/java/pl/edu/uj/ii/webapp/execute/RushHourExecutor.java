@@ -1,7 +1,8 @@
 package pl.edu.uj.ii.webapp.execute;
 
 import com.google.common.collect.Lists;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.edu.uj.ii.model.CarMove;
 import pl.edu.uj.ii.webapp.execute.test.TestCase;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.lang.Boolean.FALSE;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.apache.commons.io.FilenameUtils.getExtension;
@@ -29,9 +31,10 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
  * Created by gauee on 4/7/16.
  */
 public class RushHourExecutor {
-    private static final Logger LOGGER = Logger.getLogger(RushHourExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RushHourExecutor.class);
     private final TaskFactory taskFactory;
     private final Map<TestCase, List<List<CarMove>>> testCases;
+    private boolean IS_VALIDATION_MOCKED = FALSE;
 
     public RushHourExecutor(TaskFactory taskFactory) {
         this.taskFactory = taskFactory;
@@ -41,9 +44,7 @@ public class RushHourExecutor {
     public List<TestResult> runAllTestCases(final Param param) {
         try {
             Task task = this.taskFactory.createTask(param);
-
             LOGGER.debug(String.format("Running %d tests", this.testCases.size()));
-
             List<TestResult> results = this.testCases.entrySet()
                     .stream()
                     .map(entry -> of(entry, task.getOutputFor(entry.getKey())))
@@ -82,18 +83,18 @@ public class RushHourExecutor {
     }
 
     private List<List<CarMove>> loadExpectedCarMoves(File expectedResult) {
+        if (!IS_VALIDATION_MOCKED) {
+            return emptyList();
+        }
         List<String> lines = Lists.newLinkedList();
-
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(expectedResult))) {
             String line;
-
             while ((line = bufferedReader.readLine()) != null) {
                 lines.add(line);
             }
         } catch (IllegalArgumentException | IOException e) {
             LOGGER.error("Cannot load file " + expectedResult.getAbsolutePath(), e);
         }
-
         return parseOutputLines(lines);
     }
 }
