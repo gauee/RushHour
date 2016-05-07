@@ -18,7 +18,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,15 +31,15 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
  * Created by shybovycha on 22/04/16.
  */
 public abstract class Task {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(JavaTask.class);
-    protected static final Duration RUN_TIMEOUT = Duration.ofSeconds(30);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(JavaTask.class);
+    private static final Duration RUN_TIMEOUT = Duration.ofSeconds(30);
     protected String baseFileName;
     protected Path sourceFile;
     protected String sourceCode;
 
-    protected abstract String getExecuteCommand();
-    protected abstract String getTempFileName();
+    abstract String getExecuteCommand();
+
+    abstract String getTempFileName();
 
     protected String getSourceFilePath() {
         return this.sourceFile.toAbsolutePath().toString();
@@ -81,33 +80,19 @@ public abstract class Task {
 
     public Task processUpload(UploadFile uploadFile) throws IOException {
         this.baseFileName = uploadFile.getName().split("\\.")[0];
-
         Path root = Paths.get(CONFIG.getUploadedFileDir());
         this.sourceFile = Paths.get(root.toString(), this.getTempFileName());
-
         Files.createDirectories(this.sourceFile.getParent());
-
         this.sourceCode = uploadFile.getData();
-
         LOGGER.debug("Source code to compile:\n" + StringUtils.replaceChars(sourceCode, '\n', ' '));
-
         this.updateSourceCode(this.sourceCode);
-
         return this;
     }
 
     public List<List<CarMove>> getOutputFor(TestCase testCase) {
         List<String> output = Lists.newArrayList();
-
         ExecutorService executor = Executors.newSingleThreadExecutor();
-
-        final Future<List<String>> future = executor.submit(new Callable<List<String>>() {
-            @Override
-            public List<String> call() throws Exception {
-                return Task.this.runWithInput(testCase.getFile());
-            }
-        });
-
+        final Future<List<String>> future = executor.submit(() -> Task.this.runWithInput(testCase.getFile()));
         try {
             output = future.get(RUN_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {

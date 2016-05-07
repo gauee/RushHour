@@ -52,7 +52,6 @@ public class RushHourExecutor {
                     .collect(Collectors.toList());
 
             LOGGER.debug(String.format("RESULTS: %s", results));
-
             return results;
         } catch (ClassNotFoundException | IOException e) {
             LOGGER.warn("Cannot execute code " + param, e);
