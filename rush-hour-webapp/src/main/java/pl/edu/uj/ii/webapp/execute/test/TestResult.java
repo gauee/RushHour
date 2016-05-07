@@ -19,9 +19,11 @@ public class TestResult {
         this.testCaseId = testCaseId;
         this.results = Lists.newLinkedList();
 
-        for (int i = 0; i < expectedMoves.size(); i++) {
-            List<CarMove> expected = expectedMoves.get(i);
-            List<CarMove> current = i < currentMoves.size() ? currentMoves.get(i) : emptyList();
+        int currentSize = currentMoves.size();
+        int expectedSize = expectedMoves.size();
+        for (int i = 0; i < Math.max(currentSize, expectedSize); i++) {
+            List<CarMove> expected = i < expectedSize ? expectedMoves.get(i) : emptyList();
+            List<CarMove> current = i < currentSize ? currentMoves.get(i) : emptyList();
             results.add(new CarMovesComparator(current, expected));
         }
     }

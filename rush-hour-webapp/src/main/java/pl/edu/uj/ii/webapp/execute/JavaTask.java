@@ -59,7 +59,7 @@ public class JavaTask extends CompilableTask {
     }
 
     private ProcessBuilder createProcessBuilder(String command, String args) {
-        LOGGER.info("Execute compiler: " + command + ", file: " + args);
+        LOGGER.info("Create command: " + command + ", args: " + args);
         ProcessBuilder processBuilder = new ProcessBuilder(command, args);
         processBuilder.redirectErrorStream(true);
         return processBuilder;
