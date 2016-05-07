@@ -44,14 +44,14 @@ public class RushHourExecutor {
     public List<TestResult> runAllTestCases(final Param param) {
         try {
             Task task = this.taskFactory.createTask(param);
-            LOGGER.debug(String.format("Running %d tests", this.testCases.size()));
+            LOGGER.info(String.format("Running %d tests", this.testCases.size()));
             List<TestResult> results = this.testCases.entrySet()
                     .stream()
                     .map(entry -> of(entry, task.getOutputFor(entry.getKey())))
                     .map(pair -> new TestResult(pair.getLeft().getKey().getId(), pair.getRight(), pair.getLeft().getValue()))
                     .collect(Collectors.toList());
 
-            LOGGER.debug(String.format("RESULTS: %s", results));
+            LOGGER.info(String.format("RESULTS: %s", results));
             return results;
         } catch (ClassNotFoundException | IOException e) {
             LOGGER.warn("Cannot execute code " + param, e);

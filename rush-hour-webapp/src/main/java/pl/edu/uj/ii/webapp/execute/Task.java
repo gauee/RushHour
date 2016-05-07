@@ -85,7 +85,7 @@ public abstract class Task {
         this.sourceFile = Paths.get(root.toString(), this.getTempFileName());
         Files.createDirectories(this.sourceFile.getParent());
         this.sourceCode = uploadFile.getData();
-        LOGGER.debug("Source code to compile:\n" + StringUtils.replaceChars(sourceCode, '\n', ' '));
+        LOGGER.info("Source code to compile:\n" + StringUtils.replaceChars(sourceCode, '\n', ' '));
         this.updateSourceCode(this.sourceCode);
         return this;
     }
