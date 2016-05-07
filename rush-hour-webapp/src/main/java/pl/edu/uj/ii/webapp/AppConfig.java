@@ -67,4 +67,11 @@ public class AppConfig {
         return appProperties.getProperty("test.cases.dir");
     }
 
+    public int getSrvPort() {
+        return Integer.valueOf(appProperties.getProperty("spark.port"));
+    }
+
+    public String getIpAddress() {
+        return appProperties.getProperty("spark.ip.address", "0.0.0.0");
+    }
 }

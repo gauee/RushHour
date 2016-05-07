@@ -31,6 +31,8 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 import static pl.edu.uj.ii.webapp.execute.SupportedLang.JAVA_8;
 import static spark.Spark.get;
+import static spark.Spark.ipAddress;
+import static spark.Spark.port;
 import static spark.Spark.post;
 
 /**
@@ -54,6 +56,8 @@ public class StartApp implements SparkApplication {
     @Override
     public void init() {
         LOGGER.info("Starting application RushHour");
+        port(CONFIG.getSrvPort());
+        ipAddress(CONFIG.getIpAddress());
         initRoutes();
         rushHourExecutor = new RushHourExecutor(new TaskFactory(initLanguages()));
     }
