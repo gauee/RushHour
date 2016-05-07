@@ -34,10 +34,8 @@ public class JavaTask extends CompilableTask {
         String filePackage = this.packageDir.replaceAll("\\" + File.separator, ".");
         String newCode = changePackageInsideSolution(filePackage);
         this.updateSourceCode(newCode);
-        File basedCompilingDir = new File(this.compiledFileDir);
         String sourceFile = this.sourceFile.toFile().toString();
-
-        ProcessBuilder processBuilder = createProcessBuilder(getCompileCommand(), basedCompilingDir, sourceFile);
+        ProcessBuilder processBuilder = createProcessBuilder(getCompileCommand(), sourceFile);
         StringBuilder compilerOut = new StringBuilder();
 
         try {
@@ -61,11 +59,10 @@ public class JavaTask extends CompilableTask {
         return this;
     }
 
-    private ProcessBuilder createProcessBuilder(String command, File basedCompilingDir, String sourceFile) {
-        LOGGER.info("Execute compiler: " + command + ", inside directory: " + basedCompilingDir + ", file: " + sourceFile);
+    private ProcessBuilder createProcessBuilder(String command, String sourceFile) {
+        LOGGER.info("Execute compiler: " + command + ", file: " + sourceFile);
         ProcessBuilder processBuilder = new ProcessBuilder(command, sourceFile);
         processBuilder.redirectErrorStream(true);
-        processBuilder.directory(basedCompilingDir);
         return processBuilder;
     }
 
