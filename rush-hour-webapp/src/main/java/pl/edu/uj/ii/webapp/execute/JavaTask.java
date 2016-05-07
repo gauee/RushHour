@@ -32,13 +32,12 @@ public class JavaTask extends CompilableTask {
     public Task compile() throws IOException, ClassNotFoundException {
         String className = this.baseFileName.split("\\.")[0];
         String filePackage = this.packageDir.replaceAll("\\" + File.separator, ".");
-        String newCode = renamePackageInUploadedSolution(filePackage);
+        String newCode = changePackageInsideSolution(filePackage);
         this.updateSourceCode(newCode);
-        File basedCompilingDir = this.sourceFile.getParent().getParent().getParent().toFile();
-        LOGGER.info("Execute compiler: " + this.getCompileCommand() + ", inside directory: " + basedCompilingDir.getAbsolutePath() + ", file: " + this.getSourceFilePath());
-        ProcessBuilder processBuilder = new ProcessBuilder(this.getCompileCommand(), this.getSourceFilePath());
-        processBuilder.redirectErrorStream(true);
-        processBuilder.directory(basedCompilingDir);
+        File basedCompilingDir = new File(this.compiledFileDir);
+        String sourceFile = this.sourceFile.toFile().toString();
+
+        ProcessBuilder processBuilder = createProcessBuilder(getCompileCommand(), basedCompilingDir, sourceFile);
         StringBuilder compilerOut = new StringBuilder();
 
         try {
@@ -62,7 +61,15 @@ public class JavaTask extends CompilableTask {
         return this;
     }
 
-    private String renamePackageInUploadedSolution(String filePackage) {
+    private ProcessBuilder createProcessBuilder(String command, File basedCompilingDir, String sourceFile) {
+        LOGGER.info("Execute compiler: " + command + ", inside directory: " + basedCompilingDir + ", file: " + sourceFile);
+        ProcessBuilder processBuilder = new ProcessBuilder(command, sourceFile);
+        processBuilder.redirectErrorStream(true);
+        processBuilder.directory(basedCompilingDir);
+        return processBuilder;
+    }
+
+    private String changePackageInsideSolution(String filePackage) {
         return this.sourceCode.replaceFirst("package\\s+.*?;", String.format("package %s;", filePackage));
     }
 
