@@ -35,7 +35,7 @@ public class JavaTask extends CompilableTask {
         String newCode = changePackageInsideSolution(filePackage);
         this.updateSourceCode(newCode);
         String sourceFile = this.sourceFile.toFile().getAbsolutePath();
-        ProcessBuilder processBuilder = createProcessBuilder(this.jdkDir + "/bin/javac", sourceFile);
+        ProcessBuilder processBuilder = createProcessBuilder(getCompilerCommand(), sourceFile);
         StringBuilder compilerOut = new StringBuilder();
 
         try {
@@ -56,6 +56,10 @@ public class JavaTask extends CompilableTask {
         }
         LOGGER.info("Compilation finished. " + compilerOut.toString());
         return this;
+    }
+
+    private String getCompilerCommand() {
+        return new File(this.jdkDir + "/bin/javac").getAbsolutePath();
     }
 
     private ProcessBuilder createProcessBuilder(String command, String args) {
