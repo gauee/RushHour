@@ -10,3 +10,4 @@ mkdir startApp
 cp $APP/target/rush-hour-webapp-1.0-SNAPSHOT.jar startApp/
 cp -r $APP/src/main/resources_os startApp/config
 mv startApp/config/scripts/* startApp/
+mkdir startApp/logs
