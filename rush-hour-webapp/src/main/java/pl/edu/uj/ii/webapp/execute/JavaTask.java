@@ -35,7 +35,7 @@ public class JavaTask extends CompilableTask {
         String newCode = changePackageInsideSolution(filePackage);
         this.updateSourceCode(newCode);
         String sourceFile = this.sourceFile.toFile().getAbsolutePath();
-        ProcessBuilder processBuilder = createProcessBuilder(getCompilerCommand(), sourceFile);
+        ProcessBuilder processBuilder = createProcessBuilder(this.jdkDir + "/bin/javac", sourceFile);
         StringBuilder compilerOut = new StringBuilder();
 
         try {
@@ -47,7 +47,7 @@ public class JavaTask extends CompilableTask {
             while ((line = errorReader.readLine()) != null) {
                 compilerOut.append(line);
             }
-            compilerOut.append("\nCompiler output:");
+            compilerOut.append(" Compiler output:");
             while ((line = outputReader.readLine()) != null) {
                 compilerOut.append(line);
             }
@@ -56,10 +56,6 @@ public class JavaTask extends CompilableTask {
         }
         LOGGER.info("Compilation finished. " + compilerOut.toString());
         return this;
-    }
-
-    private String getCompilerCommand() {
-        return this.jdkDir + "/bin/javac";
     }
 
     private ProcessBuilder createProcessBuilder(String command, String args) {
@@ -75,7 +71,7 @@ public class JavaTask extends CompilableTask {
 
     @Override
     ProcessBuilder createExecutionProcess() {
-        ProcessBuilder processBuilder = createProcessBuilder(this.jdkDir + "/bin/java", packageDir + File.separator + baseFileName);
+        ProcessBuilder processBuilder = createProcessBuilder("../" + jdkDir + "/bin/java", packageDir + File.separator + baseFileName);
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
     }
