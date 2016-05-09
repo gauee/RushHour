@@ -28,7 +28,7 @@ public class JavaTask extends CompilableTask {
 
     @Override
     public void compile() throws IOException, ClassNotFoundException {
-        String filePackage = getSolutionDir().substring(0, getSolutionDir().length() - 2).replaceAll("\\" + File.separator, ".");
+        String filePackage = getUniqSolutionDir().substring(0, getUniqSolutionDir().length() - 2).replaceAll("\\" + File.separator, ".");
         String newCode = changePackageInsideSolution(filePackage);
         this.updateSourceCode(newCode);
         String sourceFile = this.sourceFile.toFile().getAbsolutePath();
@@ -59,7 +59,7 @@ public class JavaTask extends CompilableTask {
 
     @Override
     ProcessBuilder createExecutionProcess() {
-        ProcessBuilder processBuilder = createProcessBuilder("../" + jdkDir + "bin/java", getSolutionDir() + baseFileName);
+        ProcessBuilder processBuilder = createProcessBuilder("../" + jdkDir + "bin/java", getUniqSolutionDir() + baseFileName);
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
     }

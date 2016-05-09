@@ -37,14 +37,21 @@ public abstract class Task {
     protected Path sourceFile;
     protected String sourceCode;
     private final String solutionDir;
+    private String uniqSolutionDir;
 
     public Task(String solutionDir) {
-        this.solutionDir = createSolutionDir(solutionDir);
+        this.solutionDir = solutionDir;
     }
 
     abstract ProcessBuilder createExecutionProcess();
 
     abstract String getTempFileName();
+
+    abstract protected void preExecution();
+
+    void initSolutionDir() {
+        this.uniqSolutionDir = createSolutionDir(solutionDir);
+    }
 
     protected List<String> runWithInput(File inputFile) {
         ProcessBuilder processBuilder = createExecutionProcess();
@@ -72,15 +79,13 @@ public abstract class Task {
         }
     }
 
-    public Task processUpload(UploadFile uploadFile) throws IOException {
+    public void processUpload(UploadFile uploadFile) throws IOException {
         this.baseFileName = uploadFile.getName().split("\\.")[0];
-        Path root = Paths.get(CONFIG.getUploadedFileDir(), solutionDir);
+        Path root = Paths.get(CONFIG.getUploadedFileDir(), getUniqSolutionDir());
         this.sourceFile = Paths.get(root.toString(), getTempFileName());
         Files.createDirectories(sourceFile.getParent());
         this.sourceCode = uploadFile.getData();
         LOGGER.info("Source code to compile:\n" + StringUtils.replaceChars(sourceCode, '\n', ' '));
-        this.updateSourceCode(sourceCode);
-        return this;
     }
 
     public List<List<CarMove>> getOutputFor(TestCase testCase) {
@@ -117,7 +122,7 @@ public abstract class Task {
         return String.format("runtime/%s_%d/", dirType, System.currentTimeMillis());
     }
 
-    public String getSolutionDir() {
-        return solutionDir;
+    public String getUniqSolutionDir() {
+        return uniqSolutionDir;
     }
 }

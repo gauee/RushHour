@@ -16,13 +16,17 @@ public class PythonTask extends Task {
     }
 
     @Override
+    protected void preExecution() {
+    }
+
+    @Override
     protected String getTempFileName() {
         return String.format("%s.py", baseFileName);
     }
 
     @Override
     ProcessBuilder createExecutionProcess() {
-        ProcessBuilder processBuilder = createProcessBuilder("../" + interpreter + "python", getSolutionDir() + getTempFileName());
+        ProcessBuilder processBuilder = createProcessBuilder("../" + interpreter + "python", getUniqSolutionDir() + getTempFileName());
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
     }
