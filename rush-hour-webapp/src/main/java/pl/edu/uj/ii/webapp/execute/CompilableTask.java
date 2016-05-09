@@ -13,22 +13,17 @@ import java.util.List;
  */
 public abstract class CompilableTask extends Task {
     private static final Logger LOGGER = LoggerFactory.getLogger(CompilableTask.class);
-    protected boolean isCompiled = false;
 
     public CompilableTask(String solutionDir) {
         super(solutionDir);
     }
 
-    protected abstract Task compile() throws IOException, ClassNotFoundException;
+    abstract void compile() throws IOException, ClassNotFoundException;
 
     @Override
     protected List<String> runWithInput(File inputFile) {
         try {
-            if (!this.isCompiled) {
-                this.compile();
-                this.isCompiled = true;
-            }
-
+            compile();
             return super.runWithInput(inputFile);
         } catch (IOException e) {
             LOGGER.error(String.format("IO Error: %s", e.getMessage()));

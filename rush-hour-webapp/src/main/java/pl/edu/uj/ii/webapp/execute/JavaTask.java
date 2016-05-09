@@ -27,7 +27,7 @@ public class JavaTask extends CompilableTask {
     }
 
     @Override
-    public Task compile() throws IOException, ClassNotFoundException {
+    public void compile() throws IOException, ClassNotFoundException {
         String filePackage = getSolutionDir().substring(0, getSolutionDir().length() - 2).replaceAll("\\" + File.separator, ".");
         String newCode = changePackageInsideSolution(filePackage);
         this.updateSourceCode(newCode);
@@ -51,7 +51,6 @@ public class JavaTask extends CompilableTask {
             LOGGER.error("Cannot execute process.", e);
         }
         LOGGER.info("Compilation finished. " + compilerOut.toString());
-        return this;
     }
 
     private String changePackageInsideSolution(String filePackage) {
