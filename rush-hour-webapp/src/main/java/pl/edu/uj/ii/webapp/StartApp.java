@@ -81,7 +81,7 @@ public class StartApp implements SparkApplication {
     private ModelAndView processNewSolution(Request req) {
         Param param = createParam(req);
         ModelAndView modelAndView = uploadPageView();
-        LOGGER.info("Request param: " + param);
+        LOGGER.debug("Request param: " + param);
         try {
             List<TestResult> testResults = rushHourExecutor.runAllTestCases(param);
             appendToModel(modelAndView, "testResults", testResults);

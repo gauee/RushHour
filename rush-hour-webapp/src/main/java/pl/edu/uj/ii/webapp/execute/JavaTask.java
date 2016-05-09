@@ -22,11 +22,11 @@ public class JavaTask extends CompilableTask {
     public JavaTask(String jdkDir, String compiledFileDir) {
         this.jdkDir = jdkDir;
         this.compiledFileDir = compiledFileDir;
-        this.packageDir = generateNewPackagePath();
+        this.packageDir = createSolutionDir();
     }
 
     protected String getTempFileName() {
-        return String.format("%s/%s.java", packageDir, baseFileName);
+        return String.format("%s.java", baseFileName);
     }
 
     @Override
@@ -69,8 +69,8 @@ public class JavaTask extends CompilableTask {
         return processBuilder;
     }
 
-    private String generateNewPackagePath() {
-        return String.format("runtimeCompiled/%s/_%d", this.compiledFileDir, System.currentTimeMillis());
+    @Override
+    String getSolutionTypeDir() {
+        return compiledFileDir;
     }
-
 }

@@ -1,11 +1,6 @@
 package pl.edu.uj.ii.webapp.execute;
 
-import pl.edu.uj.ii.model.CarMove;
-import pl.edu.uj.ii.webapp.execute.test.TestCase;
-
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
 
 import static java.io.File.separator;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
@@ -24,12 +19,7 @@ public class PythonTask extends Task {
 
     @Override
     protected String getTempFileName() {
-        return String.format(solutionTargetDir + separator + "%s.py", this.baseFileName);
-    }
-
-    @Override
-    public List<List<CarMove>> getOutputFor(TestCase testCase) {
-        return Collections.emptyList();
+        return String.format("%s.py", baseFileName);
     }
 
     @Override
@@ -37,5 +27,10 @@ public class PythonTask extends Task {
         ProcessBuilder processBuilder = createProcessBuilder("../" + interpreter, solutionTargetDir + separator + baseFileName);
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
+    }
+
+    @Override
+    String getSolutionTypeDir() {
+        return solutionTargetDir;
     }
 }
