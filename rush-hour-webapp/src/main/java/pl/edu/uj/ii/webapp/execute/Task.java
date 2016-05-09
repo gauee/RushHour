@@ -92,9 +92,8 @@ public abstract class Task {
         } catch (TimeoutException e) {
             future.cancel(true);
             LOGGER.error("Running program has timed out");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (ExecutionException | InterruptedException e) {
+            LOGGER.error(e.getMessage(), e);
             e.printStackTrace();
         } finally {
             executor.shutdownNow();

@@ -87,7 +87,7 @@ public class StartApp implements SparkApplication {
             appendToModel(modelAndView, "testResults", testResults);
         } catch (Exception e) {
             LOGGER.error("Cannot retrieve output", e);
-            return setMessage(modelAndView, "Cannot execute all testCases:\n" + e.getMessage());
+            return setMessage(modelAndView, "Cannot execute all testCases.");
         }
         return setMessage(modelAndView, "File uploaded.");
     }
