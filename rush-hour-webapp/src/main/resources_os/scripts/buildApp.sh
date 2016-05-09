@@ -11,3 +11,5 @@ rm -rf startApp/config
 cp $APP/target/rush-hour-webapp-1.0-SNAPSHOT.jar startApp/
 cp -r $APP/src/main/resources_os startApp/config
 mv startApp/config/scripts startApp/scripts
+
+$MVN_CMD clean
