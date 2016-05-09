@@ -64,7 +64,7 @@ public class JavaTask extends CompilableTask {
 
     @Override
     ProcessBuilder createExecutionProcess() {
-        ProcessBuilder processBuilder = createProcessBuilder("../" + jdkDir + "bin/java", packageDir + File.separator + baseFileName);
+        ProcessBuilder processBuilder = createProcessBuilder("../" + jdkDir + "bin/java", packageDir + baseFileName);
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
     }
