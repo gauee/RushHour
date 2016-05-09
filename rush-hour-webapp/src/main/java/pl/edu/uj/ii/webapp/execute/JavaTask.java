@@ -28,7 +28,7 @@ public class JavaTask extends CompilableTask {
 
     @Override
     public void compile() throws IOException, ClassNotFoundException {
-        String filePackage = getUniqSolutionDir().substring(0, getUniqSolutionDir().length() - 2).replaceAll("\\" + File.separator, ".");
+        String filePackage = getUniqSolutionDir().substring(0, getUniqSolutionDir().length() - 1).replaceAll("\\" + File.separator, ".");
         String newCode = changePackageInsideSolution(filePackage);
         this.updateSourceCode(newCode);
         String sourceFile = this.sourceFile.toFile().getAbsolutePath();
