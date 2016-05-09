@@ -13,7 +13,7 @@ public class SolutionJava7 {
                 scanner.nextLine();
             }
         }
-        for (String step : Arrays.asList("C D 1", "N L 2", "M D 2", "X R 4","C D 1", "N L 2", "M D 2", "X R 2")) {
+        for (String step : Arrays.asList("C D 1", "N L 2", "M D 2", "X R 4", "C D 1", "N L 2", "M D 2", "X R 2")) {
             System.out.println(step);
         }
     }

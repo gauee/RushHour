@@ -42,11 +42,14 @@ public final class DataConverter {
         if (args.length != 3) {
             throw new IllegalArgumentException("Cannot parse line: " + output);
         }
-
-        return new CarMove(
-                CarId.valueOf(args[0]),
-                Direction.convert(args[1]),
-                Byte.valueOf(args[2])
-        );
+        try {
+            return new CarMove(
+                    CarId.valueOf(args[0]),
+                    Direction.convert(args[1]),
+                    Byte.valueOf(args[2])
+            );
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Cannot parse line: " + output, e);
+        }
     }
 }
