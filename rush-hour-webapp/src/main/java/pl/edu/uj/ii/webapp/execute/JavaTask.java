@@ -35,7 +35,7 @@ public class JavaTask extends CompilableTask {
         String newCode = changePackageInsideSolution(filePackage);
         this.updateSourceCode(newCode);
         String sourceFile = this.sourceFile.toFile().getAbsolutePath();
-        ProcessBuilder processBuilder = createProcessBuilder(this.jdkDir + "/bin/javac", sourceFile);
+        ProcessBuilder processBuilder = createProcessBuilder(this.jdkDir + "bin/javac", sourceFile);
         StringBuilder compilerOut = new StringBuilder();
 
         try {
@@ -64,7 +64,7 @@ public class JavaTask extends CompilableTask {
 
     @Override
     ProcessBuilder createExecutionProcess() {
-        ProcessBuilder processBuilder = createProcessBuilder("../" + jdkDir + "/bin/java", packageDir + File.separator + baseFileName);
+        ProcessBuilder processBuilder = createProcessBuilder("../" + jdkDir + "bin/java", packageDir + File.separator + baseFileName);
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
     }

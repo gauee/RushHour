@@ -2,7 +2,6 @@ package pl.edu.uj.ii.webapp.execute;
 
 import java.io.File;
 
-import static java.io.File.separator;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
 /**
@@ -24,7 +23,7 @@ public class PythonTask extends Task {
 
     @Override
     ProcessBuilder createExecutionProcess() {
-        ProcessBuilder processBuilder = createProcessBuilder("../" + interpreter, solutionTargetDir + separator + baseFileName);
+        ProcessBuilder processBuilder = createProcessBuilder("../" + interpreter + "python", solutionTargetDir + getTempFileName());
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
     }
