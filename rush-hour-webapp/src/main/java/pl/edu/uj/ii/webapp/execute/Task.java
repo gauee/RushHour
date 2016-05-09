@@ -49,7 +49,7 @@ public abstract class Task {
 
     abstract protected void preExecution();
 
-    void initSolutionDir() {
+    private void initSolutionDir() {
         this.uniqSolutionDir = createSolutionDir(solutionDir);
     }
 
@@ -80,6 +80,7 @@ public abstract class Task {
     }
 
     public void processUpload(UploadFile uploadFile) throws IOException {
+        initSolutionDir();
         this.baseFileName = uploadFile.getName().split("\\.")[0];
         Path root = Paths.get(CONFIG.getUploadedFileDir(), getUniqSolutionDir());
         this.sourceFile = Paths.get(root.toString(), getTempFileName());

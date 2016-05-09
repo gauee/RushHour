@@ -17,6 +17,7 @@ public class PythonTask extends Task {
 
     @Override
     protected void preExecution() {
+        this.updateSourceCode(sourceCode);
     }
 
     @Override
