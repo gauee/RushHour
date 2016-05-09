@@ -43,7 +43,7 @@ public enum SupportedLang implements Versionable {
     }
 
     public String getDescription() {
-        return description + " (ver. " + StringUtils.substringAfterLast(getVersion(), File.separator) + " )";
+        return description + " (ver. " + StringUtils.substringAfterLast(StringUtils.substringBeforeLast(getVersion(), File.separator), File.separator) + " )";
     }
 
 
