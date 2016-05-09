@@ -19,9 +19,9 @@ public class JavaTask extends CompilableTask {
     private final String jdkDir;
     private String packageDir;
 
-    public JavaTask(String compiledFileDir, String jdkDir) {
-        this.compiledFileDir = compiledFileDir;
+    public JavaTask(String jdkDir, String compiledFileDir) {
         this.jdkDir = jdkDir;
+        this.compiledFileDir = compiledFileDir;
         this.packageDir = generateNewPackagePath();
     }
 
@@ -58,13 +58,6 @@ public class JavaTask extends CompilableTask {
         return this;
     }
 
-    private ProcessBuilder createProcessBuilder(String command, String args) {
-        LOGGER.info("Create command: " + command + ", args: " + args);
-        ProcessBuilder processBuilder = new ProcessBuilder(command, args);
-        processBuilder.redirectErrorStream(true);
-        return processBuilder;
-    }
-
     private String changePackageInsideSolution(String filePackage) {
         return this.sourceCode.replaceFirst("package\\s+.*?;", String.format("package %s;", filePackage));
     }
@@ -80,8 +73,4 @@ public class JavaTask extends CompilableTask {
         return String.format("runtimeCompiled/%s/_%d", this.compiledFileDir, System.currentTimeMillis());
     }
 
-    @Override
-    String getExecuteCommand() {
-        return null;
-    }
 }

@@ -1,0 +1,79 @@
+#* @vtlvariable name="supportedLang" type="pl.edu.uj.ii.webapp.execute.SupportedLang[]" *#
+#* @vtlvariable name="testResults" type="java.util.List<pl.edu.uj.ii.webapp.execute.test.TestResult>" *#
+
+<hmtl>
+    <head></head>
+
+    <body>
+    <h1>Welcome on RushHour!</h1>
+
+        #if($!message)
+        <p>
+            $message
+        </p>
+        #end
+
+    <form action="/submit" method="post" enctype="multipart/form-data">
+    ##    <form action="/submit" method="post">
+        <fieldset>
+            <legend>Upload source code content</legend>
+
+            <div>
+                <label for="supportedLang">Select Language</label>
+                <select name="supportedLang">
+                    #foreach ($lang in $supportedLang)
+                        <option value="$lang.ordinal()">$lang.getDescription()</option>
+                    #end
+                </select>
+            </div>
+            <div>
+                <label for="filebutton">Upload file</label>
+
+                <div>
+                    <input id="fileContent" name="fileContent" class="input-file" type="file">
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Submit solution">
+            </div>
+        </fieldset>
+    </form>
+        #if($!testResults)
+        <p>
+        <table>
+            <tr>
+                <th>Test case id</th>
+                <th>Test case result</th>
+                <th>Details</th>
+            </tr>
+            #foreach($testResult in $testResults)
+                #foreach($result in $testResult.results)
+                    <tr>
+                        <td>
+                            $testResult.testCaseId
+                        </td>
+                        #if($result.passed)
+                            #set($colorValue = 'green')
+                        #else
+                            #set($colorValue = 'red')
+                        #end
+                        <td style="color: $colorValue; font-weight: bolder;"/>
+                        $result.passed
+                        </td>
+                        <td>
+                            #if(!$result.passed)
+                                Expected was: $result.expected.toString()
+                                <br/>
+                                Current was: $result.current.toString()
+                            #end
+                        </td>
+                    </tr>
+                #end
+            #end
+        </table>
+        </p>
+        #end
+
+
+    </body>
+</hmtl>

@@ -1,5 +1,6 @@
 package pl.edu.uj.ii.webapp;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -69,20 +70,18 @@ public class StartApp implements SparkApplication {
     }
 
     private Map<SupportedLang, Task> initLanguages() {
-        Map<SupportedLang, Task> languageCompilers = Maps.newHashMap();
-        languageCompilers.put(SupportedLang.JAVA_7, new JavaTask(CONFIG.getCompiledFileDirForJava7(), CONFIG.getJava7Home()));
-        languageCompilers.put(SupportedLang.JAVA_8, new JavaTask(CONFIG.getCompiledFileDirForJava8(), CONFIG.getJava8Home()));
-        languageCompilers.put(SupportedLang.PYTHON_2, new PythonTask());
-        languageCompilers.put(SupportedLang.PYTHON_3, new PythonTask());
-        return languageCompilers;
+        return ImmutableMap.<SupportedLang, Task>builder()
+                .put(SupportedLang.JAVA_7, new JavaTask(CONFIG.getJava7Home(), CONFIG.getCompiledFileDirForJava7()))
+                .put(SupportedLang.JAVA_8, new JavaTask(CONFIG.getJava8Home(), CONFIG.getCompiledFileDirForJava8()))
+                .put(SupportedLang.PYTHON_2, new PythonTask(CONFIG.getPython2Interpreter(), CONFIG.getCompiledFileDirForPython2()))
+                .put(SupportedLang.PYTHON_3, new PythonTask(CONFIG.getPython3Interpreter(), CONFIG.getCompiledFileDirForPython3()))
+                .build();
     }
 
     private ModelAndView processNewSolution(Request req) {
         Param param = createParam(req);
         ModelAndView modelAndView = uploadPageView();
-
         LOGGER.info("Request param: " + param);
-
         try {
             List<TestResult> testResults = rushHourExecutor.runAllTestCases(param);
             appendToModel(modelAndView, "testResults", testResults);
@@ -90,7 +89,6 @@ public class StartApp implements SparkApplication {
             LOGGER.error("Cannot retrieve output", e);
             return setMessage(modelAndView, "Cannot execute all testCases:\n" + e.getMessage());
         }
-
         return setMessage(modelAndView, "File uploaded.");
     }
 

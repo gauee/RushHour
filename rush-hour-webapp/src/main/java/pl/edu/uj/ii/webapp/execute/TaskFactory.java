@@ -14,8 +14,6 @@ public class TaskFactory {
     }
 
     public Task createTask(Param param) throws IOException, ClassNotFoundException {
-        Task task = supportedTask.get(param.getSupportedLang());
-
-        return task.processUpload(param.getUploadFile());
+        return supportedTask.get(param.getSupportedLang()).processUpload(param.getUploadFile());
     }
 }

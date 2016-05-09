@@ -31,43 +31,31 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
  * Created by shybovycha on 22/04/16.
  */
 public abstract class Task {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JavaTask.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Task.class);
     private static final Duration RUN_TIMEOUT = Duration.ofSeconds(30);
     protected String baseFileName;
     protected Path sourceFile;
     protected String sourceCode;
 
-
     abstract ProcessBuilder createExecutionProcess();
 
-    abstract String getExecuteCommand();
-
     abstract String getTempFileName();
-
-    protected String getSourceFilePath() {
-        return this.sourceFile.toAbsolutePath().toString();
-    }
 
     protected List<String> runWithInput(File inputFile) {
         ProcessBuilder processBuilder = createExecutionProcess();
         processBuilder.redirectErrorStream(true);
         processBuilder.redirectInput(inputFile);
-
         List<String> lines = Lists.newLinkedList();
-
         try {
             Process start = processBuilder.start();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(start.getInputStream()));
-
             String line;
-
             while ((line = bufferedReader.readLine()) != null) {
                 lines.add(line);
             }
         } catch (IOException e) {
             LOGGER.error("Cannot execute process.", e);
         }
-
         return lines;
     }
 
@@ -82,18 +70,18 @@ public abstract class Task {
     public Task processUpload(UploadFile uploadFile) throws IOException {
         this.baseFileName = uploadFile.getName().split("\\.")[0];
         Path root = Paths.get(CONFIG.getUploadedFileDir());
-        this.sourceFile = Paths.get(root.toString(), this.getTempFileName());
-        Files.createDirectories(this.sourceFile.getParent());
+        this.sourceFile = Paths.get(root.toString(), getTempFileName());
+        Files.createDirectories(sourceFile.getParent());
         this.sourceCode = uploadFile.getData();
         LOGGER.info("Source code to compile:\n" + StringUtils.replaceChars(sourceCode, '\n', ' '));
-        this.updateSourceCode(this.sourceCode);
+        this.updateSourceCode(sourceCode);
         return this;
     }
 
     public List<List<CarMove>> getOutputFor(TestCase testCase) {
         List<String> output = Lists.newArrayList();
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        final Future<List<String>> future = executor.submit(() -> Task.this.runWithInput(testCase.getFile()));
+        final Future<List<String>> future = executor.submit(() -> runWithInput(testCase.getFile()));
         try {
             output = future.get(RUN_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
@@ -112,5 +100,12 @@ public abstract class Task {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Cannot parse output " + output, e);
         }
+    }
+
+    protected ProcessBuilder createProcessBuilder(String command, String args) {
+        LOGGER.info("Create command: " + command + ", args: " + args);
+        ProcessBuilder processBuilder = new ProcessBuilder(command, args);
+        processBuilder.redirectErrorStream(true);
+        return processBuilder;
     }
 }
