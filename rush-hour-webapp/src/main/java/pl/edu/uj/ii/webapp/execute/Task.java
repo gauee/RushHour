@@ -36,12 +36,15 @@ public abstract class Task {
     protected String baseFileName;
     protected Path sourceFile;
     protected String sourceCode;
+    private final String solutionDir;
+
+    public Task(String solutionDir) {
+        this.solutionDir = createSolutionDir(solutionDir);
+    }
 
     abstract ProcessBuilder createExecutionProcess();
 
     abstract String getTempFileName();
-
-    abstract String getSolutionTypeDir();
 
     protected List<String> runWithInput(File inputFile) {
         ProcessBuilder processBuilder = createExecutionProcess();
@@ -71,7 +74,7 @@ public abstract class Task {
 
     public Task processUpload(UploadFile uploadFile) throws IOException {
         this.baseFileName = uploadFile.getName().split("\\.")[0];
-        Path root = Paths.get(CONFIG.getUploadedFileDir(), createSolutionDir());
+        Path root = Paths.get(CONFIG.getUploadedFileDir(), solutionDir);
         this.sourceFile = Paths.get(root.toString(), getTempFileName());
         Files.createDirectories(sourceFile.getParent());
         this.sourceCode = uploadFile.getData();
@@ -111,7 +114,11 @@ public abstract class Task {
         return processBuilder;
     }
 
-    protected String createSolutionDir() {
-        return String.format("runtime/%s_%d", getSolutionTypeDir(), System.currentTimeMillis());
+    private static String createSolutionDir(String dirType) {
+        return String.format("runtime/%s_%d/", dirType, System.currentTimeMillis());
+    }
+
+    public String getSolutionDir() {
+        return solutionDir;
     }
 }

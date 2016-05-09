@@ -9,11 +9,10 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
  */
 public class PythonTask extends Task {
     private final String interpreter;
-    private final String solutionTargetDir;
 
-    public PythonTask(String interpreter, String solutionTargetDir) {
+    public PythonTask(String interpreter, String solutionDir) {
+        super(solutionDir);
         this.interpreter = interpreter;
-        this.solutionTargetDir = solutionTargetDir;
     }
 
     @Override
@@ -23,13 +22,9 @@ public class PythonTask extends Task {
 
     @Override
     ProcessBuilder createExecutionProcess() {
-        ProcessBuilder processBuilder = createProcessBuilder("../" + interpreter + "python", solutionTargetDir + getTempFileName());
+        ProcessBuilder processBuilder = createProcessBuilder("../" + interpreter + "python", getSolutionDir() + getTempFileName());
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
     }
 
-    @Override
-    String getSolutionTypeDir() {
-        return solutionTargetDir;
-    }
 }

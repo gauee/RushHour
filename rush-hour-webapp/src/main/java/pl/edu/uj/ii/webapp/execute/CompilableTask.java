@@ -15,6 +15,10 @@ public abstract class CompilableTask extends Task {
     private static final Logger LOGGER = LoggerFactory.getLogger(CompilableTask.class);
     protected boolean isCompiled = false;
 
+    public CompilableTask(String solutionDir) {
+        super(solutionDir);
+    }
+
     protected abstract Task compile() throws IOException, ClassNotFoundException;
 
     @Override

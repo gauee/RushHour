@@ -15,14 +15,11 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
  */
 public class JavaTask extends CompilableTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(JavaTask.class);
-    private final String compiledFileDir;
     private final String jdkDir;
-    private String packageDir;
 
     public JavaTask(String jdkDir, String compiledFileDir) {
+        super(compiledFileDir);
         this.jdkDir = jdkDir;
-        this.compiledFileDir = compiledFileDir;
-        this.packageDir = createSolutionDir();
     }
 
     protected String getTempFileName() {
@@ -31,13 +28,12 @@ public class JavaTask extends CompilableTask {
 
     @Override
     public Task compile() throws IOException, ClassNotFoundException {
-        String filePackage = this.packageDir.replaceAll("\\" + File.separator, ".");
+        String filePackage = getSolutionDir().substring(0, getSolutionDir().length() - 2).replaceAll("\\" + File.separator, ".");
         String newCode = changePackageInsideSolution(filePackage);
         this.updateSourceCode(newCode);
         String sourceFile = this.sourceFile.toFile().getAbsolutePath();
         ProcessBuilder processBuilder = createProcessBuilder(this.jdkDir + "bin/javac", sourceFile);
         StringBuilder compilerOut = new StringBuilder();
-
         try {
             Process start = processBuilder.start();
             BufferedReader outputReader = new BufferedReader(new InputStreamReader(start.getInputStream()));
@@ -64,13 +60,9 @@ public class JavaTask extends CompilableTask {
 
     @Override
     ProcessBuilder createExecutionProcess() {
-        ProcessBuilder processBuilder = createProcessBuilder("../" + jdkDir + "bin/java", packageDir + baseFileName);
+        ProcessBuilder processBuilder = createProcessBuilder("../" + jdkDir + "bin/java", getSolutionDir() + baseFileName);
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
     }
 
-    @Override
-    String getSolutionTypeDir() {
-        return compiledFileDir;
-    }
 }
