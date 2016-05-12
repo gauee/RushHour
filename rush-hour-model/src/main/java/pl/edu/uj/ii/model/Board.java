@@ -117,4 +117,8 @@ public class Board {
     public char[][] getCarsOnBoard() {
         return carsOnBoard;
     }
+
+    public boolean isCarAtPosition(CarId id, Point point) {
+        return cars.get(id).getStartPoint().equals(point);
+    }
 }
