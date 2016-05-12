@@ -6,12 +6,24 @@ package pl.edu.uj.ii.model;
 public class CarMove {
     private final CarId carId;
     private final Direction direction;
-    private final byte steps;
+    private final int steps;
 
-    public CarMove(CarId carId, Direction direction, byte steps) {
+    public CarMove(CarId carId, Direction direction, int steps) {
         this.carId = carId;
         this.direction = direction;
         this.steps = steps;
+    }
+
+    public CarId getCarId() {
+        return carId;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public int getSteps() {
+        return steps;
     }
 
     @Override
@@ -36,7 +48,7 @@ public class CarMove {
     public int hashCode() {
         int result = carId != null ? carId.hashCode() : 0;
         result = 31 * result + (direction != null ? direction.hashCode() : 0);
-        result = 31 * result + (int) steps;
+        result = 31 * result + steps;
         return result;
     }
 }
