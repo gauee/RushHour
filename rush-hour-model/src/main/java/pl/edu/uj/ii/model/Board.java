@@ -84,6 +84,9 @@ public class Board {
         if (car.getPosition() != carMove.getDirection().getWay()) {
             return false;
         }
+        if (carMove.getSteps() < 0) {
+            return false;
+        }
         int xDirection = getDirection(H, car.getPosition()) * carMove.getDirection().getCourse();
         int yDirection = getDirection(V, car.getPosition()) * carMove.getDirection().getCourse();
         Point startPoint = car.getStartPoint();

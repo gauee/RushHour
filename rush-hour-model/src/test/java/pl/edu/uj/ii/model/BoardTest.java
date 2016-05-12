@@ -192,4 +192,11 @@ public class BoardTest {
         assertThat(board.move(new CarMove(A, Right, 1)), is(false));
     }
 
+    @Test
+    public void doesNotMoveCarWithNegativeSteps() {
+        board.add(new Car(A, new Point(2, 2), H, 2));
+
+        assertThat(board.move(new CarMove(A, Left, -1)), is(false));
+    }
+
 }
