@@ -2,12 +2,11 @@ package pl.edu.uj.ii.webapp.sample;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 /**
- * Created by gauee on 4/7/16.
+ * Created by gauee on 5/14/16.
  */
-public class SolutionJava7 {
+public class TestingMoves {
     public static final List<String> FIRST_TEST_CASE = Arrays.asList(
             "I U 2",
             "E U 2",
@@ -24,15 +23,4 @@ public class SolutionJava7 {
             "I D 3",
             "X R 3"
     );
-
-    public static void main(String[] args) {
-        try (Scanner scanner = new Scanner(System.in)) {
-            while (scanner.hasNext()) {
-                scanner.nextLine();
-            }
-        }
-        for (String step : FIRST_TEST_CASE) {
-            System.out.println(step);
-        }
-    }
 }

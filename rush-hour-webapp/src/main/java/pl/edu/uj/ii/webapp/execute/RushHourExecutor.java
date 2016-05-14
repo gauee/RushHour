@@ -26,7 +26,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -99,7 +98,6 @@ public class RushHourExecutor {
     private List<TestCase> loadTestCases() {
         try {
             return Files.list(Paths.get(getClass().getClassLoader().getResource(CONFIG.getTestCasesDir()).toURI()))
-                    .filter(filterInputFiles())
                     .map(this::convertToTestCase)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
@@ -107,10 +105,6 @@ public class RushHourExecutor {
             LOGGER.warn("Cannot load test cases from " + CONFIG.getTestCasesDir());
         }
         return emptyList();
-    }
-
-    private Predicate<Path> filterInputFiles() {
-        return path -> path.toFile().toString().endsWith("in");
     }
 
     private TestCase convertToTestCase(Path path) {

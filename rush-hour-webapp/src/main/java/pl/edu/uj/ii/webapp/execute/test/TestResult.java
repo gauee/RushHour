@@ -1,5 +1,7 @@
 package pl.edu.uj.ii.webapp.execute.test;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.List;
 
 /**
@@ -26,5 +28,14 @@ public class TestResult {
 
     public long getDuration() {
         return duration;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("testCaseId", testCaseId)
+                .add("duration", duration)
+                .add("stepsOfAllTestCases", stepsOfAllTestCases)
+                .toString();
     }
 }

@@ -1,6 +1,7 @@
 package pl.edu.uj.ii.model;
 
 import com.google.common.collect.Maps;
+import org.apache.log4j.Logger;
 
 import java.awt.Point;
 import java.util.Arrays;
@@ -9,10 +10,14 @@ import java.util.Map;
 import static pl.edu.uj.ii.model.Position.H;
 import static pl.edu.uj.ii.model.Position.V;
 
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+
 /**
  * Created by gauee on 3/31/16.
  */
 public class Board {
+    private static final Logger LOGGER = Logger.getLogger(Board.class);
     public static final char EMPTY_POSITION = ' ';
     public static final int DEFAULT_SIZE = 6;
     private final int width;
@@ -84,12 +89,15 @@ public class Board {
     public boolean move(CarMove carMove) {
         Car car = cars.get(carMove.getCarId());
         if (car == null) {
+            LOGGER.debug("Car does not exist on board.");
             return false;
         }
         if (car.getPosition() != carMove.getDirection().getWay()) {
+            LOGGER.debug("Car has position " + car.getPosition() + " direction of move is " + carMove.getDirection() + ".");
             return false;
         }
         if (carMove.getSteps() < 0) {
+            LOGGER.debug("Cannot move car by negative steps.");
             return false;
         }
         int xDirection = getDirection(H, car.getPosition()) * carMove.getDirection().getCourse();
@@ -98,6 +106,7 @@ public class Board {
         int xPosition = startPoint.x + xDirection * carMove.getSteps();
         int yPosition = startPoint.y + yDirection * carMove.getSteps();
         if (isPositionNotReachable(xPosition, yPosition)) {
+            LOGGER.debug("Car will be move out of the board (" + xPosition + "," + yPosition + ") for " + car + " and " + carMove);
             return false;
         }
         int offset = 0;
@@ -108,6 +117,7 @@ public class Board {
                     i--;
                     offset++;
                 } else {
+                    LOGGER.debug("Other car is on this position " + currentSign);
                     return false;
                 }
             }

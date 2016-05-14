@@ -1,5 +1,7 @@
 package pl.edu.uj.ii.model;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * Created by gauee on 4/7/16.
  */
@@ -28,7 +30,11 @@ public class CarMove {
 
     @Override
     public String toString() {
-        return carId + " " + direction + " " + steps;
+        return MoreObjects.toStringHelper(this)
+                .add("carId", carId)
+                .add("direction", direction)
+                .add("steps", steps)
+                .toString();
     }
 
     @Override
