@@ -39,21 +39,20 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 public class RushHourExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(RushHourExecutor.class);
     private final TaskFactory taskFactory;
-    private final List<TestCase> testCases;
     private ExecutorService taskExecutor = Executors.newFixedThreadPool(2);
     private static final long RUN_TIMEOUT = TimeUnit.SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec());
     private final MovesChecker movesChecker = new MovesChecker();
 
     public RushHourExecutor(TaskFactory taskFactory) {
         this.taskFactory = taskFactory;
-        this.testCases = loadTestCases();
     }
 
     public List<TestResult> runAllTestCases(final Param param) {
         try {
+            List<TestCase> testCases = loadTestCases();
             Task task = this.taskFactory.createTask(param);
-            LOGGER.info(String.format("Running %d tests", this.testCases.size()));
-            List<TestResult> results = this.testCases.stream()
+            LOGGER.info(String.format("Running %d tests", testCases.size()));
+            List<TestResult> results = testCases.stream()
                     .map(testCase -> retrieveTestCaseOutputs(task, testCase))
                     .collect(Collectors.toList());
             LOGGER.info(String.format("RESULTS: %s", results));
