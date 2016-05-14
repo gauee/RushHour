@@ -14,6 +14,7 @@ import pl.edu.uj.ii.webapp.execute.Task;
 import pl.edu.uj.ii.webapp.execute.TaskFactory;
 import pl.edu.uj.ii.webapp.execute.UploadFile;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
+import pl.edu.uj.ii.webapp.ui.TimeDuration;
 import spark.ModelAndView;
 import spark.Request;
 import spark.servlet.SparkApplication;
@@ -43,6 +44,7 @@ public class StartApp implements SparkApplication {
     public static final String PARAM_SUPPORTED_LANG = "supportedLang";
     public static final String PARAM_FILE_CONTENT = "fileContent";
     private static final Logger LOGGER = LoggerFactory.getLogger(StartApp.class);
+    private final TimeDuration timeDuration = new TimeDuration();
     private RushHourExecutor rushHourExecutor;
 
     public static void main(String[] args) {
@@ -128,6 +130,7 @@ public class StartApp implements SparkApplication {
     private ModelAndView uploadPageView() {
         Map<String, Object> model = Maps.newHashMap();
         model.put("supportedLang", SupportedLang.values());
+        model.put("timeDuration", timeDuration);
         return new ModelAndView(model, "templates/index.vm");
     }
 

@@ -1,5 +1,6 @@
 #* @vtlvariable name="supportedLang" type="pl.edu.uj.ii.webapp.execute.SupportedLang[]" *#
 #* @vtlvariable name="testResults" type="java.util.List<pl.edu.uj.ii.webapp.execute.test.TestResult>" *#
+#* @vtlvariable name="timeDuration" type="pl.edu.uj.ii.webapp.ui.TimeDuration" *#
 
 <hmtl>
     <head>
@@ -57,7 +58,7 @@
                         $testResult.testCaseId
                     </td>
                     <td>
-                        $testResult.duration
+                        $timeDuration.parse($testResult.duration)
                     </td>
                     <td>
                         <table>
