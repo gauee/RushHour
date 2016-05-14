@@ -1,7 +1,6 @@
 package pl.edu.uj.ii;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.StringUtils;
 import pl.edu.uj.ii.model.Board;
 import pl.edu.uj.ii.model.Car;
 import pl.edu.uj.ii.model.CarId;
@@ -46,22 +45,14 @@ public final class DataConverter {
 
     public static List<List<CarMove>> parseOutputLines(List<String> lines) {
         List<List<CarMove>> carMovesTestResults = Lists.newLinkedList();
-        List<CarMove> carMoves = Lists.newLinkedList();
-
-        // ignore the amount of moves in the first line as we do not need this
-        lines.remove(0);
-
-        for (String line : lines) {
-            if (StringUtils.isBlank(line)) {
-                carMovesTestResults.add(carMoves);
-                carMoves = Lists.newLinkedList();
-            } else {
-                carMoves.add(parseOutputLine(line));
+        while (!lines.isEmpty()) {
+            int carMovesAmount = Integer.valueOf(lines.remove(0));
+            List<CarMove> carMoves = Lists.newLinkedList();
+            for (int i = 0; i < carMovesAmount; i++) {
+                carMoves.add(parseOutputLine(lines.remove(0)));
             }
+            carMovesTestResults.add(carMoves);
         }
-
-        carMovesTestResults.add(carMoves);
-
         return carMovesTestResults;
     }
 

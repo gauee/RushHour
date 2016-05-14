@@ -9,6 +9,7 @@ import java.util.Scanner;
  */
 public class SolutionJava7 {
     public static final List<String> FIRST_TEST_CASE = Arrays.asList(
+            "14",
             "I U 2",
             "E U 2",
             "M R 4",
