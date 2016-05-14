@@ -8,6 +8,8 @@ import pl.edu.uj.ii.DataConverter;
 import pl.edu.uj.ii.model.Board;
 import pl.edu.uj.ii.model.CarMove;
 import pl.edu.uj.ii.verify.MovesChecker;
+import pl.edu.uj.ii.webapp.execute.tasks.Task;
+import pl.edu.uj.ii.webapp.execute.tasks.TaskFactory;
 import pl.edu.uj.ii.webapp.execute.test.TestCase;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
 

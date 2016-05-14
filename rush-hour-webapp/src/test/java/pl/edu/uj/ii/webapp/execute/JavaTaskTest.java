@@ -2,6 +2,8 @@ package pl.edu.uj.ii.webapp.execute;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import pl.edu.uj.ii.webapp.execute.tasks.JavaTask;
+import pl.edu.uj.ii.webapp.execute.tasks.Task;
 
 import java.io.IOException;
 

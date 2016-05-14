@@ -1,9 +1,10 @@
-package pl.edu.uj.ii.webapp.execute;
+package pl.edu.uj.ii.webapp.execute.tasks;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.edu.uj.ii.webapp.execute.UploadFile;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -43,7 +44,7 @@ public abstract class Task {
         this.uniqSolutionDir = createSolutionDir(solutionDir);
     }
 
-    protected List<String> runWithInput(File inputFile) {
+    public List<String> runWithInput(File inputFile) {
         ProcessBuilder processBuilder = createExecutionProcess();
         processBuilder.redirectErrorStream(true);
         processBuilder.redirectInput(inputFile);

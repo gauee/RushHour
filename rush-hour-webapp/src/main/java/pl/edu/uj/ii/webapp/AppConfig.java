@@ -27,36 +27,29 @@ public class AppConfig {
         }
     }
 
-    public String getJava8Home() {
-        return appProperties.getProperty("java.8.home");
+    public String getGppHome() {
+        return appProperties.getProperty("cpp.home");
     }
 
-    public String getJava7Home() {
-        return appProperties.getProperty("java.7.home");
+    public String getJava8Home() {
+        return appProperties.getProperty("java.8.home");
     }
 
     public String getPython3Interpreter() {
         return appProperties.getProperty("python.3.interpreter");
     }
 
-    public String getPython2Interpreter() {
-        return appProperties.getProperty("python.2.interpreter");
-    }
-
     public String getUploadedFileDir() {
         return appProperties.getProperty("uploaded.file.dir");
     }
 
-    public String getCompiledFileDirForJava7() {
-        return appProperties.getProperty("compiled.file.dir.java.7");
+    public String getCompiledFileDirForCpp() {
+        return appProperties.getProperty("compiled.file.dir.cpp");
+
     }
 
     public String getCompiledFileDirForJava8() {
         return appProperties.getProperty("compiled.file.dir.java.8");
-    }
-
-    public String getCompiledFileDirForPython2() {
-        return appProperties.getProperty("compiled.file.dir.python.2");
     }
 
     public String getCompiledFileDirForPython3() {
@@ -78,4 +71,5 @@ public class AppConfig {
     public int getExecutionTimeoutInSec() {
         return Integer.valueOf(appProperties.getProperty("solution.exec.timeout.seconds"));
     }
+
 }

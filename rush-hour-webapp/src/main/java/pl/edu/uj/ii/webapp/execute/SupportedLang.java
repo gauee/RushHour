@@ -1,6 +1,10 @@
 package pl.edu.uj.ii.webapp.execute;
 
 import org.apache.commons.lang.StringUtils;
+import pl.edu.uj.ii.webapp.execute.tasks.CppTask;
+import pl.edu.uj.ii.webapp.execute.tasks.JavaTask;
+import pl.edu.uj.ii.webapp.execute.tasks.PythonTask;
+import pl.edu.uj.ii.webapp.execute.tasks.Task;
 
 import java.io.File;
 
@@ -22,6 +26,20 @@ public enum SupportedLang {
             return new JavaTask(
                     CONFIG.getJava8Home(),
                     CONFIG.getCompiledFileDirForJava8()
+            );
+        }
+    },
+    GPP("C++") {
+        @Override
+        public String getVersion() {
+            return CONFIG.getGppHome();
+        }
+
+        @Override
+        public Task createTask() {
+            return new CppTask(
+                    CONFIG.getGppHome(),
+                    CONFIG.getCompiledFileDirForCpp()
             );
         }
     },
