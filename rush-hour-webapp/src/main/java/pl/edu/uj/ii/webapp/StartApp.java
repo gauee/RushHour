@@ -5,9 +5,7 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.edu.uj.ii.webapp.execute.JavaTask;
 import pl.edu.uj.ii.webapp.execute.Param;
-import pl.edu.uj.ii.webapp.execute.PythonTask;
 import pl.edu.uj.ii.webapp.execute.RushHourExecutor;
 import pl.edu.uj.ii.webapp.execute.SupportedLang;
 import pl.edu.uj.ii.webapp.execute.Task;
@@ -74,9 +72,14 @@ public class StartApp implements SparkApplication {
     }
 
     private Map<SupportedLang, Task> initLanguages() {
-        return ImmutableMap.<SupportedLang, Task>builder()
-                .put(SupportedLang.JAVA_8, new JavaTask(CONFIG.getJava8Home(), CONFIG.getCompiledFileDirForJava8()))
-                .put(SupportedLang.PYTHON_3, new PythonTask(CONFIG.getPython3Interpreter(), CONFIG.getCompiledFileDirForPython3()))
+        ImmutableMap.Builder<SupportedLang, Task> mapBuilder = ImmutableMap.<SupportedLang, Task>builder();
+        for (SupportedLang supportedLang : SupportedLang.values()) {
+            mapBuilder.put(
+                    supportedLang,
+                    supportedLang.createTask()
+            );
+        }
+        return mapBuilder
                 .build();
     }
 
