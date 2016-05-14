@@ -72,7 +72,7 @@ public class RushHourExecutor {
         List<List<CarMove>> carMovesForAllBoards = DataConverter.parseOutputLines(outputLines);
         List<Integer> stepsForAllBoards = Lists.newLinkedList();
         for (Board board : testCase.getBoards()) {
-            List<CarMove> carMoves = carMovesForAllBoards.remove(0);
+            List<CarMove> carMoves = carMovesForAllBoards.isEmpty() ? emptyList() : carMovesForAllBoards.remove(0);
             int steps = movesChecker.canSpecialCarEscapeBoard(board, carMoves);
             stepsForAllBoards.add(steps);
         }
