@@ -19,7 +19,7 @@ public class SolutionJava7 {
             "X R 2",
             "A U 3",
             "X L 1",
-            "E U 2",
+            "E U 3",
             "M L 3",
             "E D 3",
             "I D 3",

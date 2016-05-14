@@ -86,6 +86,9 @@ public class Board {
     }
 
     public boolean move(CarMove carMove) {
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Trying to move " + carMove + " on board " + consoleDrawer.printWithLog(this));
+        }
         Car car = cars.get(carMove.getCarId());
         if (car == null) {
             LOGGER.debug("Car does not exist on board. " + carMove);
