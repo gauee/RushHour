@@ -70,7 +70,7 @@
                                     #set($colorValue = 'red')
                                 #end
                                 <tr>
-                                    <td style="boder: none; color: $colorValue; font-weight: bolder;">$amountOfSteps</td>
+                                    <td style="boder: none; Ncolor: $colorValue; font-weight: bolder;">$amountOfSteps</td>
                                 </tr>
                             #end
                         </table>
