@@ -28,7 +28,7 @@ public class CppTask extends CompilableTask {
     }
 
     protected ProcessBuilder createProcessBuilder(String command, String args) {
-        String sourceFile = this.sourceFile.toFile().getAbsolutePath();
+        String sourceFile = this.sourceFile.toFile().toString();
         ProcessBuilder processBuilder = new ProcessBuilder(
                 this.cppHome + "g++",
                 "-o " + this.sourceFile.getParent().toFile().getAbsolutePath() + separator + baseFileName,
