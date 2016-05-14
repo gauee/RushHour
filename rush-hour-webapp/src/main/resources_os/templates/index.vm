@@ -61,7 +61,7 @@
                         $timeDuration.parse($testResult.duration)
                     </td>
                     <td>
-                        <table>
+                        <table style="boder: none">
                             #foreach($amountOfSteps in $testResult.stepsOfAllTestCases)
 
                                 #if($amountOfSteps != -1)
@@ -70,7 +70,7 @@
                                     #set($colorValue = 'red')
                                 #end
                                 <tr>
-                                    <td style="color: $colorValue; font-weight: bolder;">$amountOfSteps</td>
+                                    <td style="boder: none; color: $colorValue; font-weight: bolder;">$amountOfSteps</td>
                                 </tr>
                             #end
                         </table>
