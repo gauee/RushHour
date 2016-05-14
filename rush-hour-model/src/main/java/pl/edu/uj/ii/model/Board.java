@@ -14,10 +14,15 @@ import static pl.edu.uj.ii.model.Position.V;
  */
 public class Board {
     public static final char EMPTY_POSITION = ' ';
+    public static final int DEFAULT_SIZE = 6;
     private final int width;
     private final int height;
     private final Map<CarId, Car> cars = Maps.newHashMap();
     private final char[][] carsOnBoard;
+
+    public Board() {
+        this(DEFAULT_SIZE, DEFAULT_SIZE);
+    }
 
     public Board(int width, int height) {
         this.width = width;
@@ -47,7 +52,7 @@ public class Board {
     }
 
     private boolean canCarBeAdd(Car car) {
-        Point startPoint = car.getStartPoint();
+        Point startPoint = car.getPoint();
         int xDirection = getDirection(H, car.getPosition());
         int yDirection = getDirection(V, car.getPosition());
         for (int i = 0; i < car.getLength(); i++) {
@@ -68,7 +73,7 @@ public class Board {
     }
 
     private void putCarOnPosition(Car car, char boardSign) {
-        Point startPoint = car.getStartPoint();
+        Point startPoint = car.getPoint();
         int xDirection = getDirection(H, car.getPosition());
         int yDirection = getDirection(V, car.getPosition());
         for (int i = 0; i < car.getLength(); i++) {
@@ -89,7 +94,7 @@ public class Board {
         }
         int xDirection = getDirection(H, car.getPosition()) * carMove.getDirection().getCourse();
         int yDirection = getDirection(V, car.getPosition()) * carMove.getDirection().getCourse();
-        Point startPoint = car.getStartPoint();
+        Point startPoint = car.getPoint();
         int xPosition = startPoint.x + xDirection * carMove.getSteps();
         int yPosition = startPoint.y + yDirection * carMove.getSteps();
         if (isPositionNotReachable(xPosition, yPosition)) {
@@ -122,6 +127,6 @@ public class Board {
     }
 
     public boolean isCarAtPosition(CarId id, Point point) {
-        return cars.get(id).getStartPoint().equals(point);
+        return cars.get(id).getPoint().equals(point);
     }
 }

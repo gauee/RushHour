@@ -1,30 +1,36 @@
 package pl.edu.uj.ii.webapp.execute;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.edu.uj.ii.DataConverter;
+import pl.edu.uj.ii.model.Board;
 import pl.edu.uj.ii.model.CarMove;
+import pl.edu.uj.ii.verify.MovesChecker;
 import pl.edu.uj.ii.webapp.execute.test.TestCase;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import static java.lang.Boolean.FALSE;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static org.apache.commons.io.FilenameUtils.getExtension;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
-import static org.apache.commons.lang3.tuple.Pair.of;
-import static pl.edu.uj.ii.DataConverter.parseOutputLines;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
 /**
@@ -33,67 +39,85 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 public class RushHourExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(RushHourExecutor.class);
     private final TaskFactory taskFactory;
-    private final Map<TestCase, List<List<CarMove>>> testCases;
-    private boolean IS_VALIDATION_MOCKED = FALSE;
+    private final List<TestCase> testCases;
+    private ExecutorService taskExecutor = Executors.newFixedThreadPool(2);
+    private static final long RUN_TIMEOUT = TimeUnit.SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec());
+    private final MovesChecker movesChecker = new MovesChecker();
 
     public RushHourExecutor(TaskFactory taskFactory) {
         this.taskFactory = taskFactory;
-        this.testCases = this.loadTestCases();
+        this.testCases = loadTestCases();
     }
 
     public List<TestResult> runAllTestCases(final Param param) {
         try {
             Task task = this.taskFactory.createTask(param);
             LOGGER.info(String.format("Running %d tests", this.testCases.size()));
-            List<TestResult> results = this.testCases.entrySet()
-                    .stream()
-                    .map(entry -> of(entry, task.getOutputFor(entry.getKey())))
-                    .map(pair -> new TestResult(pair.getLeft().getKey().getId(), pair.getRight(), pair.getLeft().getValue()))
+            List<TestResult> results = this.testCases.stream()
+                    .map(testCase -> retrieveTestCaseOutputs(task, testCase))
                     .collect(Collectors.toList());
-
             LOGGER.info(String.format("RESULTS: %s", results));
             return results;
         } catch (ClassNotFoundException | IOException e) {
             LOGGER.warn("Cannot execute code " + param, e);
         }
-
         return emptyList();
     }
 
-    private Map<TestCase, List<List<CarMove>>> loadTestCases() {
-        try {
-            return Files.list(Paths.get(getClass().getClassLoader().getResource(CONFIG.getTestCasesDir()).toURI()))
-                    .collect(Collectors.toMap(
-                            p -> removeExtension(p.toFile().getName()),
-                            p -> of(p.toFile(), p.toFile()),
-                            (p1, p2) -> "in".equals(getExtension(p1.getLeft().getName())) ? of(p1.getLeft(), p2.getRight()) : of(p2.getLeft(), p1.getRight())
-                    ))
-                    .entrySet().stream()
-                    .map(testCasePair -> of(
-                            new TestCase(testCasePair.getKey(), testCasePair.getValue().getLeft()),
-                            loadExpectedCarMoves(testCasePair.getValue().getRight())
-                    ))
-                    .collect(Collectors.toMap(pair -> pair.getLeft(), pair -> pair.getRight()));
-        } catch (IOException | URISyntaxException e) {
-            LOGGER.warn(String.format("Cannot load test cases from %s", CONFIG.getTestCasesDir()), e);
+    private TestResult retrieveTestCaseOutputs(Task task, TestCase testCase) {
+        long duration = System.currentTimeMillis();
+        List<String> outputLines = getOutput(task, testCase);
+        duration = System.currentTimeMillis() - duration;
+        List<List<CarMove>> carMovesForAllBoards = DataConverter.parseOutputLines(outputLines);
+        List<Integer> stepsForAllBoards = Lists.newLinkedList();
+        for (Board board : testCase.getBoards()) {
+            List<CarMove> carMoves = carMovesForAllBoards.remove(0);
+            int steps = movesChecker.canSpecialCarEscapeBoard(board, carMoves);
+            stepsForAllBoards.add(steps);
         }
-
-        return emptyMap();
+        return new TestResult(
+                testCase.getId(),
+                duration,
+                stepsForAllBoards
+        );
     }
 
-    private List<List<CarMove>> loadExpectedCarMoves(File expectedResult) {
-        if (!IS_VALIDATION_MOCKED) {
-            return emptyList();
+    public List<String> getOutput(Task task, TestCase testCase) {
+        final Future<List<String>> future = taskExecutor.submit(() -> task.runWithInput(testCase.getFile()));
+        try {
+            return future.get(RUN_TIMEOUT, MILLISECONDS);
+        } catch (TimeoutException e) {
+            future.cancel(true);
+            LOGGER.error("Running program has timed out");
+        } catch (ExecutionException | InterruptedException e) {
+            LOGGER.error(e.getMessage(), e);
         }
-        List<String> lines = Lists.newLinkedList();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(expectedResult))) {
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                lines.add(line);
-            }
-        } catch (IllegalArgumentException | IOException e) {
-            LOGGER.error("Cannot load file " + expectedResult.getAbsolutePath(), e);
+        return emptyList();
+    }
+
+    private List<TestCase> loadTestCases() {
+        try {
+            return Files.list(Paths.get(getClass().getClassLoader().getResource(CONFIG.getTestCasesDir()).toURI()))
+                    .filter(path -> path.endsWith(".in"))
+                    .map(this::convertToTestCase)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        } catch (IOException | URISyntaxException e) {
+            LOGGER.warn("Cannot load test cases from " + CONFIG.getTestCasesDir());
         }
-        return parseOutputLines(lines);
+        return emptyList();
+    }
+
+    private TestCase convertToTestCase(Path path) {
+        try (InputStream is = new FileInputStream(path.toFile())) {
+            return new TestCase(
+                    removeExtension(path.toFile().getName()),
+                    path.toFile(),
+                    DataConverter.parseInput(IOUtils.readLines(is))
+            );
+        } catch (IOException e) {
+            LOGGER.warn("Cannot load input for " + path.toString());
+            return null;
+        }
     }
 }

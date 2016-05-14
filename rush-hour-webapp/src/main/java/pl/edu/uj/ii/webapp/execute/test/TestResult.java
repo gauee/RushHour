@@ -1,43 +1,30 @@
 package pl.edu.uj.ii.webapp.execute.test;
 
-import com.google.common.collect.Lists;
-import pl.edu.uj.ii.model.CarMove;
-
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.util.Collections.emptyList;
 
 /**
  * Created by gauee on 4/7/16.
  */
 public class TestResult {
     private final String testCaseId;
-    private final List<CarMovesComparator> results;
+    private final long duration;
+    private final List<Integer> stepsOfAllTestCases;
 
-    public TestResult(String testCaseId, List<List<CarMove>> currentMoves, List<List<CarMove>> expectedMoves) {
+    public TestResult(String testCaseId, long duration, List<Integer> stepsOfAllTestCases) {
         this.testCaseId = testCaseId;
-        this.results = Lists.newLinkedList();
-
-        int currentSize = currentMoves.size();
-        int expectedSize = expectedMoves.size();
-        for (int i = 0; i < Math.max(currentSize, expectedSize); i++) {
-            List<CarMove> expected = i < expectedSize ? expectedMoves.get(i) : emptyList();
-            List<CarMove> current = i < currentSize ? currentMoves.get(i) : emptyList();
-            results.add(new CarMovesComparator(current, expected));
-        }
+        this.duration = duration;
+        this.stepsOfAllTestCases = stepsOfAllTestCases;
     }
 
     public String getTestCaseId() {
         return testCaseId;
     }
 
-    public List<CarMovesComparator> getResults() {
-        return results;
+    public List<Integer> getStepsOfAllTestCases() {
+        return stepsOfAllTestCases;
     }
 
-    @Override
-    public String toString() {
-        return this.results.stream().map(r -> r.toString()).collect(Collectors.joining(", "));
+    public long getDuration() {
+        return duration;
     }
 }

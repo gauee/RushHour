@@ -74,4 +74,8 @@ public class AppConfig {
     public String getIpAddress() {
         return appProperties.getProperty("spark.ip.address", "0.0.0.0");
     }
+
+    public int getExecutionTimeoutInSec() {
+        return Integer.valueOf(appProperties.getProperty("solution.exec.timeout.seconds"));
+    }
 }

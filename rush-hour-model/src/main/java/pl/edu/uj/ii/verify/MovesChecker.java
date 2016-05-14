@@ -23,9 +23,7 @@ public class MovesChecker {
             }
             totalSteps += move.getSteps();
         }
-
         return board.isCarAtPosition(X, ESCAPE) ? totalSteps : ESCAPE_UNREACHABLE;
     }
-
 
 }
