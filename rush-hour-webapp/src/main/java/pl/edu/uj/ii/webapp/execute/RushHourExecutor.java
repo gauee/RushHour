@@ -113,7 +113,7 @@ public class RushHourExecutor {
                     path.toFile(),
                     DataConverter.parseInput(IOUtils.readLines(is))
             );
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.warn("Cannot load input for " + path.toString());
             return null;
         }
