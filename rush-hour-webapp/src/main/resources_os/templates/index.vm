@@ -2,7 +2,14 @@
 #* @vtlvariable name="testResults" type="java.util.List<pl.edu.uj.ii.webapp.execute.test.TestResult>" *#
 
 <hmtl>
-    <head></head>
+    <head>
+        <style>
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+        </style>
+    </head>
 
     <body>
     <h1>Welcome on RushHour!</h1>
@@ -38,7 +45,7 @@
     </form>
         #if($!testResults)
         <p>
-        <table>
+        <table style="width:100%">
             <tr>
                 <th>Test case id</th>
                 <th>Test case result</th>
