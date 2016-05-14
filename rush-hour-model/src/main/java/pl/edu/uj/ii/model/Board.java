@@ -2,6 +2,7 @@ package pl.edu.uj.ii.model;
 
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
+import pl.edu.uj.ii.ConsoleDrawer;
 
 import java.awt.Point;
 import java.util.Arrays;
@@ -9,9 +10,6 @@ import java.util.Map;
 
 import static pl.edu.uj.ii.model.Position.H;
 import static pl.edu.uj.ii.model.Position.V;
-
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 /**
  * Created by gauee on 3/31/16.
@@ -24,6 +22,7 @@ public class Board {
     private final int height;
     private final Map<CarId, Car> cars = Maps.newHashMap();
     private final char[][] carsOnBoard;
+    private ConsoleDrawer consoleDrawer = new ConsoleDrawer();
 
     public Board() {
         this(DEFAULT_SIZE, DEFAULT_SIZE);
@@ -89,7 +88,7 @@ public class Board {
     public boolean move(CarMove carMove) {
         Car car = cars.get(carMove.getCarId());
         if (car == null) {
-            LOGGER.debug("Car does not exist on board.");
+            LOGGER.debug("Car does not exist on board. " + carMove);
             return false;
         }
         if (car.getPosition() != carMove.getDirection().getWay()) {
@@ -97,7 +96,7 @@ public class Board {
             return false;
         }
         if (carMove.getSteps() < 0) {
-            LOGGER.debug("Cannot move car by negative steps.");
+            LOGGER.debug("Cannot move car by negative steps. " + carMove);
             return false;
         }
         int xDirection = getDirection(H, car.getPosition()) * carMove.getDirection().getCourse();
@@ -111,13 +110,19 @@ public class Board {
         }
         int offset = 0;
         for (int i = 0; i < carMove.getSteps(); i++) {
-            char currentSign = carsOnBoard[startPoint.x + (offset + i) * xDirection][startPoint.y + (offset + i) * yDirection];
+            int xCandidate = startPoint.x + (offset + i) * xDirection;
+            int yCandidate = startPoint.y + (offset + i) * yDirection;
+            if (isPositionNotReachable(xCandidate, yCandidate)) {
+                LOGGER.debug("Invalid " + carMove + " for board " + consoleDrawer.printWithLog(this));
+                return false;
+            }
+            char currentSign = carsOnBoard[xCandidate][yCandidate];
             if (currentSign != EMPTY_POSITION) {
                 if (currentSign == car.getId().getId()) {
                     i--;
                     offset++;
                 } else {
-                    LOGGER.debug("Other car is on this position " + currentSign);
+                    LOGGER.debug("Other car is on this position " + currentSign + " " + carMove + " on board" + consoleDrawer.printWithLog(this));
                     return false;
                 }
             }
