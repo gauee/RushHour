@@ -1,6 +1,7 @@
 #* @vtlvariable name="supportedLang" type="pl.edu.uj.ii.webapp.execute.SupportedLang[]" *#
 #* @vtlvariable name="testResults" type="java.util.List<pl.edu.uj.ii.webapp.execute.test.TestResult>" *#
 #* @vtlvariable name="timeDuration" type="pl.edu.uj.ii.webapp.ui.TimeDuration" *#
+#* @vtlvariable name="stepsCounter" type="pl.edu.uj.ii.webapp.ui.TotalStepCounter" *#
 
 <hmtl>
     <head>
@@ -49,7 +50,8 @@
         <table style="width:100%">
             <tr>
                 <th>Test case id</th>
-                <th>Test case result</th>
+                <th>Test case duration</th>
+                <th>Total steps</th>
                 <th>Details</th>
             </tr>
             #foreach($testResult in $testResults)
@@ -59,6 +61,9 @@
                     </td>
                     <td>
                         $timeDuration.parse($testResult.duration)
+                    </td>
+                    <td>
+                        $stepsCounter.countSteps($testResult.stepsOfAllTestCases)
                     </td>
                     <td>
                         <table style="border: none">
