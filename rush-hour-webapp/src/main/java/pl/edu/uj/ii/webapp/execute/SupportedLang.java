@@ -11,22 +11,10 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
  */
 public enum SupportedLang implements Versionable {
 
-    JAVA_7("Java 7 ") {
-        @Override
-        public String getVersion() {
-            return CONFIG.getJava7Home();
-        }
-    },
     JAVA_8("Java 8") {
         @Override
         public String getVersion() {
             return CONFIG.getJava8Home();
-        }
-    },
-    PYTHON_2("Python 2") {
-        @Override
-        public String getVersion() {
-            return CONFIG.getPython2Interpreter();
         }
     },
     PYTHON_3("Python 3") {
