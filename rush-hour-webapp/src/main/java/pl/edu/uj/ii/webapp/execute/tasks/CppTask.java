@@ -22,7 +22,7 @@ public class CppTask extends CompilableTask {
 
     @Override
     String createCompileCommand() {
-        return this.cppHome + "g++ -o " + baseFileName;
+        return "../" + this.cppHome + "g++ -o " + this.sourceFile.getParent().toFile().getAbsolutePath() + baseFileName;
     }
 
     @Override
