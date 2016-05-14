@@ -27,9 +27,20 @@ public class CppTask extends CompilableTask {
         return this.cppHome + "g++ -o " + this.sourceFile.getParent().toFile().getAbsolutePath() + separator + baseFileName;
     }
 
+    protected ProcessBuilder createProcessBuilder(String command, String args) {
+        String sourceFile = this.sourceFile.toFile().getAbsolutePath();
+        ProcessBuilder processBuilder = new ProcessBuilder(
+                this.cppHome + "g++",
+                "-o " + this.sourceFile.getParent().toFile().getAbsolutePath() + separator + baseFileName,
+                sourceFile
+        );
+        processBuilder.redirectErrorStream(true);
+        return processBuilder;
+    }
+
     @Override
     ProcessBuilder createExecutionProcess() {
-        ProcessBuilder processBuilder = createProcessBuilder("./", getUniqSolutionDir() + baseFileName);
+        ProcessBuilder processBuilder = new ProcessBuilder("./" + getUniqSolutionDir() + baseFileName);
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
     }
