@@ -5,7 +5,7 @@ for i in xrange(0, testCases):
         raw_input()
 
 steps = [
-    "0"
+    "0",
     "13",
     "I U 2",
     "E R 2",

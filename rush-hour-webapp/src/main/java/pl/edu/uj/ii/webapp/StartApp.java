@@ -75,9 +75,9 @@ public class StartApp implements SparkApplication {
 
     private Map<SupportedLang, Task> initLanguages() {
         return ImmutableMap.<SupportedLang, Task>builder()
-                .put(SupportedLang.JAVA_7, new JavaTask(CONFIG.getJava7Home(), CONFIG.getCompiledFileDirForJava7()))
+//                .put(SupportedLang.JAVA_7, new JavaTask(CONFIG.getJava7Home(), CONFIG.getCompiledFileDirForJava7()))
                 .put(SupportedLang.JAVA_8, new JavaTask(CONFIG.getJava8Home(), CONFIG.getCompiledFileDirForJava8()))
-                .put(SupportedLang.PYTHON_2, new PythonTask(CONFIG.getPython2Interpreter(), CONFIG.getCompiledFileDirForPython2()))
+//                .put(SupportedLang.PYTHON_2, new PythonTask(CONFIG.getPython2Interpreter(), CONFIG.getCompiledFileDirForPython2()))
                 .put(SupportedLang.PYTHON_3, new PythonTask(CONFIG.getPython3Interpreter(), CONFIG.getCompiledFileDirForPython3()))
                 .build();
     }
