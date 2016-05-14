@@ -3,6 +3,7 @@ package pl.edu.uj.ii.webapp.execute.tasks;
 import java.io.File;
 import java.io.IOException;
 
+import static java.io.File.separator;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
 /**
@@ -18,11 +19,12 @@ public class CppTask extends CompilableTask {
 
     @Override
     void preCompile() throws IOException, ClassNotFoundException {
+        this.updateSourceCode(sourceCode);
     }
 
     @Override
     String createCompileCommand() {
-        return this.cppHome + "g++ -o " + this.sourceFile.getParent().toFile().getAbsolutePath() + baseFileName;
+        return this.cppHome + "g++ -o " + this.sourceFile.getParent().toFile().getAbsolutePath() + separator + baseFileName;
     }
 
     @Override
