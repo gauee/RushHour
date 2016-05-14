@@ -31,7 +31,7 @@ public class CppTask extends CompilableTask {
         String sourceFile = this.sourceFile.toFile().toString();
         ProcessBuilder processBuilder = new ProcessBuilder(
                 this.cppHome + "g++",
-                "-o " + this.sourceFile.getParent().toFile().getAbsolutePath() + separator + baseFileName,
+                "-o " + this.sourceFile.getParent().toString() + separator + baseFileName,
                 sourceFile
         );
         processBuilder.redirectErrorStream(true);
