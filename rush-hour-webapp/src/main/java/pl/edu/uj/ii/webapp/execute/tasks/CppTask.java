@@ -31,10 +31,10 @@ public class CppTask extends CompilableTask {
         String sourceFile = this.sourceFile.toFile().toString();
         ProcessBuilder processBuilder = new ProcessBuilder(
                 this.cppHome + "g++",
-                "-o " + this.sourceFile.getParent().toString() + separator + baseFileName,
                 sourceFile
         );
         processBuilder.redirectErrorStream(true);
+        processBuilder.directory(this.sourceFile.getParent().toFile());
         return processBuilder;
     }
 
