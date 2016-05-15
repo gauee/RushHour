@@ -16,6 +16,10 @@
 
     <body>
     <h1>Welcome on RushHour!</h1>
+
+    <h3>
+        15.05.2016r - Rozwiazania dla jezyka Java powoduja timeouty, musimy zmienic proces sprawdzania wynikow any byl asynchroniczny.
+    </h3>
         #if($!message)
         <p>
             $message
