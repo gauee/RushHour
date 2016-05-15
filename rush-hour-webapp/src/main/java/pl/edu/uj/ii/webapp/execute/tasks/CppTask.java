@@ -30,7 +30,7 @@ public class CppTask extends CompilableTask {
     protected ProcessBuilder createProcessBuilder(String command, String args) {
         String sourceFile = this.sourceFile.toFile().toString();
         ProcessBuilder processBuilder = new ProcessBuilder(
-                this.cppHome + "g++",
+                "g++",
                 sourceFile
         );
         processBuilder.redirectErrorStream(true);
