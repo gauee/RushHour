@@ -40,7 +40,7 @@ public class CppTask extends CompilableTask {
 
     @Override
     ProcessBuilder createExecutionProcess() {
-        ProcessBuilder processBuilder = new ProcessBuilder("./" + getUniqSolutionDir() + baseFileName);
+        ProcessBuilder processBuilder = new ProcessBuilder("./" + getUniqSolutionDir() + "a.out");
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
     }
