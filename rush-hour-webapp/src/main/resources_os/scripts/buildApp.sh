@@ -3,6 +3,8 @@
 APP=./rush-hour-webapp/
 MVN_CMD=$M2_HOME/bin/mvn
 
+git pull --rebase
+
 $MVN_CMD clean package
 
 mkdir startApp

@@ -1,12 +1,10 @@
-package pl.edu.uj.ii.webapp.execute;
+package pl.edu.uj.ii.webapp.execute.tasks;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.edu.uj.ii.DataConverter;
-import pl.edu.uj.ii.model.CarMove;
-import pl.edu.uj.ii.webapp.execute.test.TestCase;
+import pl.edu.uj.ii.webapp.execute.UploadFile;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,14 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
@@ -32,7 +23,7 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
  */
 public abstract class Task {
     private static final Logger LOGGER = LoggerFactory.getLogger(Task.class);
-    private static final Duration RUN_TIMEOUT = Duration.ofSeconds(30);
+
     protected String baseFileName;
     protected Path sourceFile;
     protected String sourceCode;
@@ -53,7 +44,7 @@ public abstract class Task {
         this.uniqSolutionDir = createSolutionDir(solutionDir);
     }
 
-    protected List<String> runWithInput(File inputFile) {
+    public List<String> runWithInput(File inputFile) {
         ProcessBuilder processBuilder = createExecutionProcess();
         processBuilder.redirectErrorStream(true);
         processBuilder.redirectInput(inputFile);
@@ -89,28 +80,7 @@ public abstract class Task {
         LOGGER.info("Source code to compile:\n" + StringUtils.replaceChars(sourceCode, '\n', ' '));
     }
 
-    public List<List<CarMove>> getOutputFor(TestCase testCase) {
-        List<String> output = Lists.newArrayList();
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        final Future<List<String>> future = executor.submit(() -> runWithInput(testCase.getFile()));
-        try {
-            output = future.get(RUN_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
-        } catch (TimeoutException e) {
-            future.cancel(true);
-            LOGGER.error("Running program has timed out");
-        } catch (ExecutionException | InterruptedException e) {
-            LOGGER.error(e.getMessage(), e);
-            e.printStackTrace();
-        } finally {
-            executor.shutdownNow();
-        }
 
-        try {
-            return DataConverter.parseOutputLines(output);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Cannot parse output " + output, e);
-        }
-    }
 
     protected ProcessBuilder createProcessBuilder(String command, String args) {
         LOGGER.info("Create command: " + command + ", args: " + args);

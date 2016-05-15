@@ -1,4 +1,7 @@
-package pl.edu.uj.ii.webapp.execute;
+package pl.edu.uj.ii.webapp.execute.tasks;
+
+import pl.edu.uj.ii.webapp.execute.Param;
+import pl.edu.uj.ii.webapp.execute.SupportedLang;
 
 import java.io.IOException;
 import java.util.Map;

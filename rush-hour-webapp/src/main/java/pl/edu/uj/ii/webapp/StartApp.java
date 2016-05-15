@@ -5,15 +5,15 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.edu.uj.ii.webapp.execute.JavaTask;
 import pl.edu.uj.ii.webapp.execute.Param;
-import pl.edu.uj.ii.webapp.execute.PythonTask;
 import pl.edu.uj.ii.webapp.execute.RushHourExecutor;
 import pl.edu.uj.ii.webapp.execute.SupportedLang;
-import pl.edu.uj.ii.webapp.execute.Task;
-import pl.edu.uj.ii.webapp.execute.TaskFactory;
 import pl.edu.uj.ii.webapp.execute.UploadFile;
+import pl.edu.uj.ii.webapp.execute.tasks.Task;
+import pl.edu.uj.ii.webapp.execute.tasks.TaskFactory;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
+import pl.edu.uj.ii.webapp.ui.TimeDuration;
+import pl.edu.uj.ii.webapp.ui.TotalStepCounter;
 import spark.ModelAndView;
 import spark.Request;
 import spark.servlet.SparkApplication;
@@ -43,6 +43,8 @@ public class StartApp implements SparkApplication {
     public static final String PARAM_SUPPORTED_LANG = "supportedLang";
     public static final String PARAM_FILE_CONTENT = "fileContent";
     private static final Logger LOGGER = LoggerFactory.getLogger(StartApp.class);
+    private final TimeDuration timeDuration = new TimeDuration();
+    private final TotalStepCounter stepCounter = new TotalStepCounter();
     private RushHourExecutor rushHourExecutor;
 
     public static void main(String[] args) {
@@ -70,11 +72,14 @@ public class StartApp implements SparkApplication {
     }
 
     private Map<SupportedLang, Task> initLanguages() {
-        return ImmutableMap.<SupportedLang, Task>builder()
-                .put(SupportedLang.JAVA_7, new JavaTask(CONFIG.getJava7Home(), CONFIG.getCompiledFileDirForJava7()))
-                .put(SupportedLang.JAVA_8, new JavaTask(CONFIG.getJava8Home(), CONFIG.getCompiledFileDirForJava8()))
-                .put(SupportedLang.PYTHON_2, new PythonTask(CONFIG.getPython2Interpreter(), CONFIG.getCompiledFileDirForPython2()))
-                .put(SupportedLang.PYTHON_3, new PythonTask(CONFIG.getPython3Interpreter(), CONFIG.getCompiledFileDirForPython3()))
+        ImmutableMap.Builder<SupportedLang, Task> mapBuilder = ImmutableMap.<SupportedLang, Task>builder();
+        for (SupportedLang supportedLang : SupportedLang.values()) {
+            mapBuilder.put(
+                    supportedLang,
+                    supportedLang.createTask()
+            );
+        }
+        return mapBuilder
                 .build();
     }
 
@@ -128,6 +133,8 @@ public class StartApp implements SparkApplication {
     private ModelAndView uploadPageView() {
         Map<String, Object> model = Maps.newHashMap();
         model.put("supportedLang", SupportedLang.values());
+        model.put("timeDuration", timeDuration);
+        model.put("stepsCounter", stepCounter);
         return new ModelAndView(model, "templates/index.vm");
     }
 

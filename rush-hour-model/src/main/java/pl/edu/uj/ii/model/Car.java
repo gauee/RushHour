@@ -9,13 +9,13 @@ import java.awt.Point;
  */
 public class Car {
     private final CarId id;
-    private final Point startPoint;
+    private final Point point;
     private final Position position;
     private final int length;
 
     public Car(CarId id, Point startPoint, Position position, int length) {
         this.id = id;
-        this.startPoint = startPoint;
+        this.point = startPoint;
         this.position = position;
         this.length = length;
     }
@@ -24,8 +24,8 @@ public class Car {
         return id;
     }
 
-    public Point getStartPoint() {
-        return startPoint;
+    public Point getPoint() {
+        return point;
     }
 
     public Position getPosition() {
@@ -41,7 +41,7 @@ public class Car {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("startPoint", startPoint)
+                .add("point", point)
                 .add("position", position)
                 .add("length", length)
                 .toString();
