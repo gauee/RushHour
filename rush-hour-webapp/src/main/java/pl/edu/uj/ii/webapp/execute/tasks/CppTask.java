@@ -31,7 +31,7 @@ public class CppTask extends CompilableTask {
         String sourceFile = this.sourceFile.toFile().toString();
         ProcessBuilder processBuilder = new ProcessBuilder(
                 "g++",
-                sourceFile
+                getTempFileName()
         );
         processBuilder.redirectErrorStream(true);
         processBuilder.directory(this.sourceFile.getParent().toFile());
