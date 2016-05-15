@@ -31,6 +31,7 @@ public class CppTask extends CompilableTask {
         String sourceFile = this.sourceFile.toFile().toString();
         ProcessBuilder processBuilder = new ProcessBuilder(
                 "g++",
+                "-o " + baseFileName,
                 getTempFileName()
         );
         processBuilder.redirectErrorStream(true);
@@ -40,7 +41,7 @@ public class CppTask extends CompilableTask {
 
     @Override
     ProcessBuilder createExecutionProcess() {
-        ProcessBuilder processBuilder = new ProcessBuilder("./" + getUniqSolutionDir() + "a.out");
+        ProcessBuilder processBuilder = new ProcessBuilder("./" + getUniqSolutionDir() + baseFileName);
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
     }
