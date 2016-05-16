@@ -37,7 +37,7 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 public class RushHourExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(RushHourExecutor.class);
     private final TaskFactory taskFactory;
-    private ExecutorService taskExecutor = Executors.newFixedThreadPool(2);
+    private ExecutorService taskExecutor = Executors.newFixedThreadPool(1);
     private final MovesChecker movesChecker = new MovesChecker();
 
     public RushHourExecutor(TaskFactory taskFactory) {

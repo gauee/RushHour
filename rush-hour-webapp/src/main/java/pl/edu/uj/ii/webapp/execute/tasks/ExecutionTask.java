@@ -23,7 +23,6 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
  */
 public abstract class ExecutionTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecutionTask.class);
-
     protected String baseFileName;
     protected Path sourceFile;
     protected String sourceCode;
