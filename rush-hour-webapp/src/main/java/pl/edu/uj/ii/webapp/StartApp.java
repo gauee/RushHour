@@ -13,6 +13,7 @@ import pl.edu.uj.ii.webapp.solution.Task;
 import pl.edu.uj.ii.webapp.ui.TotalStepCounter;
 import spark.ModelAndView;
 import spark.Request;
+import spark.Response;
 import spark.servlet.SparkApplication;
 import spark.template.velocity.VelocityTemplateEngine;
 
@@ -39,6 +40,7 @@ public class StartApp implements SparkApplication {
     public static final String PARAM_SUPPORTED_LANG = "supportedLang";
     public static final String PARAM_FILE_CONTENT = "fileContent";
     private static final Logger LOGGER = LoggerFactory.getLogger(StartApp.class);
+    public static final String PARAM_SOLUTION_ID = "solutionId";
     private DurationFormatUtils timeDuration = new DurationFormatUtils();
     private final TotalStepCounter stepCounter = new TotalStepCounter();
     private final Scheduler scheduler;
@@ -70,14 +72,19 @@ public class StartApp implements SparkApplication {
     private void initRoutes() {
         VelocityTemplateEngine templateEngine = new VelocityTemplateEngine();
         get("/", (req, res) -> uploadPageView(), templateEngine);
-        post("/submit", "multipart/form-data", (req, res) -> processNewSolution(req), templateEngine);
+        get("/:solutionId", (req, res) -> handleSubmission(req), templateEngine);
+        post("/submit", "multipart/form-data", (req, res) -> processNewSolution(req, res));
     }
 
+    private ModelAndView handleSubmission(Request req) {
+        String solutionId = req.params(PARAM_SOLUTION_ID);
+        ModelAndView modelAndView = uploadPageView();
+        appendToModel(modelAndView, "solutionId", solutionId);
+        return modelAndView;
+    }
 
-
-    private ModelAndView processNewSolution(Request req) {
+    private ModelAndView processNewSolution(Request req, Response res) {
         Task task = createParam(req);
-        req.session().invalidate();
         ModelAndView modelAndView = uploadPageView();
         LOGGER.debug("Request param: " + task);
         try {
@@ -87,7 +94,8 @@ public class StartApp implements SparkApplication {
             LOGGER.error("Cannot retrieve output", e);
             return setMessage(modelAndView, "Cannot execute all testCases.");
         }
-        return setMessage(modelAndView, "File uploaded.");
+        res.redirect("/" + task.getSolutionId());
+        return modelAndView;
     }
 
     private Task createParam(Request req) {

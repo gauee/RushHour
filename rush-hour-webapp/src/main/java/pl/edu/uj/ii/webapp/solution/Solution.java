@@ -1,5 +1,7 @@
 package pl.edu.uj.ii.webapp.solution;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.List;
 
 /**
@@ -26,5 +28,14 @@ public class Solution {
 
     public List<String> getMoves() {
         return moves;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("testCaseId", testCaseId)
+                .add("moves", moves)
+                .toString();
     }
 }

@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Scheduler extends Thread {
     private static final Logger LOGGER = Logger.getLogger(Scheduler.class);
+    public static final int TEST_CASES_AMOUNT = 4;
     private final Source source;
     private BlockingQueue<Task> tasks = new LinkedBlockingDeque<>(32);
     private final RushHourExecutor rushHourExecutor;
@@ -49,13 +50,15 @@ public class Scheduler extends Thread {
             return;
         }
 
-        for (int i = 0; i < 4; i++) {
+        String solutionId = task.getSolutionId();
+        source.startProcessing(solutionId, TEST_CASES_AMOUNT);
+        for (int i = 0; i < TEST_CASES_AMOUNT; i++) {
             List<String> steps = Lists.newArrayList();
             for (int j = 0; j < (int) (Math.random() * 100); j++) {
                 steps.add(UUID.randomUUID().toString());
             }
             source.save(new Solution(
-                    task.getSolutionId(),
+                    solutionId,
                     "testCase" + i,
                     steps
             ));
