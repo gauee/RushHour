@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
 /**
@@ -59,19 +61,20 @@ public class Scheduler extends Thread {
         List<Future<TestResult>> futures = rushHourExecutor.runAllTestCases(task);
         source.startProcessing(solutionId, futures.size());
         for (Future<TestResult> future : futures) {
+            TestResult testResult = new TestResult(EMPTY, -1, emptyList());
             try {
-                TestResult testResult = future.get(CONFIG.getExecutionTimeoutInSec(), TimeUnit.SECONDS);
-                source.save(new Solution(
-                        solutionId,
-                        testResult.getTestCaseId(),
-                        testResult.getStepsOfAllTestCases().parallelStream().map(integer -> integer.toString()).collect(Collectors.toList())
-                ));
+                testResult = future.get(CONFIG.getExecutionTimeoutInSec(), TimeUnit.SECONDS);
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Exception occurred during execution solution " + solutionId);
             } catch (TimeoutException e) {
                 LOGGER.warn("Executing process for solution " + solutionId + " timed out");
                 future.cancel(true);
             }
+            source.save(new Solution(
+                    solutionId,
+                    testResult.getTestCaseId(),
+                    testResult.getStepsOfAllTestCases().parallelStream().map(integer -> integer.toString()).collect(Collectors.toList())
+            ));
         }
     }
 

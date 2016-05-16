@@ -7,6 +7,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,10 +17,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
 /**
@@ -48,6 +47,10 @@ public class Source {
         createNonExistingDir(outputDir);
         updateTasksInProgressStatus(solutionId);
         try {
+            if (isEmpty(solution.getTestCaseId())) {
+                LOGGER.warn("No solution will be save for time outed one.");
+                return;
+            }
             Path outputFile = Paths.get(outputDir.toString(), solution.getTestCaseId());
             try (FileOutputStream outStream = new FileOutputStream(outputFile.toFile())) {
                 IOUtils.writeLines(solution.getMoves(), "\n", outStream);
@@ -58,15 +61,14 @@ public class Source {
     }
 
     public List<Solution> load(String solutionId) {
+
         Path outputDir = getSolutionsDir(solutionId);
         List<Solution> solutions = Lists.newArrayList();
-        try (Stream<Path> fileStream = Files.list(outputDir)) {
-            fileStream
-                    .map(this::readSolution)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toCollection(() -> solutions));
-        } catch (IOException e) {
-            LOGGER.error("Cannot list files from dir " + solutionId);
+        for (File file : outputDir.toFile().listFiles()) {
+            Solution solution = readSolution(file);
+            if (solution != null) {
+                solutions.add(solution);
+            }
         }
         return solutions;
     }
@@ -97,15 +99,15 @@ public class Source {
         }
     }
 
-    private Solution readSolution(Path path) {
-        try (InputStream inStream = new FileInputStream(path.toFile())) {
+    private Solution readSolution(File file) {
+        try (InputStream inStream = new FileInputStream(file)) {
             return new Solution(
                     "",
-                    path.toFile().getName(),
+                    file.getName(),
                     IOUtils.readLines(inStream)
             );
         } catch (IOException e) {
-            LOGGER.error("Cannot load file " + path.toString());
+            LOGGER.error("Cannot load file " + file.toString());
         }
         return null;
     }
