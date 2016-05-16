@@ -49,6 +49,7 @@ public abstract class ExecutionTask {
         processBuilder.redirectInput(inputFile);
         List<String> lines = Lists.newLinkedList();
         try {
+            LOGGER.info("Started process with input " + inputFile.getName());
             Process start = processBuilder.start();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(start.getInputStream()));
             String line;
@@ -78,7 +79,6 @@ public abstract class ExecutionTask {
         this.sourceCode = uploadFile.getData();
         LOGGER.info("Source code to compile:\n" + StringUtils.replaceChars(sourceCode, '\n', ' '));
     }
-
 
 
     protected ProcessBuilder createProcessBuilder(String command, String args) {
