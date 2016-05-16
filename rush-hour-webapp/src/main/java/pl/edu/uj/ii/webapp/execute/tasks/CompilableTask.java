@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 /**
  * Created by gauee on 4/7/16.
  */
-public abstract class CompilableTask extends Task {
+public abstract class CompilableTask extends ExecutionTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(CompilableTask.class);
 
     public CompilableTask(String solutionDir) {

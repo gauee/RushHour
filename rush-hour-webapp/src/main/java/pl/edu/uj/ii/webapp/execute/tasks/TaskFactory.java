@@ -10,16 +10,16 @@ import java.util.Map;
  * Created by gauee on 4/7/16.
  */
 public class TaskFactory {
-    private final Map<SupportedLang, pl.edu.uj.ii.webapp.execute.tasks.Task> supportedTask;
+    private final Map<SupportedLang, ExecutionTask> supportedTask;
 
-    public TaskFactory(Map<SupportedLang, pl.edu.uj.ii.webapp.execute.tasks.Task> supportedTask) {
+    public TaskFactory(Map<SupportedLang, ExecutionTask> supportedTask) {
         this.supportedTask = supportedTask;
     }
 
-    public pl.edu.uj.ii.webapp.execute.tasks.Task createTask(Task solutionTask) throws IOException, ClassNotFoundException {
-        pl.edu.uj.ii.webapp.execute.tasks.Task task = supportedTask.get(solutionTask.getSupportedLang());
-        task.processUpload(solutionTask.getUploadFile());
-        task.preExecution();
-        return task;
+    public ExecutionTask createTask(Task solutionTask) throws IOException, ClassNotFoundException {
+        ExecutionTask executionTask = supportedTask.get(solutionTask.getSupportedLang());
+        executionTask.processUpload(solutionTask.getUploadFile());
+        executionTask.preExecution();
+        return executionTask;
     }
 }

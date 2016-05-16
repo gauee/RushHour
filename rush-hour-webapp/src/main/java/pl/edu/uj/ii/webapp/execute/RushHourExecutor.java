@@ -8,7 +8,7 @@ import pl.edu.uj.ii.DataConverter;
 import pl.edu.uj.ii.model.Board;
 import pl.edu.uj.ii.model.CarMove;
 import pl.edu.uj.ii.verify.MovesChecker;
-import pl.edu.uj.ii.webapp.execute.tasks.Task;
+import pl.edu.uj.ii.webapp.execute.tasks.ExecutionTask;
 import pl.edu.uj.ii.webapp.execute.tasks.TaskFactory;
 import pl.edu.uj.ii.webapp.execute.test.TestCase;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
@@ -22,16 +22,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
@@ -42,43 +38,45 @@ public class RushHourExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(RushHourExecutor.class);
     private final TaskFactory taskFactory;
     private ExecutorService taskExecutor = Executors.newFixedThreadPool(2);
-    private static final long RUN_TIMEOUT = TimeUnit.SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec());
     private final MovesChecker movesChecker = new MovesChecker();
 
     public RushHourExecutor(TaskFactory taskFactory) {
         this.taskFactory = taskFactory;
     }
 
-
-    private TestResult retrieveTestCaseOutputs(Task task, TestCase testCase) {
-        long duration = System.currentTimeMillis();
-        List<String> outputLines = getOutput(task, testCase);
-        duration = System.currentTimeMillis() - duration;
-        List<List<CarMove>> carMovesForAllBoards = DataConverter.parseOutputLines(outputLines);
-        List<Integer> stepsForAllBoards = Lists.newLinkedList();
-        for (Board board : testCase.getBoards()) {
-            List<CarMove> carMoves = carMovesForAllBoards.isEmpty() ? emptyList() : carMovesForAllBoards.remove(0);
-            int steps = movesChecker.canSpecialCarEscapeBoard(board, carMoves);
-            stepsForAllBoards.add(steps);
-        }
-        return new TestResult(
-                testCase.getId(),
-                duration,
-                stepsForAllBoards
-        );
-    }
-
-    public List<String> getOutput(Task task, TestCase testCase) {
-        final Future<List<String>> future = taskExecutor.submit(() -> task.runWithInput(testCase.getFile()));
+    public List<Future<TestResult>> runAllTestCases(final pl.edu.uj.ii.webapp.solution.Task solutionTask) {
         try {
-            return future.get(RUN_TIMEOUT, MILLISECONDS);
-        } catch (TimeoutException e) {
-            future.cancel(true);
-            LOGGER.error("Running program has timed out");
-        } catch (ExecutionException | InterruptedException e) {
-            LOGGER.error(e.getMessage(), e);
+            List<TestCase> testCases = loadTestCases();
+            ExecutionTask executionTask = this.taskFactory.createTask(solutionTask);
+            LOGGER.info(String.format("Running %d tests", testCases.size()));
+            List<Future<TestResult>> results = testCases.stream()
+                    .map(testCase -> retrieveTestCaseOutputs(executionTask, testCase))
+                    .collect(Collectors.toList());
+            return results;
+        } catch (ClassNotFoundException | IOException e) {
+            LOGGER.warn("Cannot execute code " + solutionTask, e);
         }
         return emptyList();
+    }
+
+    private Future<TestResult> retrieveTestCaseOutputs(ExecutionTask executionTask, TestCase testCase) {
+        return taskExecutor.submit(() -> {
+            long duration = System.currentTimeMillis();
+            List<String> outputLines = executionTask.runWithInput(testCase.getFile());
+            duration = System.currentTimeMillis() - duration;
+            List<List<CarMove>> carMovesForAllBoards = DataConverter.parseOutputLines(outputLines);
+            List<Integer> stepsForAllBoards = Lists.newLinkedList();
+            for (Board board : testCase.getBoards()) {
+                List<CarMove> carMoves = carMovesForAllBoards.isEmpty() ? emptyList() : carMovesForAllBoards.remove(0);
+                int steps = movesChecker.canSpecialCarEscapeBoard(board, carMoves);
+                stepsForAllBoards.add(steps);
+            }
+            return new TestResult(
+                    testCase.getId(),
+                    duration,
+                    stepsForAllBoards
+            );
+        });
     }
 
     private List<TestCase> loadTestCases() {

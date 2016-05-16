@@ -21,8 +21,8 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 /**
  * Created by shybovycha on 22/04/16.
  */
-public abstract class Task {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Task.class);
+public abstract class ExecutionTask {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutionTask.class);
 
     protected String baseFileName;
     protected Path sourceFile;
@@ -30,7 +30,7 @@ public abstract class Task {
     private final String solutionDir;
     private String uniqSolutionDir;
 
-    public Task(String solutionDir) {
+    public ExecutionTask(String solutionDir) {
         this.solutionDir = solutionDir;
     }
 

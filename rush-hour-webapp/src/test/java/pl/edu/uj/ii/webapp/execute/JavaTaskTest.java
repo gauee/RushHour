@@ -2,8 +2,8 @@ package pl.edu.uj.ii.webapp.execute;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import pl.edu.uj.ii.webapp.execute.tasks.ExecutionTask;
 import pl.edu.uj.ii.webapp.execute.tasks.JavaTask;
-import pl.edu.uj.ii.webapp.execute.tasks.Task;
 
 import java.io.IOException;
 
@@ -19,8 +19,8 @@ public class JavaTaskTest {
 
     @Test
     public void compilesProvidedSourceCode() throws IOException, ClassNotFoundException {
-        Task task = new JavaTask(CONFIG.getCompiledFileDirForJava8(), CONFIG.getJava8Home());
-        task.processUpload(new UploadFile("Reader.java", javaClassSourceCode));
+        ExecutionTask executionTask = new JavaTask(CONFIG.getCompiledFileDirForJava8(), CONFIG.getJava8Home());
+        executionTask.processUpload(new UploadFile("Reader.java", javaClassSourceCode));
     }
 
 //    static class Reader {
