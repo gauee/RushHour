@@ -1,7 +1,9 @@
 #* @vtlvariable name="supportedLang" type="pl.edu.uj.ii.webapp.execute.SupportedLang[]" *#
 #* @vtlvariable name="testResults" type="java.util.List<pl.edu.uj.ii.webapp.execute.test.TestResult>" *#
-#* @vtlvariable name="timeDuration" type="pl.edu.uj.ii.webapp.ui.TimeDuration" *#
+#* @vtlvariable name="timeDuration" type="org.apache.commons.lang3.time.DurationFormatUtils" *#
 #* @vtlvariable name="stepsCounter" type="pl.edu.uj.ii.webapp.ui.TotalStepCounter" *#
+#* @vtlvariable name="solutionSource" type="pl.edu.uj.ii.webapp.solution.Source" *#
+#* @vtlvariable name="solutionId" type="java.lang.String" *#
 
 <hmtl>
     <head>
@@ -46,6 +48,15 @@
             </div>
         </fieldset>
     </form>
+
+        #if($!solutionSource)
+        <p>Retrieving solution in progress</p>
+            #foreach($solution in $solutionSource.load($solutionId))
+            <p>$solution.toString()</p>
+            #end
+            $solutionSource.load($solutionId)
+        #end
+
         #if($!testResults)
         <p>
         <table style="width:100%">
@@ -61,7 +72,7 @@
                         $testResult.testCaseId
                     </td>
                     <td>
-                        $timeDuration.parse($testResult.duration)
+                        $timeDuration.formatDuration($testResult.duration,"H:mm:ss") seconds
                     </td>
                     <td>
                         $stepsCounter.countSteps($testResult.stepsOfAllTestCases)

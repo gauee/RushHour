@@ -1,18 +1,15 @@
 package pl.edu.uj.ii.webapp;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.edu.uj.ii.webapp.execute.Param;
-import pl.edu.uj.ii.webapp.execute.RushHourExecutor;
 import pl.edu.uj.ii.webapp.execute.SupportedLang;
 import pl.edu.uj.ii.webapp.execute.UploadFile;
-import pl.edu.uj.ii.webapp.execute.tasks.Task;
-import pl.edu.uj.ii.webapp.execute.tasks.TaskFactory;
-import pl.edu.uj.ii.webapp.execute.test.TestResult;
-import pl.edu.uj.ii.webapp.ui.TimeDuration;
+import pl.edu.uj.ii.webapp.solution.Scheduler;
+import pl.edu.uj.ii.webapp.solution.Source;
+import pl.edu.uj.ii.webapp.solution.Task;
 import pl.edu.uj.ii.webapp.ui.TotalStepCounter;
 import spark.ModelAndView;
 import spark.Request;
@@ -25,7 +22,6 @@ import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
@@ -43,17 +39,23 @@ public class StartApp implements SparkApplication {
     public static final String PARAM_SUPPORTED_LANG = "supportedLang";
     public static final String PARAM_FILE_CONTENT = "fileContent";
     private static final Logger LOGGER = LoggerFactory.getLogger(StartApp.class);
-    private final TimeDuration timeDuration = new TimeDuration();
+    private DurationFormatUtils timeDuration = new DurationFormatUtils();
     private final TotalStepCounter stepCounter = new TotalStepCounter();
-    private RushHourExecutor rushHourExecutor;
+    private final Scheduler scheduler;
+    private final Source solutionSource;
+
 
     public static void main(String[] args) {
         try {
-            StartApp startApp = new StartApp();
-            startApp.init();
+            new StartApp().init();
         } catch (Exception e) {
             LOGGER.error("Main thread throw exception.", e);
         }
+    }
+
+    public StartApp() {
+        this.solutionSource = new Source();
+        this.scheduler = new Scheduler(solutionSource);
     }
 
     @Override
@@ -62,7 +64,7 @@ public class StartApp implements SparkApplication {
         port(CONFIG.getSrvPort());
         ipAddress(CONFIG.getIpAddress());
         initRoutes();
-        rushHourExecutor = new RushHourExecutor(new TaskFactory(initLanguages()));
+        scheduler.start();
     }
 
     private void initRoutes() {
@@ -71,25 +73,16 @@ public class StartApp implements SparkApplication {
         post("/submit", "multipart/form-data", (req, res) -> processNewSolution(req), templateEngine);
     }
 
-    private Map<SupportedLang, Task> initLanguages() {
-        ImmutableMap.Builder<SupportedLang, Task> mapBuilder = ImmutableMap.<SupportedLang, Task>builder();
-        for (SupportedLang supportedLang : SupportedLang.values()) {
-            mapBuilder.put(
-                    supportedLang,
-                    supportedLang.createTask()
-            );
-        }
-        return mapBuilder
-                .build();
-    }
+
 
     private ModelAndView processNewSolution(Request req) {
-        Param param = createParam(req);
+        Task task = createParam(req);
+        req.session().invalidate();
         ModelAndView modelAndView = uploadPageView();
-        LOGGER.debug("Request param: " + param);
+        LOGGER.debug("Request param: " + task);
         try {
-            List<TestResult> testResults = rushHourExecutor.runAllTestCases(param);
-            appendToModel(modelAndView, "testResults", testResults);
+            scheduler.addTask(task);
+            appendToModel(modelAndView, "solutionId", task.getSolutionId());
         } catch (Exception e) {
             LOGGER.error("Cannot retrieve output", e);
             return setMessage(modelAndView, "Cannot execute all testCases.");
@@ -97,9 +90,9 @@ public class StartApp implements SparkApplication {
         return setMessage(modelAndView, "File uploaded.");
     }
 
-    private Param createParam(Request req) {
+    private Task createParam(Request req) {
         req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("./target"));
-        return new Param(retrieveSupportedLang(req), retrieveSourceCode(req));
+        return new Task(retrieveSupportedLang(req), retrieveSourceCode(req));
     }
 
     private UploadFile retrieveSourceCode(Request req) {
@@ -135,6 +128,7 @@ public class StartApp implements SparkApplication {
         model.put("supportedLang", SupportedLang.values());
         model.put("timeDuration", timeDuration);
         model.put("stepsCounter", stepCounter);
+        model.put("solutionSource", solutionSource);
         return new ModelAndView(model, "templates/index.vm");
     }
 

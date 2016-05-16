@@ -49,21 +49,6 @@ public class RushHourExecutor {
         this.taskFactory = taskFactory;
     }
 
-    public List<TestResult> runAllTestCases(final Param param) {
-        try {
-            List<TestCase> testCases = loadTestCases();
-            Task task = this.taskFactory.createTask(param);
-            LOGGER.info(String.format("Running %d tests", testCases.size()));
-            List<TestResult> results = testCases.stream()
-                    .map(testCase -> retrieveTestCaseOutputs(task, testCase))
-                    .collect(Collectors.toList());
-            LOGGER.info(String.format("RESULTS: %s", results));
-            return results;
-        } catch (ClassNotFoundException | IOException e) {
-            LOGGER.warn("Cannot execute code " + param, e);
-        }
-        return emptyList();
-    }
 
     private TestResult retrieveTestCaseOutputs(Task task, TestCase testCase) {
         long duration = System.currentTimeMillis();
