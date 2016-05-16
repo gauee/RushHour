@@ -33,7 +33,7 @@ public class Scheduler extends Thread {
     public void run() {
         while (true) {
             try {
-                processTask(tasks.poll(1, TimeUnit.MINUTES));
+                processTask(tasks.poll(10, TimeUnit.MINUTES));
             } catch (InterruptedException e) {
                 LOGGER.error("Caught interrupted exception inside SolutionScheduler.");
             }
