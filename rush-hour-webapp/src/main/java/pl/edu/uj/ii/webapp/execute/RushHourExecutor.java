@@ -12,6 +12,7 @@ import pl.edu.uj.ii.webapp.execute.tasks.ExecutionTask;
 import pl.edu.uj.ii.webapp.execute.tasks.TaskFactory;
 import pl.edu.uj.ii.webapp.execute.test.TestCase;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
+import pl.edu.uj.ii.webapp.solution.Task;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class RushHourExecutor {
         this.taskFactory = taskFactory;
     }
 
-    public List<Future<TestResult>> runAllTestCases(final pl.edu.uj.ii.webapp.solution.Task solutionTask) {
+    public List<Future<TestResult>> runAllTestCases(final Task solutionTask) {
         try {
             List<TestCase> testCases = loadTestCases();
             ExecutionTask executionTask = this.taskFactory.createTask(solutionTask);

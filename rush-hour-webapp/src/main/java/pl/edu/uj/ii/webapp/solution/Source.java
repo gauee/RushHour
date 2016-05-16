@@ -31,6 +31,7 @@ public class Source {
 
     public void startProcessing(String solutionId, int testCasesAmount) {
         tasksInProgress.put(solutionId, new MutablePair<>(testCasesAmount, 0));
+        createNonExistingDir(getSolutionsDir(solutionId));
     }
 
     public String getExecutionStatus(String solutionId) {
@@ -43,15 +44,13 @@ public class Source {
 
     public void save(Solution solution) {
         String solutionId = solution.getId();
-        Path outputDir = getSolutionsDir(solutionId);
-        createNonExistingDir(outputDir);
         updateTasksInProgressStatus(solutionId);
         try {
             if (isEmpty(solution.getTestCaseId())) {
                 LOGGER.warn("No solution will be save for time outed one.");
                 return;
             }
-            Path outputFile = Paths.get(outputDir.toString(), solution.getTestCaseId());
+            Path outputFile = Paths.get(getSolutionsDir(solutionId).toString(), solution.getTestCaseId());
             try (FileOutputStream outStream = new FileOutputStream(outputFile.toFile())) {
                 IOUtils.writeLines(solution.getMoves(), "\n", outStream);
             }
@@ -61,10 +60,13 @@ public class Source {
     }
 
     public List<Solution> load(String solutionId) {
-
         Path outputDir = getSolutionsDir(solutionId);
         List<Solution> solutions = Lists.newArrayList();
-        for (File file : outputDir.toFile().listFiles()) {
+        File[] files = outputDir.toFile().listFiles();
+        if (files == null) {
+            return solutions;
+        }
+        for (File file : files) {
             Solution solution = readSolution(file);
             if (solution != null) {
                 solutions.add(solution);
