@@ -23,6 +23,12 @@
         $message
     </p>
     #end
+<p>
+    <b>
+        Rozwiązania w jezyku Java musza byc kompilowalne. Przykład. Plik o nazwie "New Text Document" z zawartością class RushHour { ... }, nie jest
+        poprawnym plikiem.
+    </b>
+</p>
 <form action="/submit" method="post" enctype="multipart/form-data">
 ##    <form action="/submit" method="post">
     <fieldset>
