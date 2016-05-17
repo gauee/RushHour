@@ -65,7 +65,7 @@ public class Scheduler extends Thread {
             try {
                 testResult = future.get(CONFIG.getExecutionTimeoutInSec(), TimeUnit.SECONDS);
             } catch (InterruptedException | ExecutionException e) {
-                LOGGER.error("Exception occurred during execution solution " + solutionId);
+                LOGGER.error("Exception occurred during execution solution " + solutionId, e);
             } catch (TimeoutException e) {
                 LOGGER.warn("Executing process for solution " + solutionId + " timed out");
                 future.cancel(true);
