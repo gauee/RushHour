@@ -49,6 +49,10 @@ public class RushHourExecutor {
         try {
             List<TestCase> testCases = loadTestCases();
             ExecutionTask executionTask = this.taskFactory.createTask(solutionTask);
+            if (executionTask == null) {
+                LOGGER.warn("Cannot compile uploaded file.");
+                return emptyList();
+            }
             LOGGER.info(String.format("Running %d tests", testCases.size()));
             List<Future<TestResult>> results = testCases.stream()
                     .map(testCase -> retrieveTestCaseOutputs(executionTask, testCase))

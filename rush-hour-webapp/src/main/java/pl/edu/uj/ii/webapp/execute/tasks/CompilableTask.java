@@ -22,18 +22,19 @@ public abstract class CompilableTask extends ExecutionTask {
     abstract String createCompileCommand();
 
     @Override
-    protected void preExecution() {
+    protected boolean preExecution() {
         try {
             preCompile();
-            compile();
+            return compile();
         } catch (IOException e) {
             LOGGER.error(String.format("IO Error: %s", e.getMessage()));
         } catch (ClassNotFoundException e) {
             LOGGER.error(String.format("Class Not Found Error: %s", e.getMessage()));
         }
+        return false;
     }
 
-    public void compile() throws IOException, ClassNotFoundException {
+    public boolean compile() throws IOException, ClassNotFoundException {
         String sourceFile = this.sourceFile.toFile().getAbsolutePath();
         ProcessBuilder processBuilder = createProcessBuilder(createCompileCommand(), sourceFile);
         StringBuilder compilerOut = new StringBuilder();
@@ -52,8 +53,11 @@ public abstract class CompilableTask extends ExecutionTask {
             }
         } catch (IOException e) {
             LOGGER.error("Cannot execute process.", e);
+            return false;
         }
-        LOGGER.info("Compilation finished. " + compilerOut.toString());
+        String compilerOutputMsg = compilerOut.toString();
+        LOGGER.info("Compilation finished. " + compilerOutputMsg);
+        return !compilerOutputMsg.contains("errror:");
     }
 
 }

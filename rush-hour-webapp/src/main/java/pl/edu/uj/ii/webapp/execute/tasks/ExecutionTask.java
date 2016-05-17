@@ -37,7 +37,7 @@ public abstract class ExecutionTask {
 
     abstract String getTempFileName();
 
-    abstract protected void preExecution();
+    abstract protected boolean preExecution();
 
     private void initSolutionDir() {
         this.uniqSolutionDir = createSolutionDir(solutionDir);

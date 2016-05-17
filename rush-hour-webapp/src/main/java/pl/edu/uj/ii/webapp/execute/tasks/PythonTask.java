@@ -16,8 +16,9 @@ public class PythonTask extends ExecutionTask {
     }
 
     @Override
-    protected void preExecution() {
+    protected boolean preExecution() {
         this.updateSourceCode(sourceCode);
+        return true;
     }
 
     @Override
