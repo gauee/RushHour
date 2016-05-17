@@ -108,7 +108,7 @@ public class StartApp implements SparkApplication {
         String fileName = StringUtils.EMPTY;
         try {
             Part part = req.raw().getPart(PARAM_FILE_CONTENT);
-            fileName = part.getSubmittedFileName();
+            fileName = part.getSubmittedFileName().trim().replaceAll("\\s+", "_");
             try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(part.getInputStream()))) {
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
