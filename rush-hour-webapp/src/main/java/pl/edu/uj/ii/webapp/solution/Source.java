@@ -36,6 +36,9 @@ public class Source {
     }
 
     public String getExecutionStatus(String solutionId) {
+        if (Files.notExists(getSolutionsDir(solutionId))) {
+            return "Solution scheduled for executing, please check status after few seconds.";
+        }
         Pair<Integer, Integer> taskProgress = tasksInProgress.get(solutionId);
         if (taskProgress == null) {
             return "Solution executed with all test cases.";
