@@ -21,16 +21,15 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 /**
  * Created by shybovycha on 22/04/16.
  */
-public abstract class Task {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Task.class);
-
+public abstract class ExecutionTask {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutionTask.class);
     protected String baseFileName;
     protected Path sourceFile;
     protected String sourceCode;
     private final String solutionDir;
     private String uniqSolutionDir;
 
-    public Task(String solutionDir) {
+    public ExecutionTask(String solutionDir) {
         this.solutionDir = solutionDir;
     }
 
@@ -50,6 +49,7 @@ public abstract class Task {
         processBuilder.redirectInput(inputFile);
         List<String> lines = Lists.newLinkedList();
         try {
+            LOGGER.info("Started process with input " + inputFile.getName());
             Process start = processBuilder.start();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(start.getInputStream()));
             String line;
@@ -79,7 +79,6 @@ public abstract class Task {
         this.sourceCode = uploadFile.getData();
         LOGGER.info("Source code to compile:\n" + StringUtils.replaceChars(sourceCode, '\n', ' '));
     }
-
 
 
     protected ProcessBuilder createProcessBuilder(String command, String args) {

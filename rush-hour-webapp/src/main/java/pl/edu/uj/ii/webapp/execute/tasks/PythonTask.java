@@ -7,7 +7,7 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 /**
  * Created by gauee on 4/7/16.
  */
-public class PythonTask extends Task {
+public class PythonTask extends ExecutionTask {
     private final String interpreter;
 
     public PythonTask(String interpreter, String solutionDir) {

@@ -1,92 +1,100 @@
 #* @vtlvariable name="supportedLang" type="pl.edu.uj.ii.webapp.execute.SupportedLang[]" *#
 #* @vtlvariable name="testResults" type="java.util.List<pl.edu.uj.ii.webapp.execute.test.TestResult>" *#
-#* @vtlvariable name="timeDuration" type="pl.edu.uj.ii.webapp.ui.TimeDuration" *#
+#* @vtlvariable name="timeDuration" type="org.apache.commons.lang3.time.DurationFormatUtils" *#
 #* @vtlvariable name="stepsCounter" type="pl.edu.uj.ii.webapp.ui.TotalStepCounter" *#
+#* @vtlvariable name="solutionSource" type="pl.edu.uj.ii.webapp.solution.Source" *#
+#* @vtlvariable name="solutionId" type="java.lang.String" *#
 
-<hmtl>
-    <head>
-        <title>RushHour Testerka</title>
-        <style>
-            table, th, td {
-                border: 1px solid black;
-                border-collapse: collapse;
-            }
-        </style>
-    </head>
+<html>
+<head>
+    <title>RushHour Testerka</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
 
-    <body>
-    <h1>Welcome on RushHour!</h1>
-        #if($!message)
-        <p>
-            $message
-        </p>
+<body>
+<h1>Welcome on RushHour!</h1>
+    #if($!message)
+    <p>
+        $message
+    </p>
+    #end
+<form action="/submit" method="post" enctype="multipart/form-data">
+##    <form action="/submit" method="post">
+    <fieldset>
+        <legend>Upload source code content</legend>
+
+        <div>
+            <label for="supportedLang">Select Language</label>
+            <select name="supportedLang">
+                #foreach ($lang in $supportedLang)
+                    <option value="$lang.ordinal()">$lang.getDescription()</option>
+                #end
+            </select>
+        </div>
+        <div>
+            <label for="filebutton">Upload file</label>
+
+            <div>
+                <input id="fileContent" name="fileContent" class="input-file" type="file">
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Submit solution">
+        </div>
+    </fieldset>
+</form>
+
+    #if($!solutionId)
+    <p>$solutionSource.getExecutionStatus($solutionId)</p>
+        #foreach($solution in $solutionSource.load($solutionId))
+        <p>$solution.toString()</p>
         #end
-    <form action="/submit" method="post" enctype="multipart/form-data">
-    ##    <form action="/submit" method="post">
-        <fieldset>
-            <legend>Upload source code content</legend>
+    #end
 
-            <div>
-                <label for="supportedLang">Select Language</label>
-                <select name="supportedLang">
-                    #foreach ($lang in $supportedLang)
-                        <option value="$lang.ordinal()">$lang.getDescription()</option>
-                    #end
-                </select>
-            </div>
-            <div>
-                <label for="filebutton">Upload file</label>
-
-                <div>
-                    <input id="fileContent" name="fileContent" class="input-file" type="file">
-                </div>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Submit solution">
-            </div>
-        </fieldset>
-    </form>
-        #if($!testResults)
-        <p>
-        <table style="width:100%">
+    #if($!testResults)
+    <p>
+    <table style="width:100%">
+        <tr>
+            <th>Test case id</th>
+            <th>Test case duration</th>
+            <th>Total steps</th>
+            <th>Details</th>
+        </tr>
+        #foreach($testResult in $testResults)
             <tr>
-                <th>Test case id</th>
-                <th>Test case duration</th>
-                <th>Total steps</th>
-                <th>Details</th>
-            </tr>
-            #foreach($testResult in $testResults)
-                <tr>
-                    <td>
-                        $testResult.testCaseId
-                    </td>
-                    <td>
-                        $timeDuration.parse($testResult.duration)
-                    </td>
-                    <td>
-                        $stepsCounter.countSteps($testResult.stepsOfAllTestCases)
-                    </td>
-                    <td>
-                        <table style="border: none">
-                            #foreach($amountOfSteps in $testResult.stepsOfAllTestCases)
+                <td>
+                    $testResult.testCaseId
+                </td>
+                <td>
+                    $timeDuration.formatDuration($testResult.duration,"H:mm:ss") seconds
+                </td>
+                <td>
+                    $stepsCounter.countSteps($testResult.stepsOfAllTestCases)
+                </td>
+                <td>
+                    <table style="border: none">
+                        #foreach($amountOfSteps in $testResult.stepsOfAllTestCases)
 
-                                #if($amountOfSteps != -1)
-                                    #set($colorValue = 'green')
-                                #else
-                                    #set($colorValue = 'red')
-                                #end
-                                <tr>
-                                    <td style="border: none; color: $colorValue; font-weight: bolder;">$amountOfSteps</td>
-                                </tr>
+                            #if($amountOfSteps != -1)
+                                #set($colorValue = 'green')
+                            #else
+                                #set($colorValue = 'red')
                             #end
-                        </table>
-                    </td>
-                </tr>
-            #end
-        </table>
-        </p>
+                            <tr>
+                                <td style="border: none; color: $colorValue; font-weight: bolder;">$amountOfSteps</td>
+                            </tr>
+                        #end
+                    </table>
+                </td>
+            </tr>
         #end
-
-
-    </body>
-</hmtl>
+    </table>
+    </p>
+    #end
+</body>
+</html>
