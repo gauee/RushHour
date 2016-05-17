@@ -27,6 +27,7 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 public class Source {
     private static final String OUTPUTS = "outputs";
     private static final Logger LOGGER = Logger.getLogger(Source.class);
+    public static final String EXECUTION_ERROR_INFO = "executionError.info";
     private final Map<String, Pair<Integer, Integer>> tasksInProgress = Maps.newHashMap();
 
     public void startProcessing(String solutionId, int testCasesAmount) {
@@ -59,6 +60,15 @@ public class Source {
         }
     }
 
+    public void save(String errorMessage, String solutionId) {
+        Path outputFile = Paths.get(getSolutionsDir(solutionId).toString(), EXECUTION_ERROR_INFO);
+        try (FileOutputStream outStream = new FileOutputStream(outputFile.toFile())) {
+            IOUtils.write(errorMessage, outStream);
+        } catch (IOException e) {
+            LOGGER.error("Cannot create errorMessage.");
+        }
+    }
+
     public List<Solution> load(String solutionId) {
         Path outputDir = getSolutionsDir(solutionId);
         List<Solution> solutions = Lists.newArrayList();
@@ -73,6 +83,18 @@ public class Source {
             }
         }
         return solutions;
+    }
+
+    public String loadError(String solutionId) {
+        Path errorFile = Paths.get(getSolutionsDir(solutionId).toString(), EXECUTION_ERROR_INFO);
+        if (Files.exists(errorFile)) {
+            try (InputStream inStream = new FileInputStream(errorFile.toFile())) {
+                return String.join("", IOUtils.readLines(inStream));
+            } catch (IOException e) {
+                LOGGER.error("Cannot load file " + errorFile.toFile().toString());
+            }
+        }
+        return null;
     }
 
     private void updateTasksInProgressStatus(String solutionId) {

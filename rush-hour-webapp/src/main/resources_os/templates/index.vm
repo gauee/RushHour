@@ -56,9 +56,16 @@
 </form>
 
     #if($!solutionId)
-    <p>$solutionSource.getExecutionStatus($solutionId)</p>
-        #foreach($solution in $solutionSource.load($solutionId))
-        <p>$solution.toString()</p>
+        #set($errorMsg = $solutionSource.loadError($solutionId))
+        #if ($errorMsg)
+        <p>Some problem occured during uploading solution</p>
+
+        <p>$errorMsg</p>
+        #else
+        <p>$solutionSource.getExecutionStatus($solutionId)</p>
+            #foreach($solution in $solutionSource.load($solutionId))
+            <p>$solution.toString()</p>
+            #end
         #end
     #end
 

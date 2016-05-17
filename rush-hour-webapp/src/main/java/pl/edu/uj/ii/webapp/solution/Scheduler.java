@@ -59,6 +59,10 @@ public class Scheduler extends Thread {
 
         String solutionId = task.getSolutionId();
         List<Future<TestResult>> futures = rushHourExecutor.runAllTestCases(task);
+        if (futures.isEmpty()) {
+            source.save("Problem during executin solution, please contact admin for more details.", solutionId);
+            return;
+        }
         source.startProcessing(solutionId, futures.size());
         for (Future<TestResult> future : futures) {
             TestResult testResult = new TestResult(EMPTY, -1, emptyList());
