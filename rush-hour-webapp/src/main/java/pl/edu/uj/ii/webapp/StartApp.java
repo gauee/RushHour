@@ -108,7 +108,7 @@ public class StartApp implements SparkApplication {
             LOGGER.error("Cannot retrieve output", e);
             return setMessage(modelAndView, "Cannot execute all testCases.");
         }
-        res.redirect("/" + task.getSolutionId());
+        res.redirect("/solution/" + task.getSolutionId());
         return modelAndView;
     }
 
