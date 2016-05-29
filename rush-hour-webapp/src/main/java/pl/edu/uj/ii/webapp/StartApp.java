@@ -146,31 +146,33 @@ public class StartApp implements SparkApplication {
     }
 
     private ModelAndView uploadPageView() {
-        Map<String, Object> model = Maps.newHashMap();
+        Map<String, Object> model = createDefaultModel();
         model.put("supportedLang", SupportedLang.values());
-        model.put("timeDuration", timeDuration);
         model.put("stepsCounter", stepCounter);
         model.put("solutionSource", solutionSource);
         model.put("topResults", new TopResults(topResultsSource.getTopResults()));
-        model.put("dateFormatter", FastDateFormat.class);
         return new ModelAndView(model, "templates/view_index.vm");
     }
 
     private ModelAndView authorView(UserResults userResults) {
-        Map<String, Object> model = Maps.newHashMap();
-        model.put("timeDuration", timeDuration);
+        Map<String, Object> model = createDefaultModel();
         model.put("userResults", userResults);
-        model.put("dateFormatter", FastDateFormat.class);
         return new ModelAndView(model, "templates/view_author.vm");
     }
 
     private ModelAndView solutionView(TotalResult totalResult) {
-        Map<String, Object> model = Maps.newHashMap();
-        model.put("timeDuration", timeDuration);
+        Map<String, Object> model = createDefaultModel();
         model.put("stepsCounter", stepCounter);
         model.put("totalResult", totalResult);
-        model.put("dateFormatter", FastDateFormat.class);
         return new ModelAndView(model, "templates/view_solution.vm");
+    }
+
+    private Map<String, Object> createDefaultModel() {
+        Map<String, Object> model = Maps.newHashMap();
+        model.put("timeDuration", timeDuration);
+        model.put("dateFormatter", FastDateFormat.class);
+
+        return model;
     }
 
     private ModelAndView setMessage(ModelAndView modelAndView, String message) {
