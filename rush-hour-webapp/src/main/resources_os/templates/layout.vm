@@ -33,6 +33,15 @@
 </head>
 
 <body>
+<h1>Testerka rozwiazan problemu RushHour</h1>
     #parse($content_block)
 </body>
 </html>
+
+#macro( authorHref $authorId $msg)
+<a href="/author/$authorId">$msg</a>
+#end
+
+#macro( printDuration $duration)
+    $timeDuration.formatDuration($duration,"mm:ss",false).replaceFirst(":"," min ") secs
+#end

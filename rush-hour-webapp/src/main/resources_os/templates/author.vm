@@ -18,7 +18,7 @@
                 $totalResult.getMoves()
             </td>
             <td>
-                $timeDuration.formatDuration($totalResult.getDuration(),"H:mm:ss")
+                #printDuration($totalResult.getDuration())
             </td>
             <td>
                 <a href="/solution/$totalResult.getResult().getId()">$totalResult.getResult().getId()</a>

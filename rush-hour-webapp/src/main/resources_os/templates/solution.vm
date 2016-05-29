@@ -2,7 +2,7 @@
 #* @vtlvariable name="timeDuration" type="org.apache.commons.lang3.time.DurationFormatUtils" *#
 #* @vtlvariable name="stepsCounter" type="pl.edu.uj.ii.webapp.ui.TotalStepCounter" *#
 
-<h1>RushHour</h1>
+<h2>Solution</h2>
 <table class="no-border" style="text-align: left;">
     <tr>
         <td class="no-border">
@@ -11,7 +11,7 @@
     </tr>
     <tr>
         <td class="no-border">
-            <a href="/author/$totalResult.getResult().getAuthor()">Check other solutions of author $totalResult.getResult().getAuthor()</a>
+            #authorHref($totalResult.getResult().getAuthor() "Check other solutions of author $totalResult.getResult().getAuthor()")
         </td>
     </tr>
 
@@ -21,13 +21,13 @@
 <table style="width:100%">
     <tr>
         <th>Total moves</th>
-        <th>Total duration<br/>[seconds]</th>
+        <th>Total duration</th>
         <th>Submission time</th>
         <th>Language</th>
     </tr>
     <tr>
         <td>$totalResult.getMoves()</td>
-        <td>$timeDuration.formatDuration($totalResult.getDuration(),"H:mm:ss")</td>
+        <td>#printDuration($totalResult.getDuration())</td>
         <td>$totalResult.getResult().getCreationDate()</td>
         <td>$totalResult.getResult().getLang()</td>
     </tr>
@@ -36,13 +36,13 @@
 <table style="width:100%">
 <tr>
     <th>TestCase id</th>
-    <th>TestCase duration<br/>[seconds]</th>
+    <th>TestCase duration</th>
     <th>Total moves</th>
     <th>TestCase moves</th>
     #foreach($resultDetail in $totalResult.getResult().getDetails())
         <tr>
             <td>$resultDetail.getTestCaseId()</td>
-            <td>$timeDuration.formatDuration($resultDetail.getDuration(),"H:mm:ss")</td>
+            <td>#printDuration($resultDetail.getDuration())</td>
             <td>
                 $stepsCounter.countSteps($resultDetail.getMoves())
             </td>

@@ -1,0 +1,33 @@
+#* @vtlvariable name="topResults" type="pl.edu.uj.ii.webapp.ui.TopResults" *#
+#* @vtlvariable name="langResult" type="java.util.Map.Entry<java.lang.String, java.util.List<pl.edu.uj.ii.webapp.ui.TotalResult>>" *#
+#* @vtlvariable name="bestResult" type="pl.edu.uj.ii.webapp.ui.TotalResult" *#
+#* @vtlvariable name="timeDuration" type="org.apache.commons.lang3.time.DurationFormatUtils" *#
+#* @vtlvariable name="dateFormatter" type="org.apache.commons.lang3.time.FastDateFormat" *#
+<style>
+    .solution_col {
+        width: 25%;
+    }
+</style>
+<h2>Best solutions</h2>
+#foreach($langResult in $topResults.getBestResults().entrySet())
+<h3>$langResult.getKey()</h3>
+<table style="width: 60%">
+    <tr>
+        <th class="solution_col">Author</th>
+        <th class="solution_col">Total moves</th>
+        <th class="solution_col">Total duration</th>
+        <th class="solution_col">Submitted</th>
+    </tr>
+    #foreach($bestResult in $langResult.getValue())
+        <tr>
+            <td>
+                #authorHref($bestResult.getResult().getAuthor() $bestResult.getResult().getAuthor())
+            </td>
+            <td>$bestResult.getMoves()</td>
+            <td>#printDuration($bestResult.getDuration())</td>
+            <td>$dateFormatter.getInstance("dd/MM/yyyy HH:mm:ss").format($bestResult.getResult().getCreationDate())</td>
+        </tr>
+    #end
+</table>
+#end
+

@@ -4,8 +4,6 @@
 #* @vtlvariable name="stepsCounter" type="pl.edu.uj.ii.webapp.ui.TotalStepCounter" *#
 #* @vtlvariable name="solutionSource" type="pl.edu.uj.ii.webapp.solution.Source" *#
 #* @vtlvariable name="solutionId" type="java.lang.String" *#
-
-<h1>RushHour</h1>
 #if($!message)
 <p>
     $message
@@ -97,3 +95,4 @@
 </table>
 </p>
 #end
+#parse('templates/top_solutions.vm')

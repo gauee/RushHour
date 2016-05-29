@@ -3,6 +3,7 @@ package pl.edu.uj.ii.webapp;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.edu.uj.ii.webapp.db.Result;
@@ -12,6 +13,8 @@ import pl.edu.uj.ii.webapp.execute.UploadFile;
 import pl.edu.uj.ii.webapp.solution.Scheduler;
 import pl.edu.uj.ii.webapp.solution.Source;
 import pl.edu.uj.ii.webapp.solution.Task;
+import pl.edu.uj.ii.webapp.ui.TopResults;
+import pl.edu.uj.ii.webapp.ui.TopResultsSource;
 import pl.edu.uj.ii.webapp.ui.TotalResult;
 import pl.edu.uj.ii.webapp.ui.TotalStepCounter;
 import pl.edu.uj.ii.webapp.ui.UserResults;
@@ -49,6 +52,7 @@ public class StartApp implements SparkApplication {
     private DurationFormatUtils timeDuration = new DurationFormatUtils();
     private final TotalStepCounter stepCounter = new TotalStepCounter();
     private final ResultDao resultDao = new ResultDao();
+    private final TopResultsSource topResultsSource = new TopResultsSource(resultDao);
     private final Scheduler scheduler;
     private final Source solutionSource;
 
@@ -147,6 +151,8 @@ public class StartApp implements SparkApplication {
         model.put("timeDuration", timeDuration);
         model.put("stepsCounter", stepCounter);
         model.put("solutionSource", solutionSource);
+        model.put("topResults", new TopResults(topResultsSource.getTopResults()));
+        model.put("dateFormatter", FastDateFormat.class);
         return new ModelAndView(model, "templates/view_index.vm");
     }
 
