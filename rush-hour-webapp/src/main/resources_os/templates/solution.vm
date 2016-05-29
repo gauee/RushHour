@@ -1,25 +1,9 @@
 #* @vtlvariable name="totalResult" type="pl.edu.uj.ii.webapp.ui.TotalResult" *#
 #* @vtlvariable name="timeDuration" type="org.apache.commons.lang3.time.DurationFormatUtils" *#
+#* @vtlvariable name="stepsCounter" type="pl.edu.uj.ii.webapp.ui.TotalStepCounter" *#
 
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>RushHour Testerka</title>
-    <style>
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-
-        .no-border {
-            border: none;
-        }
-    </style>
-</head>
-
-<body>
 <h1>RushHour</h1>
-<table class="no-border">
+<table class="no-border" style="text-align: left;">
     <tr>
         <td class="no-border">
             <a href="/">Upload new solution</a>
@@ -33,36 +17,46 @@
 
 </table>
 
-    #if($!totalResult)
-    <table style="width:100%">
-        <tr>
-            <th>Total moves</th>
-            <th>Total duration<br/>[seconds]</th>
-            <th>Submission time</th>
-            <th>Language</th>
-        </tr>
-        <tr>
-            <td>$totalResult.getMoves()</td>
-            <td>$timeDuration.formatDuration($totalResult.getDuration(),"H:mm:ss")</td>
-            <td>$totalResult.getResult().getCreationDate()</td>
-            <td>$totalResult.getResult().getLang()</td>
-        </tr>
-    </table>
-    <br/>
-    <table style="width:100%">
+#if($!totalResult)
+<table style="width:100%">
     <tr>
-        <th>TestCase id</th>
-        <th>Total testCase moves</th>
-        <th>Total testCase duration<br/>[seconds]</th>
-        #foreach($resultDetail in $totalResult.getResult().getDetails())
-            <tr>
-                <td>$resultDetail.getTestCaseId()</td>
-                <td>$resultDetail.getMoves()</td>
-                <td>$timeDuration.formatDuration($resultDetail.getDuration(),"H:mm:ss")</td>
-            </tr>
-        #end
+        <th>Total moves</th>
+        <th>Total duration<br/>[seconds]</th>
+        <th>Submission time</th>
+        <th>Language</th>
+    </tr>
+    <tr>
+        <td>$totalResult.getMoves()</td>
+        <td>$timeDuration.formatDuration($totalResult.getDuration(),"H:mm:ss")</td>
+        <td>$totalResult.getResult().getCreationDate()</td>
+        <td>$totalResult.getResult().getLang()</td>
+    </tr>
+</table>
+<br/>
+<table style="width:100%">
+<tr>
+    <th>TestCase id</th>
+    <th>TestCase duration<br/>[seconds]</th>
+    <th>Total moves</th>
+    <th>TestCase moves</th>
+    #foreach($resultDetail in $totalResult.getResult().getDetails())
+        <tr>
+            <td>$resultDetail.getTestCaseId()</td>
+            <td>$timeDuration.formatDuration($resultDetail.getDuration(),"H:mm:ss")</td>
+            <td>
+                $stepsCounter.countSteps($resultDetail.getMoves())
+            </td>
+            <td>
+                <table class="no-border" style="width: 100%">
+                    #foreach($move in $resultDetail.getMoves())
+                        <tr>
+                            <td class="no-border">$move</td>
+                        </tr>
+                    #end
+                </table>
+            </td>
         </tr>
-    </table>
     #end
-</body>
-</html>
+    </tr>
+</table>
+#end

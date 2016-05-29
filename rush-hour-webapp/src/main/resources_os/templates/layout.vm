@@ -1,0 +1,38 @@
+#* @vtlvariable name="totalResult" type="pl.edu.uj.ii.webapp.ui.TotalResult" *#
+#* @vtlvariable name="timeDuration" type="org.apache.commons.lang3.time.DurationFormatUtils" *#
+#* @vtlvariable name="stepsCounter" type="pl.edu.uj.ii.webapp.ui.TotalStepCounter" *#
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>RushHour Testerka</title>
+    <style>
+        a {
+            text-decoration: none;
+            color: #aaa;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: #000;
+        }
+
+        table {
+            text-align: center;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        .no-border {
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    #parse($content_block)
+</body>
+</html>

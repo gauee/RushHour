@@ -5,25 +5,12 @@
 #* @vtlvariable name="solutionSource" type="pl.edu.uj.ii.webapp.solution.Source" *#
 #* @vtlvariable name="solutionId" type="java.lang.String" *#
 
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>RushHour Testerka</title>
-    <style>
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-    </style>
-</head>
-
-<body>
-<h1>Welcome on RushHour!</h1>
-    #if($!message)
-    <p>
-        $message
-    </p>
-    #end
+<h1>RushHour</h1>
+#if($!message)
+<p>
+    $message
+</p>
+#end
 <p>
     <b>
         Rozwiazania w jezyku Java musza byc kompilowalne. Przyklad. Plik o nazwie "New Text Document" z zawartoscia class RushHour { ... }, nie jest
@@ -56,59 +43,57 @@
     </fieldset>
 </form>
 
-    #if($!solutionId)
-        #set($errorMsg = $solutionSource.loadError($solutionId))
-        #if ($errorMsg)
-        <p>Some problem occured during uploading solution</p>
+#if($!solutionId)
+    #set($errorMsg = $solutionSource.loadError($solutionId))
+    #if ($errorMsg)
+    <p>Some problem occured during uploading solution</p>
 
-        <p>$errorMsg</p>
-        #else
-        <p>$solutionSource.getExecutionStatus($solutionId)</p>
-            #foreach($solution in $solutionSource.load($solutionId))
-            <p>$solution.toString()</p>
-            #end
+    <p>$errorMsg</p>
+    #else
+    <p>$solutionSource.getExecutionStatus($solutionId)</p>
+        #foreach($solution in $solutionSource.load($solutionId))
+        <p>$solution.toString()</p>
         #end
     #end
+#end
 
-    #if($!testResults)
-    <p>
-    <table style="width:100%">
+#if($!testResults)
+<p>
+<table style="width:100%">
+    <tr>
+        <th>Test case id</th>
+        <th>Test case duration</th>
+        <th>Total steps</th>
+        <th>Details</th>
+    </tr>
+    #foreach($testResult in $testResults)
         <tr>
-            <th>Test case id</th>
-            <th>Test case duration</th>
-            <th>Total steps</th>
-            <th>Details</th>
-        </tr>
-        #foreach($testResult in $testResults)
-            <tr>
-                <td>
-                    $testResult.testCaseId
-                </td>
-                <td>
-                    $timeDuration.formatDuration($testResult.duration,"H:mm:ss") seconds
-                </td>
-                <td>
-                    $stepsCounter.countSteps($testResult.stepsOfAllTestCases)
-                </td>
-                <td>
-                    <table style="border: none">
-                        #foreach($amountOfSteps in $testResult.stepsOfAllTestCases)
+            <td>
+                $testResult.testCaseId
+            </td>
+            <td>
+                $timeDuration.formatDuration($testResult.duration,"H:mm:ss") seconds
+            </td>
+            <td>
+                $stepsCounter.countSteps($testResult.stepsOfAllTestCases)
+            </td>
+            <td>
+                <table style="border: none">
+                    #foreach($amountOfSteps in $testResult.stepsOfAllTestCases)
 
-                            #if($amountOfSteps != -1)
-                                #set($colorValue = 'green')
-                            #else
-                                #set($colorValue = 'red')
-                            #end
-                            <tr>
-                                <td style="border: none; color: $colorValue; font-weight: bolder;">$amountOfSteps</td>
-                            </tr>
+                        #if($amountOfSteps != -1)
+                            #set($colorValue = 'green')
+                        #else
+                            #set($colorValue = 'red')
                         #end
-                    </table>
-                </td>
-            </tr>
-        #end
-    </table>
-    </p>
+                        <tr>
+                            <td style="border: none; color: $colorValue; font-weight: bolder;">$amountOfSteps</td>
+                        </tr>
+                    #end
+                </table>
+            </td>
+        </tr>
     #end
-</body>
-</html>
+</table>
+</p>
+#end

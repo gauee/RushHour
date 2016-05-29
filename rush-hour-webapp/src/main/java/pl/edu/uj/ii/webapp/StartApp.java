@@ -147,21 +147,22 @@ public class StartApp implements SparkApplication {
         model.put("timeDuration", timeDuration);
         model.put("stepsCounter", stepCounter);
         model.put("solutionSource", solutionSource);
-        return new ModelAndView(model, "templates/index.vm");
+        return new ModelAndView(model, "templates/view_index.vm");
     }
 
     private ModelAndView authorView(UserResults userResults) {
         Map<String, Object> model = Maps.newHashMap();
         model.put("timeDuration", timeDuration);
         model.put("userResults", userResults);
-        return new ModelAndView(model, "templates/author.vm");
+        return new ModelAndView(model, "templates/view_author.vm");
     }
 
     private ModelAndView solutionView(TotalResult totalResult) {
         Map<String, Object> model = Maps.newHashMap();
         model.put("timeDuration", timeDuration);
+        model.put("stepsCounter", stepCounter);
         model.put("totalResult", totalResult);
-        return new ModelAndView(model, "templates/solution.vm");
+        return new ModelAndView(model, "templates/view_solution.vm");
     }
 
     private ModelAndView setMessage(ModelAndView modelAndView, String message) {
