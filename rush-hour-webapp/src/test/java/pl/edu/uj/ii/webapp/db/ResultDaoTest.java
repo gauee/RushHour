@@ -1,5 +1,6 @@
 package pl.edu.uj.ii.webapp.db;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import pl.edu.uj.ii.webapp.execute.SupportedLang;
 
@@ -19,6 +20,34 @@ import static org.hamcrest.core.IsNot.not;
 public class ResultDaoTest {
 
     private ResultDao resultDao = new ResultDao();
+
+    @Test
+    @Ignore
+    public void generateRandomData() {
+        for (SupportedLang supportedLang : SupportedLang.values()) {
+            int amountOfUser = (int) (Math.random() * 100 % 10);
+            for (int i = 0; i < amountOfUser; i++) {
+                String user = "user_" + supportedLang.toString() + "_" + i;
+                int amountOfSolutions = (int) (Math.random() * 10);
+                for (int j = 0; j < amountOfSolutions; j++) {
+                    Result result = new Result()
+                            .withId(UUID.randomUUID().toString())
+                            .withAuthor(user)
+                            .withLang(supportedLang.toString())
+                            .withCreationDate(new Date());
+                    resultDao.save(result);
+                    for (int k = 0; k < 4; k++) {
+                        resultDao.addDetails(new ResultDetail()
+                                .withResultId(result.getId())
+                                .withDuration((long) (Math.random() * 100000))
+                                .withMoves((int) (Math.random() * 1000))
+                                .withTestCaseId("testCase_" + k));
+                    }
+                }
+
+            }
+        }
+    }
 
     @Test
     public void createsNewResult() {
