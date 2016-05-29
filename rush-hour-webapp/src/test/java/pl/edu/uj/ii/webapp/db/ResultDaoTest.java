@@ -6,12 +6,15 @@ import pl.edu.uj.ii.webapp.execute.SupportedLang;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 
 /**
@@ -101,6 +104,16 @@ public class ResultDaoTest {
     @Test
     public void selectsAllResults() {
         assertThat(resultDao.get(), is(not(emptyList())));
+    }
+
+    @Test
+    public void returnsAllAuthorResults() {
+        String authorId = SupportedLang.GPP + "_0";
+        List<Result> authorResults = resultDao.getAuthorResults(authorId);
+        for (Result authorResult : authorResults) {
+            assertThat(authorResult.getAuthor(), is(equalTo(authorId)));
+            assertThat(authorResult.getDetails(), is(not(empty())));
+        }
     }
 
 }

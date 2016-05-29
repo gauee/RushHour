@@ -5,12 +5,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.edu.uj.ii.webapp.db.Result;
+import pl.edu.uj.ii.webapp.db.ResultDao;
 import pl.edu.uj.ii.webapp.execute.SupportedLang;
 import pl.edu.uj.ii.webapp.execute.UploadFile;
 import pl.edu.uj.ii.webapp.solution.Scheduler;
 import pl.edu.uj.ii.webapp.solution.Source;
 import pl.edu.uj.ii.webapp.solution.Task;
 import pl.edu.uj.ii.webapp.ui.TotalStepCounter;
+import pl.edu.uj.ii.webapp.ui.UserResults;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -23,6 +26,7 @@ import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
@@ -43,9 +47,9 @@ public class StartApp implements SparkApplication {
     public static final String PARAM_SOLUTION_ID = "solutionId";
     private DurationFormatUtils timeDuration = new DurationFormatUtils();
     private final TotalStepCounter stepCounter = new TotalStepCounter();
+    private final ResultDao resultDao = new ResultDao();
     private final Scheduler scheduler;
     private final Source solutionSource;
-
 
     public static void main(String[] args) {
         try {
@@ -72,8 +76,17 @@ public class StartApp implements SparkApplication {
     private void initRoutes() {
         VelocityTemplateEngine templateEngine = new VelocityTemplateEngine();
         get("/", (req, res) -> uploadPageView(), templateEngine);
-        get("/:solutionId", (req, res) -> handleSubmission(req), templateEngine);
+        get("/solution/:solutionId", (req, res) -> handleSubmission(req), templateEngine);
+        get("/author/:authorId", (req, res) -> retrieveAuthorHistory(req), templateEngine);
         post("/submit", "multipart/form-data", (req, res) -> processNewSolution(req, res));
+    }
+
+    private ModelAndView retrieveAuthorHistory(Request req) {
+        String authorId = req.params("authorId");
+        List<Result> authorResults = resultDao.getAuthorResults(authorId);
+        ModelAndView modelAndView = authorView();
+        appendToModel(modelAndView, "userResults", new UserResults(authorId, authorResults));
+        return modelAndView;
     }
 
     private ModelAndView handleSubmission(Request req) {
@@ -138,6 +151,12 @@ public class StartApp implements SparkApplication {
         model.put("stepsCounter", stepCounter);
         model.put("solutionSource", solutionSource);
         return new ModelAndView(model, "templates/index.vm");
+    }
+
+    private ModelAndView authorView() {
+        Map<String, Object> model = Maps.newHashMap();
+        model.put("timeDuration", timeDuration);
+        return new ModelAndView(model, "templates/author.vm");
     }
 
     private ModelAndView setMessage(ModelAndView modelAndView, String message) {
