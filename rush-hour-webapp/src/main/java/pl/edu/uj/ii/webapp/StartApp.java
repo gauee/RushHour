@@ -12,6 +12,7 @@ import pl.edu.uj.ii.webapp.execute.UploadFile;
 import pl.edu.uj.ii.webapp.solution.Scheduler;
 import pl.edu.uj.ii.webapp.solution.Source;
 import pl.edu.uj.ii.webapp.solution.Task;
+import pl.edu.uj.ii.webapp.ui.TotalResult;
 import pl.edu.uj.ii.webapp.ui.TotalStepCounter;
 import pl.edu.uj.ii.webapp.ui.UserResults;
 import spark.ModelAndView;
@@ -84,16 +85,12 @@ public class StartApp implements SparkApplication {
     private ModelAndView retrieveAuthorHistory(Request req) {
         String authorId = req.params("authorId");
         List<Result> authorResults = resultDao.getAuthorResults(authorId);
-        ModelAndView modelAndView = authorView();
-        appendToModel(modelAndView, "userResults", new UserResults(authorId, authorResults));
-        return modelAndView;
+        return authorView(new UserResults(authorId, authorResults));
     }
 
     private ModelAndView handleSubmission(Request req) {
         String solutionId = req.params(PARAM_SOLUTION_ID);
-        ModelAndView modelAndView = uploadPageView();
-        appendToModel(modelAndView, "solutionId", solutionId);
-        return modelAndView;
+        return solutionView(new TotalResult(resultDao.get(solutionId)));
     }
 
     private ModelAndView processNewSolution(Request req, Response res) {
@@ -153,10 +150,18 @@ public class StartApp implements SparkApplication {
         return new ModelAndView(model, "templates/index.vm");
     }
 
-    private ModelAndView authorView() {
+    private ModelAndView authorView(UserResults userResults) {
         Map<String, Object> model = Maps.newHashMap();
         model.put("timeDuration", timeDuration);
+        model.put("userResults", userResults);
         return new ModelAndView(model, "templates/author.vm");
+    }
+
+    private ModelAndView solutionView(TotalResult totalResult) {
+        Map<String, Object> model = Maps.newHashMap();
+        model.put("timeDuration", timeDuration);
+        model.put("totalResult", totalResult);
+        return new ModelAndView(model, "templates/solution.vm");
     }
 
     private ModelAndView setMessage(ModelAndView modelAndView, String message) {
