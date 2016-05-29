@@ -1,6 +1,7 @@
 package pl.edu.uj.ii.webapp.db;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -17,7 +18,9 @@ public class ResultDetailRowMapper implements RowMapper<ResultDetail> {
     public ResultDetail mapRow(ResultSet resultSet, int i) throws SQLException {
         List<Integer> moves = Lists.newLinkedList();
         for (String singleMove : resultSet.getString("moves").split(MOVES_SEPARATOR)) {
-            moves.add(Integer.valueOf(singleMove));
+            if (StringUtils.isNoneEmpty(singleMove)) {
+                moves.add(Integer.valueOf(singleMove));
+            }
         }
 
         return new ResultDetail()
