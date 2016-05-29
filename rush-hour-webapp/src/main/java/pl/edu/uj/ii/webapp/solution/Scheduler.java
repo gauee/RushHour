@@ -71,7 +71,7 @@ public class Scheduler extends Thread {
             return;
         }
         for (Future<TestResult> future : futures) {
-            TestResult testResult = new TestResult(EMPTY, -1, emptyList());
+            TestResult testResult = new TestResult(EMPTY, 0, emptyList());
             try {
                 testResult = future.get(CONFIG.getExecutionTimeoutInSec(), TimeUnit.SECONDS);
             } catch (InterruptedException | ExecutionException e) {
