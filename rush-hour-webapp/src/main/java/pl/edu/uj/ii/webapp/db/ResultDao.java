@@ -1,12 +1,11 @@
 package pl.edu.uj.ii.webapp.db;
 
-import com.google.common.collect.Sets;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 public class ResultDao {
     public static final String CREATE_RESULT = "insert into result values(?,?,?,?);";
@@ -50,8 +49,10 @@ public class ResultDao {
         return results;
     }
 
-    private Set<ResultDetail> getResultDetails(JdbcTemplate jdbcTemplate, String id) {
-        return Sets.newHashSet(jdbcTemplate.query(SELECT_RESULT_DETAILS, new Object[]{id}, new ResultDetailRowMapper()));
+    private List<ResultDetail> getResultDetails(JdbcTemplate jdbcTemplate, String id) {
+        List<ResultDetail> details = jdbcTemplate.query(SELECT_RESULT_DETAILS, new Object[]{id}, new ResultDetailRowMapper());
+        Collections.sort(details, (o1, o2) -> o1.getTestCaseId().compareTo(o2.getTestCaseId()));
+        return details;
     }
 
     private JdbcTemplate getJdbcTemplate() {

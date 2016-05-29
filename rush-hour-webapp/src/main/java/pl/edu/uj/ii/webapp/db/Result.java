@@ -4,9 +4,9 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 
 /**
  * Created by gauee on 5/29/16.
@@ -16,7 +16,7 @@ public class Result {
     private String author;
     private String lang;
     private Date creationDate;
-    private Set<ResultDetail> details = emptySet();
+    private List<ResultDetail> details = emptyList();
 
     public String getId() {
         return id;
@@ -54,12 +54,12 @@ public class Result {
         return creationDate;
     }
 
-    public Result withDetails(Set<ResultDetail> details) {
+    public Result withDetails(List<ResultDetail> details) {
         this.details = details;
         return this;
     }
 
-    public Set<ResultDetail> getDetails() {
+    public List<ResultDetail> getDetails() {
         return details;
     }
 
