@@ -1,5 +1,6 @@
 package pl.edu.uj.ii.webapp.db;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import pl.edu.uj.ii.webapp.execute.SupportedLang;
 
@@ -21,10 +22,10 @@ public class ResultDaoTest {
     private ResultDao resultDao = new ResultDao();
 
     @Test
-//    @Ignore
+    @Ignore
     public void generateRandomData() {
         for (SupportedLang supportedLang : SupportedLang.values()) {
-            int amountOfUser = (int) (Math.random() * 100) % 10;
+            int amountOfUser = (int) (Math.random() * 100) % 10 + 4;
             for (int i = 0; i < amountOfUser; i++) {
                 String user = "user_" + supportedLang.toString() + "_" + i;
                 int amountOfSolutions = (int) (Math.random() * 100) % 20;
