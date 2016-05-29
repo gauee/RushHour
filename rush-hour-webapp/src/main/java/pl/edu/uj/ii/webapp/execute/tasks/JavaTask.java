@@ -22,7 +22,7 @@ public class JavaTask extends CompilableTask {
 
     @Override
     void preCompile() throws IOException, ClassNotFoundException {
-        String filePackage = getUniqSolutionDir().substring(0, getUniqSolutionDir().length() - 1).replaceAll("\\" + File.separator, ".");
+        String filePackage = getUniqueSolutionDir().substring(0, getUniqueSolutionDir().length() - 1).replaceAll("\\" + File.separator, ".");
         String newCode = changePackageInsideSolution(filePackage);
         this.updateSourceCode(newCode);
     }
@@ -38,7 +38,7 @@ public class JavaTask extends CompilableTask {
 
     @Override
     ProcessBuilder createExecutionProcess() {
-        ProcessBuilder processBuilder = createProcessBuilder("../" + jdkDir + "bin/java", getUniqSolutionDir() + baseFileName);
+        ProcessBuilder processBuilder = createProcessBuilder("../" + jdkDir + "bin/java", getUniqueSolutionDir() + baseFileName);
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
     }

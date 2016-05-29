@@ -28,7 +28,7 @@ public class PythonTask extends ExecutionTask {
 
     @Override
     ProcessBuilder createExecutionProcess() {
-        ProcessBuilder processBuilder = createProcessBuilder("../" + interpreter + "python", getUniqSolutionDir() + getTempFileName());
+        ProcessBuilder processBuilder = createProcessBuilder("../" + interpreter + "python", getUniqueSolutionDir() + getTempFileName());
         processBuilder.directory(new File(CONFIG.getUploadedFileDir()));
         return processBuilder;
     }
