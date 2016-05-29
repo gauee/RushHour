@@ -1,19 +1,19 @@
 package pl.edu.uj.ii.webapp.ui.comparator;
 
-import pl.edu.uj.ii.webapp.db.Result;
+import pl.edu.uj.ii.webapp.ui.TotalResult;
 
 import java.util.Comparator;
 
 /**
  * Created by gauee on 5/29/16.
  */
-public class ResultComparator implements Comparator<Result> {
+public class ResultComparator implements Comparator<TotalResult> {
     private final ResultMovesComparator movesComparator = new ResultMovesComparator();
     private final ResultDurationComparator durationComparator = new ResultDurationComparator();
 
     @Override
-    public int compare(Result o1, Result o2) {
-        int sizeOfResult = o1.getDetails().size() - o2.getDetails().size();
+    public int compare(TotalResult o1, TotalResult o2) {
+        int sizeOfResult = o1.getResult().getDetails().size() - o2.getResult().getDetails().size();
         if (sizeOfResult != 0) {
             return sizeOfResult;
         }
