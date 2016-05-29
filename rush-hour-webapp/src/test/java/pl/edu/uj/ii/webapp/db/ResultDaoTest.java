@@ -1,17 +1,26 @@
 package pl.edu.uj.ii.webapp.db;
 
 import com.google.common.collect.Lists;
+import org.apache.log4j.Logger;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.jdbc.UncategorizedSQLException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import pl.edu.uj.ii.webapp.execute.SupportedLang;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -23,8 +32,36 @@ import static org.hamcrest.core.IsNot.not;
  * Created by gauee on 5/29/16.
  */
 public class ResultDaoTest {
+    private static final Logger LOGGER = Logger.getLogger(ResultDaoTest.class);
+    private ResultDao resultDao = new ResultDao(new DriverManagerDataSource("jdbc:sqlite:" + dbName));
 
-    private ResultDao resultDao = new ResultDao();
+    private static final String dbName = "test.db";
+
+    @BeforeClass
+    public static void createDb() throws IOException {
+        new File(dbName).createNewFile();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(new DriverManagerDataSource("jdbc:sqlite:" + dbName));
+        StringBuilder script = new StringBuilder();
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(ResultDaoTest.class.getClassLoader().getResourceAsStream("schema.sql")))) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                script.append(line);
+                if (line.endsWith(";")) {
+                    try {
+                        jdbcTemplate.execute(script.toString());
+                    } catch (UncategorizedSQLException e) {
+                        LOGGER.warn("Cannot execute script: " + script.toString());
+                    }
+                    script.setLength(0);
+                }
+            }
+        }
+    }
+
+    @AfterClass
+    public static void deleteDb() {
+        new File(dbName).delete();
+    }
 
     @Test
     @Ignore
@@ -105,11 +142,6 @@ public class ResultDaoTest {
         testAuthor.withDetails(Arrays.asList(easyDetails, hardDetails));
 
         assertThat(resultDao.get(uid), is(testAuthor));
-    }
-
-    @Test
-    public void selectsAllResults() {
-        assertThat(resultDao.get(), is(not(emptyList())));
     }
 
     @Test
