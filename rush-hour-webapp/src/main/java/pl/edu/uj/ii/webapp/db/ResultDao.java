@@ -6,10 +6,12 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Set;
 
 public class ResultDao {
     public static final String CREATE_RESULT = "insert into result values(?,?,?,?);";
     public static final String CREATE_RESULT_DETAIL = "insert into result_detail values(?,?,?,?);";
+    public static final String SELECT_RESULTS = "select * from result;";
     public static final String SELECT_RESULT = "select * from result where id=?;";
     public static final String SELECT_RESULT_DETAILS = "select * from result_detail where result_id=?;";
     private final DataSource dataSource;
@@ -34,11 +36,22 @@ public class ResultDao {
 
     public Result get(String id) {
         JdbcTemplate jdbcTemplate = getJdbcTemplate();
-        Object[] whereValues = {id};
-        List<ResultDetail> details = jdbcTemplate.query(SELECT_RESULT_DETAILS, whereValues, new ResultDetailRowMapper());
         Result result = jdbcTemplate
-                .queryForObject(SELECT_RESULT, whereValues, new ResultRowMapper());
-        return result.withDetails(Sets.newHashSet(details));
+                .queryForObject(SELECT_RESULT, new Object[]{id}, new ResultRowMapper());
+        return result.withDetails(getResultDetails(jdbcTemplate, id));
+    }
+
+    public List<Result> get() {
+        JdbcTemplate jdbcTemplate = getJdbcTemplate();
+        List<Result> results = jdbcTemplate.query(SELECT_RESULTS, new ResultRowMapper());
+        for (Result result : results) {
+            result.withDetails(getResultDetails(jdbcTemplate, result.getId()));
+        }
+        return results;
+    }
+
+    private Set<ResultDetail> getResultDetails(JdbcTemplate jdbcTemplate, String id) {
+        return Sets.newHashSet(jdbcTemplate.query(SELECT_RESULT_DETAILS, new Object[]{id}, new ResultDetailRowMapper()));
     }
 
     private JdbcTemplate getJdbcTemplate() {

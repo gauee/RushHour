@@ -7,9 +7,11 @@ import java.util.Date;
 import java.util.UUID;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 
 /**
  * Created by gauee on 5/29/16.
@@ -65,6 +67,11 @@ public class ResultDaoTest {
         testAuthor.withDetails(newHashSet(easyDetails, hardDetails));
 
         assertThat(resultDao.get(uid), is(testAuthor));
+    }
+
+    @Test
+    public void selectsAllResults() {
+        assertThat(resultDao.get(), is(not(emptyList())));
     }
 
 }
