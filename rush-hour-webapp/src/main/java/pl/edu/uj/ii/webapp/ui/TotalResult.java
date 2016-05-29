@@ -19,7 +19,9 @@ public class TotalResult {
         this.result = result;
         for (ResultDetail resultDetail : result.getDetails()) {
             this.duration += resultDetail.getDuration();
-            this.moves += resultDetail.getMoves() != ESCAPE_UNREACHABLE ? resultDetail.getMoves() : 0;
+            for (int move : resultDetail.getMoves()) {
+                this.moves += move != ESCAPE_UNREACHABLE ? move : 0;
+            }
         }
     }
 

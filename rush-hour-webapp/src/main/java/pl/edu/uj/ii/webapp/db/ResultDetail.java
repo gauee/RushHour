@@ -2,14 +2,18 @@ package pl.edu.uj.ii.webapp.db;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
 
 /**
  * Created by gauee on 5/29/16.
  */
 public class ResultDetail {
+    public static final String MOVES_SEPARATOR = ",";
     private String resultId;
     private String testCaseId;
-    private int moves;
+    private List<Integer> moves;
     private long duration;
 
     public String getResultId() {
@@ -30,11 +34,11 @@ public class ResultDetail {
         return this;
     }
 
-    public int getMoves() {
+    public List<Integer> getMoves() {
         return moves;
     }
 
-    public ResultDetail withMoves(int moves) {
+    public ResultDetail withMoves(List<Integer> moves) {
         this.moves = moves;
         return this;
     }
@@ -48,13 +52,22 @@ public class ResultDetail {
         return this;
     }
 
+    public Object[] toObjects() {
+        return new Object[]{
+                resultId,
+                testCaseId,
+                StringUtils.join(moves, MOVES_SEPARATOR),
+                duration
+        };
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ResultDetail that = (ResultDetail) o;
-        return moves == that.moves &&
-                duration == that.duration &&
+        return duration == that.duration &&
+                Objects.equal(moves, that.moves) &&
                 Objects.equal(resultId, that.resultId) &&
                 Objects.equal(testCaseId, that.testCaseId);
     }
@@ -62,15 +75,6 @@ public class ResultDetail {
     @Override
     public int hashCode() {
         return Objects.hashCode(resultId, testCaseId, moves, duration);
-    }
-
-    public Object[] toObjects() {
-        return new Object[]{
-                resultId,
-                testCaseId,
-                moves,
-                duration
-        };
     }
 
     @Override

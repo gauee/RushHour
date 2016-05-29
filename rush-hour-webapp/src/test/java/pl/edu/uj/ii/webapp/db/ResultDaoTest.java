@@ -1,11 +1,13 @@
 package pl.edu.uj.ii.webapp.db;
 
+import com.google.common.collect.Lists;
 import org.junit.Ignore;
 import org.junit.Test;
 import pl.edu.uj.ii.webapp.execute.SupportedLang;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,10 +42,14 @@ public class ResultDaoTest {
                             .withCreationDate(new Date());
                     resultDao.save(result);
                     for (int k = 0; k < 4; k++) {
+                        LinkedList<Integer> moves = Lists.newLinkedList();
+                        for (int l = 0; l < 10; l++) {
+                            moves.add((int) (Math.random() * 1000) % 50);
+                        }
                         resultDao.addDetails(new ResultDetail()
                                 .withResultId(result.getId())
                                 .withDuration((long) (Math.random() * 100000))
-                                .withMoves((int) (Math.random() * 1000) % 50)
+                                .withMoves(moves)
                                 .withTestCaseId("testCase_" + k));
                     }
                 }
@@ -78,13 +84,13 @@ public class ResultDaoTest {
 
         ResultDetail easyDetails = new ResultDetail()
                 .withDuration(12345)
-                .withMoves(12)
+                .withMoves(singletonList(12))
                 .withResultId(uid)
                 .withTestCaseId("easy");
 
         ResultDetail hardDetails = new ResultDetail()
                 .withDuration(345678)
-                .withMoves(12)
+                .withMoves(singletonList(12))
                 .withResultId(uid)
                 .withTestCaseId("hard");
 
