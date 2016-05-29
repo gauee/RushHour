@@ -1,6 +1,5 @@
 #* @vtlvariable name="totalResult" type="pl.edu.uj.ii.webapp.ui.TotalResult" *#
 #* @vtlvariable name="timeDuration" type="org.apache.commons.lang3.time.DurationFormatUtils" *#
-#* @vtlvariable name="stepsCounter" type="pl.edu.uj.ii.webapp.ui.TotalStepCounter" *#
 #* @vtlvariable name="dateFormatter" type="org.apache.commons.lang3.time.FastDateFormat" *#
 
 <html>

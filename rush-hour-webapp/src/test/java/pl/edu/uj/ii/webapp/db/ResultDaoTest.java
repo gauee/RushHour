@@ -46,7 +46,7 @@ public class ResultDaoTest {
                         for (int l = 0; l < 10; l++) {
                             moves.add((int) (Math.random() * 1000) % 50);
                         }
-                        resultDao.addDetails(new ResultDetail()
+                        resultDao.save(new ResultDetail()
                                 .withResultId(result.getId())
                                 .withDuration((long) (Math.random() * 100000))
                                 .withMoves(moves)
@@ -94,13 +94,13 @@ public class ResultDaoTest {
                 .withResultId(uid)
                 .withTestCaseId("hard");
 
-        resultDao.addDetails(easyDetails);
+        resultDao.save(easyDetails);
 
         testAuthor.withDetails(singletonList(easyDetails));
 
         assertThat(resultDao.get(uid), is(testAuthor));
 
-        resultDao.addDetails(hardDetails);
+        resultDao.save(hardDetails);
 
         testAuthor.withDetails(Arrays.asList(easyDetails, hardDetails));
 

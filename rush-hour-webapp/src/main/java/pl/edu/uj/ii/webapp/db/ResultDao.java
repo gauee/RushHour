@@ -33,7 +33,7 @@ public class ResultDao {
                 .update(CREATE_RESULT, result.toObjects());
     }
 
-    public void addDetails(ResultDetail resultDetail) {
+    public void save(ResultDetail resultDetail) {
         getJdbcTemplate()
                 .update(CREATE_RESULT_DETAIL, resultDetail.toObjects());
     }

@@ -2,12 +2,16 @@ package pl.edu.uj.ii.webapp.solution;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.log4j.Logger;
+import pl.edu.uj.ii.webapp.db.Result;
+import pl.edu.uj.ii.webapp.db.ResultDao;
+import pl.edu.uj.ii.webapp.db.ResultDetail;
 import pl.edu.uj.ii.webapp.execute.RushHourExecutor;
 import pl.edu.uj.ii.webapp.execute.SupportedLang;
 import pl.edu.uj.ii.webapp.execute.tasks.ExecutionTask;
 import pl.edu.uj.ii.webapp.execute.tasks.TaskFactory;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -16,7 +20,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -27,12 +30,12 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
  */
 public class Scheduler extends Thread {
     private static final Logger LOGGER = Logger.getLogger(Scheduler.class);
-    private final Source source;
+    private final ResultDao resultDao;
     private BlockingQueue<Task> tasks = new LinkedBlockingDeque<>(32);
     private final RushHourExecutor rushHourExecutor;
 
-    public Scheduler(Source source) {
-        this.source = source;
+    public Scheduler(ResultDao resultDao) {
+        this.resultDao = resultDao;
         rushHourExecutor = new RushHourExecutor(new TaskFactory(initLanguages()));
     }
 
@@ -56,14 +59,17 @@ public class Scheduler extends Thread {
             LOGGER.info("No new task in queue.");
             return;
         }
-
+        Result newResult = new Result()
+                .withId(task.getSolutionId())
+                .withLang(task.getSupportedLang().toString())
+                .withCreationDate(new Date())
+                .withAuthor(task.getAuthor());
+        resultDao.save(newResult);
         String solutionId = task.getSolutionId();
         List<Future<TestResult>> futures = rushHourExecutor.runAllTestCases(task);
         if (futures.isEmpty()) {
-            source.save("Problem during executing solution, please contact admin for more details.", solutionId);
             return;
         }
-        source.startProcessing(solutionId, futures.size());
         for (Future<TestResult> future : futures) {
             TestResult testResult = new TestResult(EMPTY, -1, emptyList());
             try {
@@ -74,11 +80,11 @@ public class Scheduler extends Thread {
                 LOGGER.warn("Executing process for solution " + solutionId + " timed out");
                 future.cancel(true);
             }
-            source.save(new Solution(
-                    solutionId,
-                    testResult.getTestCaseId(),
-                    testResult.getStepsOfAllTestCases().parallelStream().map(integer -> integer.toString()).collect(Collectors.toList())
-            ));
+            resultDao.save(new ResultDetail()
+                    .withResultId(newResult.getId())
+                    .withTestCaseId(testResult.getTestCaseId())
+                    .withDuration(testResult.getDuration())
+                    .withMoves(testResult.getStepsOfAllTestCases()));
         }
     }
 
