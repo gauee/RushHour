@@ -16,28 +16,37 @@
     </b>
 </p>
 <form action="/submit" method="post" enctype="multipart/form-data">
-##    <form action="/submit" method="post">
     <fieldset>
         <legend>Upload source code content</legend>
-
-        <div>
-            <label for="supportedLang">Select Language</label>
-            <select name="supportedLang">
-                #foreach ($lang in $supportedLang)
-                    <option value="$lang.ordinal()">$lang.getDescription()</option>
-                #end
-            </select>
-        </div>
-        <div>
-            <label for="filebutton">Upload file</label>
-
-            <div>
-                <input id="fileContent" name="fileContent" class="input-file" type="file">
-            </div>
-        </div>
-        <div class="form-group">
-            <input type="submit" value="Submit solution">
-        </div>
+        <table class="no-border" style="text-align: left;">
+            <tr>
+                <td class="no-border">Select Language</td>
+                <td class="no-border">
+                    <select name="supportedLang">
+                        #foreach ($lang in $supportedLang)
+                            <option value="$lang.ordinal()">$lang.getDescription()</option>
+                        #end
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="no-border">Upload file</td>
+                <td class="no-border">
+                    <input name="fileContent" class="input-file" type="file">
+                </td>
+            </tr>
+            <tr>
+                <td class="no-border">Author</td>
+                <td class="no-border">
+                    <input name="author" type="text">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="no-border">
+                    <input type="submit" value="Submit solution">
+                </td>
+            </tr>
+        </table>
     </fieldset>
 </form>
 
