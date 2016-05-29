@@ -2,7 +2,7 @@
 #* @vtlvariable name="langResult" type="java.util.Map.Entry<java.lang.String, java.util.List<pl.edu.uj.ii.webapp.ui.TotalResult>>" *#
 #* @vtlvariable name="bestResult" type="pl.edu.uj.ii.webapp.ui.TotalResult" *#
 #* @vtlvariable name="timeDuration" type="org.apache.commons.lang3.time.DurationFormatUtils" *#
-#* @vtlvariable name="dateFormatter" type="org.apache.commons.lang3.time.FastDateFormat" *#
+
 <style>
     .solution_col {
         width: 25%;
@@ -25,7 +25,7 @@
             </td>
             <td>$bestResult.getMoves()</td>
             <td>#printDuration($bestResult.getDuration())</td>
-            <td>$dateFormatter.getInstance("dd/MM/yyyy HH:mm:ss").format($bestResult.getResult().getCreationDate())</td>
+            <td>#printDate($bestResult.getResult().getCreationDate())</td>
         </tr>
     #end
 </table>

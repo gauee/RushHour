@@ -160,6 +160,7 @@ public class StartApp implements SparkApplication {
         Map<String, Object> model = Maps.newHashMap();
         model.put("timeDuration", timeDuration);
         model.put("userResults", userResults);
+        model.put("dateFormatter", FastDateFormat.class);
         return new ModelAndView(model, "templates/view_author.vm");
     }
 
@@ -168,6 +169,7 @@ public class StartApp implements SparkApplication {
         model.put("timeDuration", timeDuration);
         model.put("stepsCounter", stepCounter);
         model.put("totalResult", totalResult);
+        model.put("dateFormatter", FastDateFormat.class);
         return new ModelAndView(model, "templates/view_solution.vm");
     }
 

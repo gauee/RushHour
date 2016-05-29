@@ -7,7 +7,7 @@
 <table>
     <tr>
         <th>Total moves</th>
-        <th>Total duration<br/>[seconds]</th>
+        <th>Total duration</th>
         <th>Id</th>
         <th>Langauge</th>
         <th>Submission time</th>
@@ -27,7 +27,7 @@
                 $totalResult.getResult().getLang()
             </td>
             <td>
-                $totalResult.getResult().getCreationDate()
+                #printDate($totalResult.getResult().getCreationDate())
             </td>
         </tr>
     #end

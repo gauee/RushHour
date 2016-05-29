@@ -28,7 +28,7 @@
     <tr>
         <td>$totalResult.getMoves()</td>
         <td>#printDuration($totalResult.getDuration())</td>
-        <td>$totalResult.getResult().getCreationDate()</td>
+        <td>#printDate($totalResult.getResult().getCreationDate())</td>
         <td>$totalResult.getResult().getLang()</td>
     </tr>
 </table>
