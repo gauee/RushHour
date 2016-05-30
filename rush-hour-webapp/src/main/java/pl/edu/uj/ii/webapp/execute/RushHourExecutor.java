@@ -66,10 +66,15 @@ public class RushHourExecutor {
 
     private Future<TestResult> retrieveTestCaseOutputs(ExecutionTask executionTask, TestCase testCase) {
         return taskExecutor.submit(() -> {
+            List<List<CarMove>> carMovesForAllBoards = emptyList();
             long duration = System.currentTimeMillis();
-            List<String> outputLines = executionTask.runWithInput(testCase.getFile());
+            try {
+                List<String> outputLines = executionTask.runWithInput(testCase.getFile());
+                carMovesForAllBoards = DataConverter.parseOutputLines(outputLines);
+            } catch (Exception e) {
+                LOGGER.error("Cannot retrieve result", e);
+            }
             duration = System.currentTimeMillis() - duration;
-            List<List<CarMove>> carMovesForAllBoards = DataConverter.parseOutputLines(outputLines);
             List<Integer> stepsForAllBoards = Lists.newLinkedList();
             for (Board board : testCase.getBoards()) {
                 List<CarMove> carMoves = carMovesForAllBoards.isEmpty() ? emptyList() : carMovesForAllBoards.remove(0);
