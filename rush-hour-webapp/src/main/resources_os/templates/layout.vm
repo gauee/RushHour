@@ -43,7 +43,7 @@
 #end
 
 #macro( printDuration $duration)
-    $timeDuration.formatDuration($duration,"mm:ss",false).replaceFirst(":"," min ") secs
+    $timeDuration.formatDuration($duration,"mm:ss,SSS", false).replaceFirst(":"," min ").replaceFirst(",", " sec ") ms
 #end
 
 #macro( printDate $date)

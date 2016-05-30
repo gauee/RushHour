@@ -46,6 +46,8 @@ public class Scheduler extends Thread {
                 processTask(tasks.poll(10, TimeUnit.MINUTES));
             } catch (InterruptedException e) {
                 LOGGER.error("Caught interrupted exception inside SolutionScheduler.");
+            } catch (Exception e) {
+                LOGGER.error("Caught unexpected exception", e);
             }
         }
     }
