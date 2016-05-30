@@ -10,12 +10,17 @@ import java.util.Comparator;
 public class ResultComparator implements Comparator<TotalResult> {
     private final ResultMovesComparator movesComparator = new ResultMovesComparator();
     private final ResultDurationComparator durationComparator = new ResultDurationComparator();
+    private final ResultInvalidMovesComparator invalidMovesComparator = new ResultInvalidMovesComparator();
 
     @Override
     public int compare(TotalResult o1, TotalResult o2) {
         int sizeOfResult = o2.getResult().getDetails().size() - o1.getResult().getDetails().size();
         if (sizeOfResult != 0) {
             return sizeOfResult;
+        }
+        int invalidMoves = invalidMovesComparator.compare(o1, o2);
+        if (invalidMoves != 0) {
+            return invalidMoves;
         }
         int movesCompare = movesComparator.compare(o1, o2);
         if (movesCompare != 0) {
