@@ -38,6 +38,10 @@
 </body>
 </html>
 
+#macro( solutionHref $solutionId $msg)
+<a href="/solution/$solutionId">$msg</a>
+#end
+
 #macro( authorHref $authorId $msg)
 <a href="/author/$authorId">$msg</a>
 #end
