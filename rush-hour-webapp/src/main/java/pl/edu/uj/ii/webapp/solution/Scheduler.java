@@ -12,7 +12,6 @@ import pl.edu.uj.ii.webapp.execute.tasks.TaskFactory;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
@@ -21,8 +20,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static java.util.Collections.emptyList;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static java.util.Collections.singletonList;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
 /**
@@ -68,12 +66,13 @@ public class Scheduler extends Thread {
                 .withAuthor(task.getAuthor());
         resultDao.save(newResult);
         String solutionId = task.getSolutionId();
-        List<Future<TestResult>> futures = rushHourExecutor.runAllTestCases(task);
+        Map<String, Future<TestResult>> futures = rushHourExecutor.runAllTestCases(task);
         if (futures.isEmpty()) {
             return;
         }
-        for (Future<TestResult> future : futures) {
-            TestResult testResult = new TestResult(EMPTY, 0, emptyList());
+        for (Map.Entry<String, Future<TestResult>> testCaseIdWithFeature : futures.entrySet()) {
+            Future<TestResult> future = testCaseIdWithFeature.getValue();
+            TestResult testResult = new TestResult(testCaseIdWithFeature.getKey(), TimeUnit.SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec()), singletonList(-1));
             try {
                 testResult = future.get(CONFIG.getExecutionTimeoutInSec(), TimeUnit.SECONDS);
             } catch (InterruptedException | ExecutionException e) {
