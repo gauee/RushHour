@@ -9,6 +9,7 @@ import pl.edu.uj.ii.webapp.execute.RushHourExecutor;
 import pl.edu.uj.ii.webapp.execute.SupportedLang;
 import pl.edu.uj.ii.webapp.execute.tasks.ExecutionTask;
 import pl.edu.uj.ii.webapp.execute.tasks.TaskFactory;
+import pl.edu.uj.ii.webapp.execute.test.TestCaseDetails;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
 
 import java.util.Date;
@@ -20,7 +21,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static java.util.Collections.singletonList;
+import static java.util.Collections.nCopies;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
 /**
@@ -66,13 +67,14 @@ public class Scheduler extends Thread {
                 .withAuthor(task.getAuthor());
         resultDao.save(newResult);
         String solutionId = task.getSolutionId();
-        Map<String, Future<TestResult>> futures = rushHourExecutor.runAllTestCases(task);
+        Map<TestCaseDetails, Future<TestResult>> futures = rushHourExecutor.runAllTestCases(task);
         if (futures.isEmpty()) {
             return;
         }
-        for (Map.Entry<String, Future<TestResult>> testCaseIdWithFeature : futures.entrySet()) {
+        for (Map.Entry<TestCaseDetails, Future<TestResult>> testCaseIdWithFeature : futures.entrySet()) {
             Future<TestResult> future = testCaseIdWithFeature.getValue();
-            TestResult testResult = new TestResult(testCaseIdWithFeature.getKey(), TimeUnit.SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec()), singletonList(-1));
+            TestCaseDetails testCaseDetails = testCaseIdWithFeature.getKey();
+            TestResult testResult = new TestResult(testCaseDetails.getId(), TimeUnit.SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec()), nCopies(testCaseDetails.getCasesAmount(), -1));
             try {
                 testResult = future.get(CONFIG.getExecutionTimeoutInSec(), TimeUnit.SECONDS);
             } catch (InterruptedException | ExecutionException e) {

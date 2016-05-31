@@ -12,6 +12,7 @@ import pl.edu.uj.ii.verify.MovesChecker;
 import pl.edu.uj.ii.webapp.execute.tasks.ExecutionTask;
 import pl.edu.uj.ii.webapp.execute.tasks.TaskFactory;
 import pl.edu.uj.ii.webapp.execute.test.TestCase;
+import pl.edu.uj.ii.webapp.execute.test.TestCaseDetails;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
 import pl.edu.uj.ii.webapp.solution.Task;
 
@@ -47,8 +48,8 @@ public class RushHourExecutor {
         this.taskFactory = taskFactory;
     }
 
-    public Map<String, Future<TestResult>> runAllTestCases(final Task solutionTask) {
-        Map<String, Future<TestResult>> testCaseIdWithFeature = Maps.newHashMap();
+    public Map<TestCaseDetails, Future<TestResult>> runAllTestCases(final Task solutionTask) {
+        Map<TestCaseDetails, Future<TestResult>> testCaseIdWithFeature = Maps.newHashMap();
         try {
             List<TestCase> testCases = loadTestCases();
             ExecutionTask executionTask = this.taskFactory.createTask(solutionTask);
@@ -59,7 +60,7 @@ public class RushHourExecutor {
             LOGGER.info(String.format("Running %d tests", testCases.size()));
             for (TestCase testCase : testCases) {
                 Future<TestResult> testResultFuture = retrieveTestCaseOutputs(executionTask, testCase);
-                testCaseIdWithFeature.put(testCase.getId(), testResultFuture);
+                testCaseIdWithFeature.put(new TestCaseDetails(testCase.getId(), testCases.size()), testResultFuture);
             }
             return testCaseIdWithFeature;
         } catch (ClassNotFoundException | IOException e) {
