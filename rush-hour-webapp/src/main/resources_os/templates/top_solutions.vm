@@ -24,7 +24,7 @@
                 #authorHref($bestResult.getResult().getAuthor() $bestResult.getResult().getAuthor())
             </td>
             <td>
-                #solutionHreaf($bestResult.getResult().getId() $bestResult.getMoves())
+                #solutionHref($bestResult.getResult().getId() $bestResult.getMoves())
             </td>
             <td>#printDuration($bestResult.getDuration())</td>
             <td>#printDate($bestResult.getResult().getCreationDate())</td>

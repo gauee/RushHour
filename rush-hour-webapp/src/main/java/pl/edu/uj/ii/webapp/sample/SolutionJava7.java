@@ -34,6 +34,11 @@ public class SolutionJava7 {
         }
         for (String step : FIRST_TEST_CASE) {
             System.out.println(step);
+            try {
+                Thread.sleep((long) (Math.random() * 1000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
