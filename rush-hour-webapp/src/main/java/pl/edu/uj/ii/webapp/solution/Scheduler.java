@@ -13,15 +13,16 @@ import pl.edu.uj.ii.webapp.execute.test.TestCaseDetails;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static java.util.Collections.nCopies;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
 /**
@@ -67,21 +68,21 @@ public class Scheduler extends Thread {
                 .withAuthor(task.getAuthor());
         resultDao.save(newResult);
         String solutionId = task.getSolutionId();
-        Map<TestCaseDetails, Future<TestResult>> futures = rushHourExecutor.runAllTestCases(task);
-        if (futures.isEmpty()) {
+        List<TestCaseDetails> testCaseDetailses = rushHourExecutor.runAllTestCases(task);
+        if (testCaseDetailses.isEmpty()) {
             return;
         }
-        for (Map.Entry<TestCaseDetails, Future<TestResult>> testCaseIdWithFeature : futures.entrySet()) {
-            Future<TestResult> future = testCaseIdWithFeature.getValue();
-            TestCaseDetails testCaseDetails = testCaseIdWithFeature.getKey();
-            TestResult testResult = new TestResult(testCaseDetails.getId(), TimeUnit.SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec()), nCopies(testCaseDetails.getCasesAmount(), -1));
+        for (TestCaseDetails testCaseDetails : testCaseDetailses) {
+            TestResult testResult = new TestResult(
+                    testCaseDetails.getId(),
+                    SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec()), nCopies(testCaseDetails.getCasesAmount(), -1));
             try {
-                testResult = future.get(CONFIG.getExecutionTimeoutInSec(), TimeUnit.SECONDS);
+                testResult = testCaseDetails.getResultFuture().get(CONFIG.getExecutionTimeoutInSec(), SECONDS);
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Exception occurred during execution solution " + solutionId, e);
             } catch (TimeoutException e) {
                 LOGGER.warn("Executing process for solution " + solutionId + " timed out");
-                future.cancel(true);
+                testCaseDetails.getResultFuture().cancel(true);
             }
             resultDao.save(new ResultDetail()
                     .withResultId(newResult.getId())
@@ -90,7 +91,6 @@ public class Scheduler extends Thread {
                     .withMoves(testResult.getStepsOfAllTestCases()));
         }
     }
-
 
     private Map<SupportedLang, ExecutionTask> initLanguages() {
         ImmutableMap.Builder<SupportedLang, ExecutionTask> mapBuilder = ImmutableMap.<SupportedLang, ExecutionTask>builder();
