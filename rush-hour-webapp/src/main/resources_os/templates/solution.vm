@@ -1,0 +1,62 @@
+#* @vtlvariable name="totalResult" type="pl.edu.uj.ii.webapp.ui.TotalResult" *#
+#* @vtlvariable name="timeDuration" type="org.apache.commons.lang3.time.DurationFormatUtils" *#
+#* @vtlvariable name="stepsCounter" type="pl.edu.uj.ii.webapp.ui.TotalStepCounter" *#
+
+<h2>Solution</h2>
+<table class="no-border" style="text-align: left;">
+    <tr>
+        <td class="no-border">
+            <a href="/">Upload new solution</a>
+        </td>
+    </tr>
+    <tr>
+        <td class="no-border">
+            #authorHref($totalResult.getResult().getAuthor() "Check other solutions of author $totalResult.getResult().getAuthor()")
+        </td>
+    </tr>
+
+</table>
+
+#if($!totalResult)
+<table style="width:100%">
+    <tr>
+        <th>Total moves</th>
+        <th>Total duration</th>
+        <th>Submission time</th>
+        <th>Language</th>
+    </tr>
+    <tr>
+        <td>$totalResult.getMoves()</td>
+        <td>#printDuration($totalResult.getDuration())</td>
+        <td>#printDate($totalResult.getResult().getCreationDate())</td>
+        <td>$totalResult.getResult().getLang()</td>
+    </tr>
+</table>
+<br/>
+<table style="width:100%">
+<tr>
+    <th>TestCase id</th>
+    <th>TestCase duration</th>
+    <th>Total moves</th>
+    <th>TestCase moves</th>
+    #foreach($resultDetail in $totalResult.getResult().getDetails())
+        <tr>
+            <td>$resultDetail.getTestCaseId()</td>
+            <td>#printDuration($resultDetail.getDuration())</td>
+            <td>
+                $stepsCounter.countSteps($resultDetail.getMoves())
+            </td>
+            <td>
+                <table class="no-border" style="width: 100%">
+                    #foreach($move in $resultDetail.getMoves())
+                        <tr>
+                            <td class="no-border">$move</td>
+                        </tr>
+                    #end
+                </table>
+            </td>
+        </tr>
+    #end
+    </tr>
+</table>
+#end

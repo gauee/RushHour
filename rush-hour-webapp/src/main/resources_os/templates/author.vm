@@ -1,0 +1,34 @@
+#* @vtlvariable name="userResults" type="pl.edu.uj.ii.webapp.ui.UserResults" *#
+#* @vtlvariable name="result" type="pl.edu.uj.ii.webapp.db.Result" *#
+#* @vtlvariable name="timeDuration" type="org.apache.commons.lang3.time.DurationFormatUtils" *#
+
+<h2>Solution send by $userResults.getAuthor()</h2>
+
+<table>
+    <tr>
+        <th>Total moves</th>
+        <th>Total duration</th>
+        <th>Id</th>
+        <th>Langauge</th>
+        <th>Submission time</th>
+    </tr>
+    #foreach($totalResult in $userResults.getResults())
+        <tr>
+            <td>
+                $totalResult.getMoves()
+            </td>
+            <td>
+                #printDuration($totalResult.getDuration())
+            </td>
+            <td>
+                <a href="/solution/$totalResult.getResult().getId()">$totalResult.getResult().getId()</a>
+            </td>
+            <td>
+                $totalResult.getResult().getLang()
+            </td>
+            <td>
+                #printDate($totalResult.getResult().getCreationDate())
+            </td>
+        </tr>
+    #end
+</table>

@@ -3,14 +3,20 @@ package pl.edu.uj.ii.webapp;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.edu.uj.ii.webapp.db.Result;
+import pl.edu.uj.ii.webapp.db.ResultDao;
 import pl.edu.uj.ii.webapp.execute.SupportedLang;
 import pl.edu.uj.ii.webapp.execute.UploadFile;
 import pl.edu.uj.ii.webapp.solution.Scheduler;
-import pl.edu.uj.ii.webapp.solution.Source;
 import pl.edu.uj.ii.webapp.solution.Task;
+import pl.edu.uj.ii.webapp.ui.TopResults;
+import pl.edu.uj.ii.webapp.ui.TopResultsSource;
+import pl.edu.uj.ii.webapp.ui.TotalResult;
 import pl.edu.uj.ii.webapp.ui.TotalStepCounter;
+import pl.edu.uj.ii.webapp.ui.UserResults;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -23,8 +29,10 @@ import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 import static pl.edu.uj.ii.webapp.execute.SupportedLang.JAVA_8;
@@ -38,14 +46,15 @@ import static spark.Spark.post;
  */
 public class StartApp implements SparkApplication {
     public static final String PARAM_SUPPORTED_LANG = "supportedLang";
+    public static final String PARAM_AUTHOR = "author";
     public static final String PARAM_FILE_CONTENT = "fileContent";
     private static final Logger LOGGER = LoggerFactory.getLogger(StartApp.class);
     public static final String PARAM_SOLUTION_ID = "solutionId";
     private DurationFormatUtils timeDuration = new DurationFormatUtils();
     private final TotalStepCounter stepCounter = new TotalStepCounter();
+    private final ResultDao resultDao = new ResultDao();
+    private final TopResultsSource topResultsSource;
     private final Scheduler scheduler;
-    private final Source solutionSource;
-
 
     public static void main(String[] args) {
         try {
@@ -56,8 +65,8 @@ public class StartApp implements SparkApplication {
     }
 
     public StartApp() {
-        this.solutionSource = new Source();
-        this.scheduler = new Scheduler(solutionSource);
+        this.scheduler = new Scheduler(resultDao);
+        this.topResultsSource = new TopResultsSource(resultDao);
     }
 
     @Override
@@ -72,15 +81,20 @@ public class StartApp implements SparkApplication {
     private void initRoutes() {
         VelocityTemplateEngine templateEngine = new VelocityTemplateEngine();
         get("/", (req, res) -> uploadPageView(), templateEngine);
-        get("/:solutionId", (req, res) -> handleSubmission(req), templateEngine);
+        get("/solution/:solutionId", (req, res) -> handleSubmission(req), templateEngine);
+        get("/author/:authorId", (req, res) -> retrieveAuthorHistory(req), templateEngine);
         post("/submit", "multipart/form-data", (req, res) -> processNewSolution(req, res));
+    }
+
+    private ModelAndView retrieveAuthorHistory(Request req) {
+        String authorId = req.params("authorId");
+        List<Result> authorResults = resultDao.getAuthorResults(authorId);
+        return authorView(new UserResults(authorId, authorResults));
     }
 
     private ModelAndView handleSubmission(Request req) {
         String solutionId = req.params(PARAM_SOLUTION_ID);
-        ModelAndView modelAndView = uploadPageView();
-        appendToModel(modelAndView, "solutionId", solutionId);
-        return modelAndView;
+        return solutionView(new TotalResult(resultDao.get(solutionId)));
     }
 
     private ModelAndView processNewSolution(Request req, Response res) {
@@ -94,13 +108,15 @@ public class StartApp implements SparkApplication {
             LOGGER.error("Cannot retrieve output", e);
             return setMessage(modelAndView, "Cannot execute all testCases.");
         }
-        res.redirect("/" + task.getSolutionId());
+        res.redirect("/solution/" + task.getSolutionId());
         return modelAndView;
     }
 
     private Task createParam(Request req) {
         req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("./target"));
-        return new Task(retrieveSupportedLang(req), retrieveSourceCode(req));
+        return new Task(retrieveAuthor(req),
+                retrieveSupportedLang(req),
+                retrieveSourceCode(req));
     }
 
     private UploadFile retrieveSourceCode(Request req) {
@@ -131,13 +147,35 @@ public class StartApp implements SparkApplication {
         return idx >= 0 && idx < values.length ? values[idx] : JAVA_8;
     }
 
+    private String retrieveAuthor(Request req) {
+        return defaultIfEmpty(req.queryParams(PARAM_AUTHOR), "unknownAuthor");
+    }
+
     private ModelAndView uploadPageView() {
-        Map<String, Object> model = Maps.newHashMap();
+        Map<String, Object> model = createDefaultModel();
         model.put("supportedLang", SupportedLang.values());
-        model.put("timeDuration", timeDuration);
+        model.put("topResults", new TopResults(topResultsSource.getTopResults()));
+        return new ModelAndView(model, "templates/view_index.vm");
+    }
+
+    private ModelAndView authorView(UserResults userResults) {
+        Map<String, Object> model = createDefaultModel();
+        model.put("userResults", userResults);
+        return new ModelAndView(model, "templates/view_author.vm");
+    }
+
+    private ModelAndView solutionView(TotalResult totalResult) {
+        Map<String, Object> model = createDefaultModel();
         model.put("stepsCounter", stepCounter);
-        model.put("solutionSource", solutionSource);
-        return new ModelAndView(model, "templates/index.vm");
+        model.put("totalResult", totalResult);
+        return new ModelAndView(model, "templates/view_solution.vm");
+    }
+
+    private Map<String, Object> createDefaultModel() {
+        Map<String, Object> model = Maps.newHashMap();
+        model.put("timeDuration", timeDuration);
+        model.put("dateFormatter", FastDateFormat.class);
+        return model;
     }
 
     private ModelAndView setMessage(ModelAndView modelAndView, String message) {

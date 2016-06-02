@@ -1,0 +1,55 @@
+#* @vtlvariable name="totalResult" type="pl.edu.uj.ii.webapp.ui.TotalResult" *#
+#* @vtlvariable name="timeDuration" type="org.apache.commons.lang3.time.DurationFormatUtils" *#
+#* @vtlvariable name="dateFormatter" type="org.apache.commons.lang3.time.FastDateFormat" *#
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>RushHour Testerka</title>
+    <style>
+        a {
+            text-decoration: none;
+            color: #aaa;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: #000;
+        }
+
+        table {
+            text-align: center;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        .no-border {
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+<h1>Testerka rozwiazan problemu RushHour</h1>
+    #parse($content_block)
+</body>
+</html>
+
+#macro( solutionHref $solutionId $msg)
+<a href="/solution/$solutionId">$msg</a>
+#end
+
+#macro( authorHref $authorId $msg)
+<a href="/author/$authorId">$msg</a>
+#end
+
+#macro( printDuration $duration)
+    $timeDuration.formatDuration($duration,"mm:ss,SSS", false).replaceFirst(":"," min ").replaceFirst(",", " sec ") ms
+#end
+
+#macro( printDate $date)
+    $dateFormatter.getInstance("dd/MM/yyyy HH:mm:ss").format($date)
+#end

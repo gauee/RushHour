@@ -1,29 +1,9 @@
 #* @vtlvariable name="supportedLang" type="pl.edu.uj.ii.webapp.execute.SupportedLang[]" *#
-#* @vtlvariable name="testResults" type="java.util.List<pl.edu.uj.ii.webapp.execute.test.TestResult>" *#
-#* @vtlvariable name="timeDuration" type="org.apache.commons.lang3.time.DurationFormatUtils" *#
-#* @vtlvariable name="stepsCounter" type="pl.edu.uj.ii.webapp.ui.TotalStepCounter" *#
-#* @vtlvariable name="solutionSource" type="pl.edu.uj.ii.webapp.solution.Source" *#
-#* @vtlvariable name="solutionId" type="java.lang.String" *#
-
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>RushHour Testerka</title>
-    <style>
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-    </style>
-</head>
-
-<body>
-<h1>Welcome on RushHour!</h1>
-    #if($!message)
-    <p>
-        $message
-    </p>
-    #end
+#if($!message)
+<p>
+    $message
+</p>
+#end
 <p>
     <b>
         Rozwiazania w jezyku Java musza byc kompilowalne. Przyklad. Plik o nazwie "New Text Document" z zawartoscia class RushHour { ... }, nie jest
@@ -31,84 +11,38 @@
     </b>
 </p>
 <form action="/submit" method="post" enctype="multipart/form-data">
-##    <form action="/submit" method="post">
     <fieldset>
         <legend>Upload source code content</legend>
-
-        <div>
-            <label for="supportedLang">Select Language</label>
-            <select name="supportedLang">
-                #foreach ($lang in $supportedLang)
-                    <option value="$lang.ordinal()">$lang.getDescription()</option>
-                #end
-            </select>
-        </div>
-        <div>
-            <label for="filebutton">Upload file</label>
-
-            <div>
-                <input id="fileContent" name="fileContent" class="input-file" type="file">
-            </div>
-        </div>
-        <div class="form-group">
-            <input type="submit" value="Submit solution">
-        </div>
+        <table class="no-border" style="text-align: left;">
+            <tr>
+                <td class="no-border">Select Language</td>
+                <td class="no-border">
+                    <select name="supportedLang">
+                        #foreach ($lang in $supportedLang)
+                            <option value="$lang.ordinal()">$lang.getDescription()</option>
+                        #end
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="no-border">Upload file</td>
+                <td class="no-border">
+                    <input name="fileContent" class="input-file" type="file">
+                </td>
+            </tr>
+            <tr>
+                <td class="no-border">Author</td>
+                <td class="no-border">
+                    <input name="author" type="text">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="no-border">
+                    <input type="submit" value="Submit solution">
+                </td>
+            </tr>
+        </table>
     </fieldset>
 </form>
 
-    #if($!solutionId)
-        #set($errorMsg = $solutionSource.loadError($solutionId))
-        #if ($errorMsg)
-        <p>Some problem occured during uploading solution</p>
-
-        <p>$errorMsg</p>
-        #else
-        <p>$solutionSource.getExecutionStatus($solutionId)</p>
-            #foreach($solution in $solutionSource.load($solutionId))
-            <p>$solution.toString()</p>
-            #end
-        #end
-    #end
-
-    #if($!testResults)
-    <p>
-    <table style="width:100%">
-        <tr>
-            <th>Test case id</th>
-            <th>Test case duration</th>
-            <th>Total steps</th>
-            <th>Details</th>
-        </tr>
-        #foreach($testResult in $testResults)
-            <tr>
-                <td>
-                    $testResult.testCaseId
-                </td>
-                <td>
-                    $timeDuration.formatDuration($testResult.duration,"H:mm:ss") seconds
-                </td>
-                <td>
-                    $stepsCounter.countSteps($testResult.stepsOfAllTestCases)
-                </td>
-                <td>
-                    <table style="border: none">
-                        #foreach($amountOfSteps in $testResult.stepsOfAllTestCases)
-
-                            #if($amountOfSteps != -1)
-                                #set($colorValue = 'green')
-                            #else
-                                #set($colorValue = 'red')
-                            #end
-                            <tr>
-                                <td style="border: none; color: $colorValue; font-weight: bolder;">$amountOfSteps</td>
-                            </tr>
-                        #end
-                    </table>
-                </td>
-            </tr>
-        #end
-    </table>
-    </p>
-    #end
-</body>
-</html>
+#parse('templates/top_solutions.vm')

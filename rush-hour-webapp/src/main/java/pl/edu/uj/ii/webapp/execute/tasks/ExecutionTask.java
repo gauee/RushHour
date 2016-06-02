@@ -27,7 +27,7 @@ public abstract class ExecutionTask {
     protected Path sourceFile;
     protected String sourceCode;
     private final String solutionDir;
-    private String uniqSolutionDir;
+    private String uniqueSolutionDir;
 
     public ExecutionTask(String solutionDir) {
         this.solutionDir = solutionDir;
@@ -40,7 +40,7 @@ public abstract class ExecutionTask {
     abstract protected boolean preExecution();
 
     private void initSolutionDir() {
-        this.uniqSolutionDir = createSolutionDir(solutionDir);
+        this.uniqueSolutionDir = createSolutionDir(solutionDir);
     }
 
     public List<String> runWithInput(File inputFile) {
@@ -73,7 +73,7 @@ public abstract class ExecutionTask {
     public void processUpload(UploadFile uploadFile) throws IOException {
         initSolutionDir();
         this.baseFileName = uploadFile.getName().split("\\.")[0];
-        Path root = Paths.get(CONFIG.getUploadedFileDir(), getUniqSolutionDir());
+        Path root = Paths.get(CONFIG.getUploadedFileDir(), getUniqueSolutionDir());
         this.sourceFile = Paths.get(root.toString(), getTempFileName());
         Files.createDirectories(sourceFile.getParent());
         this.sourceCode = uploadFile.getData();
@@ -92,7 +92,7 @@ public abstract class ExecutionTask {
         return String.format("runtime/%s_%d/", dirType, System.currentTimeMillis());
     }
 
-    public String getUniqSolutionDir() {
-        return uniqSolutionDir;
+    public String getUniqueSolutionDir() {
+        return uniqueSolutionDir;
     }
 }

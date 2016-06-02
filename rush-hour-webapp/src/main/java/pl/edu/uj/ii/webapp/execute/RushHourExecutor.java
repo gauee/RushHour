@@ -1,6 +1,7 @@
 package pl.edu.uj.ii.webapp.execute;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import pl.edu.uj.ii.verify.MovesChecker;
 import pl.edu.uj.ii.webapp.execute.tasks.ExecutionTask;
 import pl.edu.uj.ii.webapp.execute.tasks.TaskFactory;
 import pl.edu.uj.ii.webapp.execute.test.TestCase;
+import pl.edu.uj.ii.webapp.execute.test.TestCaseDetails;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
 import pl.edu.uj.ii.webapp.solution.Task;
 
@@ -22,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,31 +48,38 @@ public class RushHourExecutor {
         this.taskFactory = taskFactory;
     }
 
-    public List<Future<TestResult>> runAllTestCases(final Task solutionTask) {
+    public Map<TestCaseDetails, Future<TestResult>> runAllTestCases(final Task solutionTask) {
+        Map<TestCaseDetails, Future<TestResult>> testCaseIdWithFeature = Maps.newHashMap();
         try {
             List<TestCase> testCases = loadTestCases();
             ExecutionTask executionTask = this.taskFactory.createTask(solutionTask);
             if (executionTask == null) {
                 LOGGER.warn("Cannot compile uploaded file.");
-                return emptyList();
+                return testCaseIdWithFeature;
             }
             LOGGER.info(String.format("Running %d tests", testCases.size()));
-            List<Future<TestResult>> results = testCases.stream()
-                    .map(testCase -> retrieveTestCaseOutputs(executionTask, testCase))
-                    .collect(Collectors.toList());
-            return results;
+            for (TestCase testCase : testCases) {
+                Future<TestResult> testResultFuture = retrieveTestCaseOutputs(executionTask, testCase);
+                testCaseIdWithFeature.put(new TestCaseDetails(testCase.getId(), testCases.size()), testResultFuture);
+            }
+            return testCaseIdWithFeature;
         } catch (ClassNotFoundException | IOException e) {
             LOGGER.warn("Cannot execute code " + solutionTask, e);
         }
-        return emptyList();
+        return testCaseIdWithFeature;
     }
 
     private Future<TestResult> retrieveTestCaseOutputs(ExecutionTask executionTask, TestCase testCase) {
         return taskExecutor.submit(() -> {
+            List<List<CarMove>> carMovesForAllBoards = emptyList();
             long duration = System.currentTimeMillis();
-            List<String> outputLines = executionTask.runWithInput(testCase.getFile());
+            try {
+                List<String> outputLines = executionTask.runWithInput(testCase.getFile());
+                carMovesForAllBoards = DataConverter.parseOutputLines(outputLines);
+            } catch (Exception e) {
+                LOGGER.error("Cannot retrieve result", e);
+            }
             duration = System.currentTimeMillis() - duration;
-            List<List<CarMove>> carMovesForAllBoards = DataConverter.parseOutputLines(outputLines);
             List<Integer> stepsForAllBoards = Lists.newLinkedList();
             for (Board board : testCase.getBoards()) {
                 List<CarMove> carMoves = carMovesForAllBoards.isEmpty() ? emptyList() : carMovesForAllBoards.remove(0);

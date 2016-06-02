@@ -72,4 +72,7 @@ public class AppConfig {
         return Integer.valueOf(appProperties.getProperty("solution.exec.timeout.seconds"));
     }
 
+    public String getDbLocation() {
+        return appProperties.getProperty("db.location");
+    }
 }
