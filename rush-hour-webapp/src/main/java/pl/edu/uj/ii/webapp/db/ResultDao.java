@@ -11,11 +11,13 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
 public class ResultDao {
     public static final String CREATE_RESULT = "insert into result values(?,?,?,?);";
-    public static final String CREATE_RESULT_DETAIL = "insert into result_detail values(?,?,?,?);";
+    public static final String CREATE_RESULT_DETAIL = "insert into result_detail values(?,?,?,?,?);";
+    public static final String UPDATE_RESULT_DETAIL = "update result_detail set msg=?, moves=?, duration=? where result_id=? and test_case_id=?;";
     public static final String SELECT_RESULTS = "select * from result;";
     public static final String SELECT_RESULT = "select * from result where id=?;";
     public static final String SELECT_AUTHOR_RESULTS = "select * from result where author=?;";
     public static final String SELECT_RESULT_DETAILS = "select * from result_detail where result_id=?;";
+
     public static final ResultRowMapper RESULT_MAPPER = new ResultRowMapper();
     public static final ResultDetailRowMapper RESULT_DETAIL_MAPPER = new ResultDetailRowMapper();
     private final DataSource dataSource;
@@ -36,6 +38,17 @@ public class ResultDao {
     public void save(ResultDetail resultDetail) {
         getJdbcTemplate()
                 .update(CREATE_RESULT_DETAIL, resultDetail.toObjects());
+    }
+
+    public void update(ResultDetail resultDetail) {
+        getJdbcTemplate()
+                .update(UPDATE_RESULT_DETAIL, new Object[]{
+                        resultDetail.getMsg(),
+                        resultDetail.getMoves(),
+                        resultDetail.getDuration(),
+                        resultDetail.getResultId(),
+                        resultDetail.getTestCaseId()
+                });
     }
 
     public Result get(String id) {

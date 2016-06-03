@@ -1,5 +1,7 @@
 package pl.edu.uj.ii.webapp.execute.test;
 
+import pl.edu.uj.ii.webapp.db.ResultDetail;
+
 import java.util.concurrent.Future;
 
 /**
@@ -9,6 +11,7 @@ public class TestCaseDetails {
     private final String id;
     private final int casesAmount;
     private final Future<TestResult> resultFuture;
+    private ResultDetail resultDetail;
 
     public TestCaseDetails(String id, int casesAmount, Future<TestResult> resultFuture) {
         this.id = id;
@@ -47,5 +50,13 @@ public class TestCaseDetails {
         result = 31 * result + casesAmount;
         result = 31 * result + (resultFuture != null ? resultFuture.hashCode() : 0);
         return result;
+    }
+
+    public void setResultDetail(ResultDetail resultDetail) {
+        this.resultDetail = resultDetail;
+    }
+
+    public ResultDetail getResultDetail() {
+        return resultDetail;
     }
 }

@@ -15,3 +15,5 @@ moves         integer   not null,
 duration      INTEGER   not null,
 FOREIGN Key(result_id) REFERENCES result(id)
 );
+
+alter table result_detail add column msg {char(128) default "executed"};

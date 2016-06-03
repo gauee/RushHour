@@ -30,6 +30,10 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
  */
 public class Scheduler extends Thread {
     private static final Logger LOGGER = Logger.getLogger(Scheduler.class);
+    public static final String EXECUTED = "executed";
+    public static final String PENDING = "pending";
+    public static final String TIMED_OUT = "timed out";
+    public static final String EXECUTION_ERROR = "execution error";
     private final ResultDao resultDao;
     private BlockingQueue<Task> tasks = new LinkedBlockingDeque<>(32);
     private final RushHourExecutor rushHourExecutor;
@@ -73,22 +77,35 @@ public class Scheduler extends Thread {
             return;
         }
         for (TestCaseDetails testCaseDetails : testCaseDetailses) {
-            TestResult testResult = new TestResult(
-                    testCaseDetails.getId(),
-                    SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec()), nCopies(testCaseDetails.getCasesAmount(), -1));
+            ResultDetail resultDetail = new ResultDetail()
+                    .withResultId(newResult.getId())
+                    .withTestCaseId(testCaseDetails.getId())
+                    .withDuration(0)
+                    .withMsg(PENDING)
+                    .withMoves(nCopies(testCaseDetails.getCasesAmount(), -1));
+            resultDao.save(resultDetail);
+            testCaseDetails.setResultDetail(resultDetail);
+
+        }
+        for (TestCaseDetails testCaseDetails : testCaseDetailses) {
             try {
-                testResult = testCaseDetails.getResultFuture().get(CONFIG.getExecutionTimeoutInSec(), SECONDS);
+                TestResult testResult = testCaseDetails.getResultFuture().get(CONFIG.getExecutionTimeoutInSec(), SECONDS);
+                testCaseDetails.getResultDetail()
+                        .withDuration(testResult.getDuration())
+                        .withMoves(testResult.getStepsOfAllTestCases())
+                        .withMsg(EXECUTED);
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Exception occurred during execution solution " + solutionId, e);
+                testCaseDetails.getResultDetail()
+                        .withMsg(EXECUTION_ERROR);
             } catch (TimeoutException e) {
                 LOGGER.warn("Executing process for solution " + solutionId + " timed out");
                 testCaseDetails.getResultFuture().cancel(true);
+                testCaseDetails.getResultDetail()
+                        .withMsg(TIMED_OUT)
+                        .withDuration(SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec()));
             }
-            resultDao.save(new ResultDetail()
-                    .withResultId(newResult.getId())
-                    .withTestCaseId(testResult.getTestCaseId())
-                    .withDuration(testResult.getDuration())
-                    .withMoves(testResult.getStepsOfAllTestCases()));
+            resultDao.update(testCaseDetails.getResultDetail());
         }
     }
 
