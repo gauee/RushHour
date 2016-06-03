@@ -1,5 +1,6 @@
 package pl.edu.uj.ii.webapp.db;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
@@ -8,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
+import static pl.edu.uj.ii.webapp.db.ResultDetail.MOVES_SEPARATOR;
 
 public class ResultDao {
     public static final String CREATE_RESULT = "insert into result values(?,?,?,?);";
@@ -44,7 +46,7 @@ public class ResultDao {
         getJdbcTemplate()
                 .update(UPDATE_RESULT_DETAIL, new Object[]{
                         resultDetail.getMsg(),
-                        resultDetail.getMoves(),
+                        StringUtils.join(resultDetail.getMoves(), MOVES_SEPARATOR),
                         resultDetail.getDuration(),
                         resultDetail.getResultId(),
                         resultDetail.getTestCaseId()
