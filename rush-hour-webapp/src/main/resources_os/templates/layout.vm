@@ -1,6 +1,7 @@
 #* @vtlvariable name="totalResult" type="pl.edu.uj.ii.webapp.ui.TotalResult" *#
 #* @vtlvariable name="timeDuration" type="org.apache.commons.lang3.time.DurationFormatUtils" *#
 #* @vtlvariable name="dateFormatter" type="org.apache.commons.lang3.time.FastDateFormat" *#
+#* @vtlvariable name="timeZone" type="java.util.TimeZone" *#
 
 <html>
 <head>
@@ -51,5 +52,5 @@
 #end
 
 #macro( printDate $date)
-    $dateFormatter.getInstance("dd/MM/yyyy HH:mm:ss").format($date)
+    $dateFormatter.getInstance("dd/MM/yyyy HH:mm:ss",$timeZone.getTimeZone("Europe/Warsaw")).format($date)
 #end
