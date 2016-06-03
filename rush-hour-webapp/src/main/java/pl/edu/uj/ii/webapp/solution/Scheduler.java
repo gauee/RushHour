@@ -106,8 +106,8 @@ public class Scheduler extends Thread {
                         .withDuration(SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec()));
             }
             resultDao.update(testCaseDetails.getResultDetail());
-            LOGGER.info("All test cases executed.");
         }
+        LOGGER.info("All test cases executed.");
     }
 
     private Map<SupportedLang, ExecutionTask> initLanguages() {
