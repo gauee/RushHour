@@ -39,6 +39,7 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
  */
 public class RushHourExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(RushHourExecutor.class);
+    public static final int CASES_AMOUNT = 10;
     private final TaskFactory taskFactory;
     private ExecutorService taskExecutor = Executors.newFixedThreadPool(1);
     private final MovesChecker movesChecker = new MovesChecker();
@@ -60,7 +61,7 @@ public class RushHourExecutor {
             LOGGER.info(String.format("Running %d tests", testCases.size()));
             for (TestCase testCase : testCases) {
                 Future<TestResult> testResultFuture = retrieveTestCaseOutputs(executionTask, testCase);
-                testCaseDetailses.add(new TestCaseDetails(testCase.getId(), testCases.size(), testResultFuture));
+                testCaseDetailses.add(new TestCaseDetails(testCase.getId(), CASES_AMOUNT, testResultFuture));
             }
         } catch (ClassNotFoundException | IOException e) {
             LOGGER.warn("Cannot execute code " + solutionTask, e);
