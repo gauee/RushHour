@@ -36,12 +36,14 @@
 <table style="width:100%">
 <tr>
     <th>TestCase id</th>
+    <th>Status</th>
     <th>TestCase duration</th>
     <th>Total moves</th>
     <th>TestCase moves</th>
     #foreach($resultDetail in $totalResult.getResult().getDetails())
         <tr>
             <td>$resultDetail.getTestCaseId()</td>
+            <td>$resultDetail.getMsg()</td>
             <td>#printDuration($resultDetail.getDuration())</td>
             <td>
                 $stepsCounter.countSteps($resultDetail.getMoves())

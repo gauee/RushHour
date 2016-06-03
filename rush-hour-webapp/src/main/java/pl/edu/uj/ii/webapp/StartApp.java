@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
@@ -175,6 +176,7 @@ public class StartApp implements SparkApplication {
         Map<String, Object> model = Maps.newHashMap();
         model.put("timeDuration", timeDuration);
         model.put("dateFormatter", FastDateFormat.class);
+        model.put("timeZone", TimeZone.class);
         return model;
     }
 

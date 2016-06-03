@@ -13,6 +13,7 @@ public class ResultDetail {
     public static final String MOVES_SEPARATOR = ",";
     private String resultId;
     private String testCaseId;
+    private String msg;
     private List<Integer> moves;
     private long duration;
 
@@ -52,12 +53,22 @@ public class ResultDetail {
         return this;
     }
 
+    public String getMsg() {
+        return msg;
+    }
+
+    public ResultDetail withMsg(String msg) {
+        this.msg = msg;
+        return this;
+    }
+
     public Object[] toObjects() {
         return new Object[]{
                 resultId,
                 testCaseId,
                 StringUtils.join(moves, MOVES_SEPARATOR),
-                duration
+                duration,
+                msg
         };
     }
 

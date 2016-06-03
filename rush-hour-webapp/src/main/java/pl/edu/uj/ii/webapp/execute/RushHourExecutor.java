@@ -1,7 +1,6 @@
 package pl.edu.uj.ii.webapp.execute;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,15 +22,15 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
@@ -48,25 +47,25 @@ public class RushHourExecutor {
         this.taskFactory = taskFactory;
     }
 
-    public Map<TestCaseDetails, Future<TestResult>> runAllTestCases(final Task solutionTask) {
-        Map<TestCaseDetails, Future<TestResult>> testCaseIdWithFeature = Maps.newHashMap();
+    public List<TestCaseDetails> runAllTestCases(final Task solutionTask) {
+        List<TestCaseDetails> testCaseDetailses = Lists.newLinkedList();
         try {
             List<TestCase> testCases = loadTestCases();
+            Collections.sort(testCases, (o1, o2) -> o1.getId().compareTo(o2.getId()));
             ExecutionTask executionTask = this.taskFactory.createTask(solutionTask);
             if (executionTask == null) {
                 LOGGER.warn("Cannot compile uploaded file.");
-                return testCaseIdWithFeature;
+                return testCaseDetailses;
             }
             LOGGER.info(String.format("Running %d tests", testCases.size()));
             for (TestCase testCase : testCases) {
                 Future<TestResult> testResultFuture = retrieveTestCaseOutputs(executionTask, testCase);
-                testCaseIdWithFeature.put(new TestCaseDetails(testCase.getId(), testCases.size()), testResultFuture);
+                testCaseDetailses.add(new TestCaseDetails(testCase.getId(), testCases.size(), testResultFuture));
             }
-            return testCaseIdWithFeature;
         } catch (ClassNotFoundException | IOException e) {
             LOGGER.warn("Cannot execute code " + solutionTask, e);
         }
-        return testCaseIdWithFeature;
+        return testCaseDetailses;
     }
 
     private Future<TestResult> retrieveTestCaseOutputs(ExecutionTask executionTask, TestCase testCase) {
@@ -99,7 +98,7 @@ public class RushHourExecutor {
             return Files.list(Paths.get(getClass().getClassLoader().getResource(CONFIG.getTestCasesDir()).toURI()))
                     .map(this::convertToTestCase)
                     .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+                    .collect(toList());
         } catch (IOException | URISyntaxException e) {
             LOGGER.warn("Cannot load test cases from " + CONFIG.getTestCasesDir());
         }

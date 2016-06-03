@@ -13,15 +13,16 @@ import pl.edu.uj.ii.webapp.execute.test.TestCaseDetails;
 import pl.edu.uj.ii.webapp.execute.test.TestResult;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static java.util.Collections.nCopies;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
 /**
@@ -29,6 +30,10 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
  */
 public class Scheduler extends Thread {
     private static final Logger LOGGER = Logger.getLogger(Scheduler.class);
+    public static final String EXECUTED = "executed";
+    public static final String PENDING = "pending";
+    public static final String TIMED_OUT = "timed out";
+    public static final String EXECUTION_ERROR = "execution error";
     private final ResultDao resultDao;
     private BlockingQueue<Task> tasks = new LinkedBlockingDeque<>(32);
     private final RushHourExecutor rushHourExecutor;
@@ -67,30 +72,42 @@ public class Scheduler extends Thread {
                 .withAuthor(task.getAuthor());
         resultDao.save(newResult);
         String solutionId = task.getSolutionId();
-        Map<TestCaseDetails, Future<TestResult>> futures = rushHourExecutor.runAllTestCases(task);
-        if (futures.isEmpty()) {
+        List<TestCaseDetails> testCaseDetailses = rushHourExecutor.runAllTestCases(task);
+        if (testCaseDetailses.isEmpty()) {
             return;
         }
-        for (Map.Entry<TestCaseDetails, Future<TestResult>> testCaseIdWithFeature : futures.entrySet()) {
-            Future<TestResult> future = testCaseIdWithFeature.getValue();
-            TestCaseDetails testCaseDetails = testCaseIdWithFeature.getKey();
-            TestResult testResult = new TestResult(testCaseDetails.getId(), TimeUnit.SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec()), nCopies(testCaseDetails.getCasesAmount(), -1));
+        for (TestCaseDetails testCaseDetails : testCaseDetailses) {
+            ResultDetail resultDetail = new ResultDetail()
+                    .withResultId(newResult.getId())
+                    .withTestCaseId(testCaseDetails.getId())
+                    .withDuration(0)
+                    .withMsg(PENDING)
+                    .withMoves(nCopies(testCaseDetails.getCasesAmount(), -1));
+            resultDao.save(resultDetail);
+            testCaseDetails.setResultDetail(resultDetail);
+
+        }
+        for (TestCaseDetails testCaseDetails : testCaseDetailses) {
             try {
-                testResult = future.get(CONFIG.getExecutionTimeoutInSec(), TimeUnit.SECONDS);
+                TestResult testResult = testCaseDetails.getResultFuture().get(CONFIG.getExecutionTimeoutInSec(), SECONDS);
+                testCaseDetails.getResultDetail()
+                        .withDuration(testResult.getDuration())
+                        .withMoves(testResult.getStepsOfAllTestCases())
+                        .withMsg(EXECUTED);
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Exception occurred during execution solution " + solutionId, e);
+                testCaseDetails.getResultDetail()
+                        .withMsg(EXECUTION_ERROR);
             } catch (TimeoutException e) {
                 LOGGER.warn("Executing process for solution " + solutionId + " timed out");
-                future.cancel(true);
+                testCaseDetails.getResultFuture().cancel(true);
+                testCaseDetails.getResultDetail()
+                        .withMsg(TIMED_OUT)
+                        .withDuration(SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec()));
             }
-            resultDao.save(new ResultDetail()
-                    .withResultId(newResult.getId())
-                    .withTestCaseId(testResult.getTestCaseId())
-                    .withDuration(testResult.getDuration())
-                    .withMoves(testResult.getStepsOfAllTestCases()));
+            resultDao.update(testCaseDetails.getResultDetail());
         }
     }
-
 
     private Map<SupportedLang, ExecutionTask> initLanguages() {
         ImmutableMap.Builder<SupportedLang, ExecutionTask> mapBuilder = ImmutableMap.<SupportedLang, ExecutionTask>builder();

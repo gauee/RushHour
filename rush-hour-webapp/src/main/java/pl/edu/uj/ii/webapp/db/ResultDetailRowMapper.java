@@ -27,6 +27,7 @@ public class ResultDetailRowMapper implements RowMapper<ResultDetail> {
                 .withResultId(resultSet.getString("result_id"))
                 .withTestCaseId(resultSet.getString("test_case_id"))
                 .withMoves(moves)
-                .withDuration(resultSet.getLong("duration"));
+                .withDuration(resultSet.getLong("duration"))
+                .withMsg(resultSet.getString("msg"));
     }
 }
