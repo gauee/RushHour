@@ -5,6 +5,8 @@ import pl.edu.uj.ii.webapp.ui.TotalResult;
 
 import java.util.Comparator;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 /**
  * Created by gauee on 5/29/16.
  */
@@ -17,7 +19,13 @@ public class ResultComparator implements Comparator<TotalResult> {
             .flatMap(resultDetail -> resultDetail.getMoves().stream())
             .filter(moves -> moves < 1)
             .count();
-    private final LangPriority langPriority = totalResult -> SupportedLang.valueOf(totalResult.getResult().getLang()).ordinal();
+    private final LangPriority langPriority = totalResult -> {
+        String lang = totalResult.getResult().getLang();
+        if (isEmpty(lang)) {
+            return Integer.MAX_VALUE;
+        }
+        return SupportedLang.valueOf(lang).ordinal();
+    };
 
     @Override
     public int compare(TotalResult firstTotalResult, TotalResult secondTotalResult) {
@@ -25,10 +33,6 @@ public class ResultComparator implements Comparator<TotalResult> {
                 .compare(firstTotalResult, secondTotalResult);
         if (langOrder != 0) {
             return langOrder;
-        }
-        int sizeOfResult = firstTotalResult.getResult().getDetails().size() - secondTotalResult.getResult().getDetails().size();
-        if (sizeOfResult != 0) {
-            return -sizeOfResult;
         }
         int testCaseAmount = ((Comparator<TotalResult>) (o1, o2) -> (int) (correctAnswersCount.count(o1) - correctAnswersCount.count(o2)))
                 .compare(firstTotalResult, secondTotalResult);

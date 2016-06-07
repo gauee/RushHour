@@ -24,27 +24,6 @@ public class ResultComparatorTest {
     private ResultComparator comparator = new ResultComparator();
 
     @Test
-    public void returnPositiveWheWinner_hasGreaterRanWithMoreTestCases() {
-        Result firstResult = new Result()
-                .withAuthor("looser")
-                .withDetails(asList(new ResultDetail()));
-        Result secondResult = new Result()
-                .withAuthor("winner")
-                .withDetails(asList(new ResultDetail(), new ResultDetail()));
-
-        TotalResult looser = new TotalResult(firstResult);
-        TotalResult winner = new TotalResult(secondResult);
-        assertThat(comparator.compare(looser, winner), is(greaterThan(0)));
-
-        ArrayList<TotalResult> totalResults = new ArrayList<>(asList(looser, winner));
-        Collections.sort(totalResults, comparator);
-        for (TotalResult totalResult : totalResults) {
-            System.out.println(totalResult.getResult().getAuthor());
-        }
-        assertThat(totalResults.get(0).getResult().getAuthor(), is(equalTo("winner")));
-    }
-
-    @Test
     public void returnPositiveValueWhenWinner_hasMoreCorrectAnswers() {
         Result firstResult = new Result()
                 .withAuthor("looser")
