@@ -1,0 +1,11 @@
+#* @vtlvariable name="authors" type="java.util.List<java.lang.String> *#
+<h2>Authors</h2>
+<table class="no-border" style="text-align: left;">
+    #foreach($author in $authors)
+        <tr>
+            <td class="no-border">
+                #authorHref($author $author)
+            </td>
+        </tr>
+    #end
+</table>

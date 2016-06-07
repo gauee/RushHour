@@ -83,8 +83,13 @@ public class StartApp implements SparkApplication {
         VelocityTemplateEngine templateEngine = new VelocityTemplateEngine();
         get("/", (req, res) -> uploadPageView(), templateEngine);
         get("/solution/:solutionId", (req, res) -> handleSubmission(req), templateEngine);
+        get("/authors", (req, res) -> retrieveAuthors(), templateEngine);
         get("/author/:authorId", (req, res) -> retrieveAuthorHistory(req), templateEngine);
         post("/submit", "multipart/form-data", (req, res) -> processNewSolution(req, res));
+    }
+
+    private ModelAndView retrieveAuthors() {
+        return authorsView(resultDao.getAuthors());
     }
 
     private ModelAndView retrieveAuthorHistory(Request req) {
@@ -157,6 +162,12 @@ public class StartApp implements SparkApplication {
         model.put("supportedLang", SupportedLang.values());
         model.put("topResults", new TopResults(topResultsSource.getTopResults()));
         return new ModelAndView(model, "templates/view_index.vm");
+    }
+
+    private ModelAndView authorsView(List<String> authors) {
+        Map<String, Object> model = createDefaultModel();
+        model.put("authors", authors);
+        return new ModelAndView(model, "templates/view_authors.vm");
     }
 
     private ModelAndView authorView(UserResults userResults) {

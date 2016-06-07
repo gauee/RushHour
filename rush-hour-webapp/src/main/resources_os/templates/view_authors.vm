@@ -1,0 +1,2 @@
+#set($content_block='templates/authors.vm')
+#parse('templates/layout.vm')

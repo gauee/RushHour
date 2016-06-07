@@ -18,11 +18,13 @@ public class ResultDao {
     public static final String UPDATE_RESULT_DETAIL = "update result_detail set msg=?, moves=?, duration=? where result_id=? and test_case_id=?;";
     public static final String SELECT_RESULTS = "select * from result;";
     public static final String SELECT_RESULT = "select * from result where id=?;";
+    public static final String SELECT_AUTHORS = "select distinct(author) from result;";
     public static final String SELECT_AUTHOR_RESULTS = "select * from result where author=?;";
     public static final String SELECT_RESULT_DETAILS = "select * from result_detail where result_id=?;";
 
     public static final ResultRowMapper RESULT_MAPPER = new ResultRowMapper();
     public static final ResultDetailRowMapper RESULT_DETAIL_MAPPER = new ResultDetailRowMapper();
+    public static final AuthorRowMapper AUTHOR_ROW_MAPPER = new AuthorRowMapper();
     private final DataSource dataSource;
 
     public ResultDao() {
@@ -76,6 +78,11 @@ public class ResultDao {
             result.withDetails(getResultDetails(jdbcTemplate, result.getId()));
         }
         return results;
+    }
+
+    public List<String> getAuthors() {
+        return getJdbcTemplate()
+                .query(SELECT_AUTHORS, AUTHOR_ROW_MAPPER);
     }
 
     private List<ResultDetail> getResultDetails(JdbcTemplate jdbcTemplate, String id) {
