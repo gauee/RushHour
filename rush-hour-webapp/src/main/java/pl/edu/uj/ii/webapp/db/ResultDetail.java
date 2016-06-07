@@ -2,6 +2,7 @@ package pl.edu.uj.ii.webapp.db;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class ResultDetail {
     private String resultId;
     private String testCaseId;
     private String msg;
-    private List<Integer> moves;
+    private List<Integer> moves = Lists.newArrayList();
     private long duration;
 
     public String getResultId() {
