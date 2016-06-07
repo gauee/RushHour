@@ -33,7 +33,11 @@ public class JavaTask extends CompilableTask {
     }
 
     private String changePackageInsideSolution(String filePackage) {
-        return this.sourceCode.replaceFirst("package\\s+.*?;", String.format("package %s;", filePackage));
+        String packageName = "package " + filePackage + ";";
+        if (!sourceCode.contains("package")) {
+            sourceCode = packageName + "\n" + sourceCode;
+        }
+        return this.sourceCode.replaceFirst("package\\s+.*?;", packageName);
     }
 
     @Override
