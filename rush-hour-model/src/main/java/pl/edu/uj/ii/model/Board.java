@@ -47,6 +47,7 @@ public class Board {
 
     public boolean add(Car car) {
         if (!canCarBeAdd(car)) {
+            LOGGER.info("Did not add " + car);
             return false;
         }
         CarId carId = car.getId();
@@ -62,7 +63,12 @@ public class Board {
         for (int i = 0; i < car.getLength(); i++) {
             int xPosition = startPoint.x + i * xDirection;
             int yPosition = startPoint.y + i * yDirection;
-            if (isPositionNotReachable(xPosition, yPosition) || carsOnBoard[xPosition][yPosition] != EMPTY_POSITION) {
+            if (isPositionNotReachable(xPosition, yPosition)) {
+                LOGGER.warn("Position is unreachable by this " + car);
+                return false;
+            }
+            if (carsOnBoard[xPosition][yPosition] != EMPTY_POSITION) {
+                LOGGER.warn("Board is occupied by different car " + carsOnBoard[xPosition][yPosition]);
                 return false;
             }
         }
