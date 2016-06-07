@@ -10,6 +10,10 @@
         poprawnym plikiem.
     </b>
 </p>
+<p>
+    Wszystkie zestawy przypadkow testowych sa dostepne pod adressem:<br/>
+    <a href="https://github.com/gauee/RushHour/tree/master/rush-hour-webapp/src/main/resources_os/testCases">https://github.com/gauee/RushHour/tree/master/rush-hour-webapp/src/main/resources_os/testCases</a>
+</p>
 <form action="/submit" method="post" enctype="multipart/form-data">
     <fieldset>
         <legend>Upload source code content</legend>

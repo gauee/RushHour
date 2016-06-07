@@ -33,6 +33,11 @@
     </tr>
 </table>
 <br/>
+    #if($totalResult.getResult().getDetails().isEmpty())
+    <p>
+        $totalResult.getResult().getMsg()
+    </p>
+    #end
 <table style="width:100%">
 <tr>
     <th>TestCase id</th>
