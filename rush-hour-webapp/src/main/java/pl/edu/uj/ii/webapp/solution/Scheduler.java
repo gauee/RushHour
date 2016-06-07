@@ -98,7 +98,7 @@ public class Scheduler extends Thread {
                 testCaseDetails.getResultDetail()
                         .withDuration(testResult.getDuration())
                         .withMoves(testResult.getStepsOfAllTestCases())
-                        .withMsg(EXECUTED);
+                        .withMsg(testResult.getExecutionMessage().isEmpty() ? EXECUTED : testResult.getExecutionMessage().substring(0, 128));
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Exception occurred during execution solution " + solutionId, e);
                 testCaseDetails.getResultDetail()

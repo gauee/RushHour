@@ -11,11 +11,13 @@ public class TestResult {
     private final String testCaseId;
     private final long duration;
     private final List<Integer> stepsOfAllTestCases;
+    private final String executionMessage;
 
-    public TestResult(String testCaseId, long duration, List<Integer> stepsOfAllTestCases) {
+    public TestResult(String testCaseId, long duration, List<Integer> stepsOfAllTestCases, String executionMessage) {
         this.testCaseId = testCaseId;
         this.duration = duration;
         this.stepsOfAllTestCases = stepsOfAllTestCases;
+        this.executionMessage = executionMessage;
     }
 
     public String getTestCaseId() {
@@ -28,6 +30,10 @@ public class TestResult {
 
     public long getDuration() {
         return duration;
+    }
+
+    public String getExecutionMessage() {
+        return executionMessage;
     }
 
     @Override

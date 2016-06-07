@@ -32,6 +32,8 @@ import java.util.concurrent.Future;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.join;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
 /**
@@ -73,9 +75,14 @@ public class RushHourExecutor {
         return taskExecutor.submit(() -> {
             List<List<CarMove>> carMovesForAllBoards = emptyList();
             long duration = System.currentTimeMillis();
+            String parseOutputMsg = EMPTY;
             try {
                 List<String> outputLines = executionTask.runWithInput(testCase.getFile());
-                carMovesForAllBoards = DataConverter.parseOutputLines(outputLines);
+                try {
+                    carMovesForAllBoards = DataConverter.parseOutputLines(outputLines);
+                } catch (NumberFormatException e) {
+                    parseOutputMsg = "Cannot parse output: " + join(outputLines, "");
+                }
             } catch (Exception e) {
                 LOGGER.error("Cannot retrieve result", e);
             }
@@ -89,8 +96,8 @@ public class RushHourExecutor {
             return new TestResult(
                     testCase.getId(),
                     duration,
-                    stepsForAllBoards
-            );
+                    stepsForAllBoards,
+                    parseOutputMsg);
         });
     }
 
