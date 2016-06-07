@@ -17,6 +17,7 @@ public class ResultRowMapper implements RowMapper<Result> {
                 .withId(resultSet.getString("id"))
                 .withAuthor(resultSet.getString("author"))
                 .withLang(resultSet.getString("lang"))
+                .withMsg(resultSet.getString("msg"))
                 .withCreationDate(new Date(resultSet.getLong("creation")));
     }
 }

@@ -16,6 +16,7 @@ public class Result {
     private String author;
     private String lang;
     private Date creationDate;
+    private String msg;
     private List<ResultDetail> details = emptyList();
 
     public String getId() {
@@ -63,6 +64,15 @@ public class Result {
         return details;
     }
 
+    public String getMsg() {
+        return msg;
+    }
+
+    public Result withMsg(String msg) {
+        this.msg = msg;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,7 +95,8 @@ public class Result {
                 id,
                 author,
                 lang,
-                creationDate
+                creationDate,
+                msg
         };
     }
 
@@ -97,6 +108,7 @@ public class Result {
                 .add("lang", lang)
                 .add("creationDate", creationDate)
                 .add("details", details)
+                .add("msg", msg)
                 .toString();
     }
 }

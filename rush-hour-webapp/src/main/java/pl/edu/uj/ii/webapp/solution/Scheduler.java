@@ -58,6 +58,13 @@ public class Scheduler extends Thread {
 
     public void addTask(Task task) {
         tasks.add(task);
+        Result newResult = new Result()
+                .withMsg("Your solution is waiting in queue to execute.")
+                .withId(task.getSolutionId())
+                .withLang(task.getSupportedLang().toString())
+                .withCreationDate(new Date())
+                .withAuthor(task.getAuthor());
+        resultDao.save(newResult);
     }
 
     private void processTask(Task task) {
@@ -65,12 +72,10 @@ public class Scheduler extends Thread {
             LOGGER.info("No new task in queue.");
             return;
         }
-        Result newResult = new Result()
+        Result result = new Result()
                 .withId(task.getSolutionId())
-                .withLang(task.getSupportedLang().toString())
-                .withCreationDate(new Date())
-                .withAuthor(task.getAuthor());
-        resultDao.save(newResult);
+                .withMsg("");
+        resultDao.update(result);
         String solutionId = task.getSolutionId();
         List<TestCaseDetails> testCaseDetailses = rushHourExecutor.runAllTestCases(task);
         if (testCaseDetailses.isEmpty()) {
@@ -78,7 +83,7 @@ public class Scheduler extends Thread {
         }
         for (TestCaseDetails testCaseDetails : testCaseDetailses) {
             ResultDetail resultDetail = new ResultDetail()
-                    .withResultId(newResult.getId())
+                    .withResultId(result.getId())
                     .withTestCaseId(testCaseDetails.getId())
                     .withDuration(0)
                     .withMsg(PENDING)

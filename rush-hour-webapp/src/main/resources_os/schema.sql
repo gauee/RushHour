@@ -17,3 +17,4 @@ FOREIGN Key(result_id) REFERENCES result(id)
 );
 
 alter table result_detail add column msg {char(128) default "executed"};
+alter table result add column msg {char(128) default ""};

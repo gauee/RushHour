@@ -12,8 +12,9 @@ import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 import static pl.edu.uj.ii.webapp.db.ResultDetail.MOVES_SEPARATOR;
 
 public class ResultDao {
-    public static final String CREATE_RESULT = "insert into result values(?,?,?,?);";
+    public static final String CREATE_RESULT = "insert into result values(?,?,?,?,?);";
     public static final String CREATE_RESULT_DETAIL = "insert into result_detail values(?,?,?,?,?);";
+    public static final String UPDATE_RESULT = "update result set msg=? where id=?";
     public static final String UPDATE_RESULT_DETAIL = "update result_detail set msg=?, moves=?, duration=? where result_id=? and test_case_id=?;";
     public static final String SELECT_RESULTS = "select * from result;";
     public static final String SELECT_RESULT = "select * from result where id=?;";
@@ -50,6 +51,14 @@ public class ResultDao {
                         resultDetail.getDuration(),
                         resultDetail.getResultId(),
                         resultDetail.getTestCaseId()
+                });
+    }
+
+    public void update(Result result) {
+        getJdbcTemplate()
+                .update(UPDATE_RESULT, new Object[]{
+                        result.getMsg(),
+                        result.getId()
                 });
     }
 
