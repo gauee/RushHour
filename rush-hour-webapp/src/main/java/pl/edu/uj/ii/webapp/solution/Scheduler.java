@@ -107,7 +107,7 @@ public class Scheduler extends Thread {
             }
             resultDao.update(testCaseDetails.getResultDetail());
         }
-        LOGGER.info("All test cases executed.");
+        LOGGER.info("All test cases executed for " + task.getSolutionId());
     }
 
     private Map<SupportedLang, ExecutionTask> initLanguages() {
