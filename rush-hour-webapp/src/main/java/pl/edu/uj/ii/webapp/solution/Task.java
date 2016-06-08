@@ -44,7 +44,6 @@ public class Task {
                 .add("author", author)
                 .add("solutionId", solutionId)
                 .add("supportedLang", supportedLang)
-                .add("uploadFile", uploadFile)
                 .toString();
     }
 
