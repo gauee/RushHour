@@ -15,6 +15,7 @@ public class ResultDetail {
     private String resultId;
     private String testCaseId;
     private String msg;
+    private List<Integer> carMoves = Lists.newArrayList();
     private List<Integer> moves = Lists.newArrayList();
     private long duration;
 
@@ -63,13 +64,23 @@ public class ResultDetail {
         return this;
     }
 
+    public List<Integer> getCarMoves() {
+        return carMoves;
+    }
+
+    public ResultDetail withCarMoves(List<Integer> carMoves) {
+        this.carMoves = carMoves;
+        return this;
+    }
+
     public Object[] toObjects() {
         return new Object[]{
                 resultId,
                 testCaseId,
                 StringUtils.join(moves, MOVES_SEPARATOR),
                 duration,
-                msg
+                msg,
+                StringUtils.join(carMoves, MOVES_SEPARATOR)
         };
     }
 
@@ -95,6 +106,7 @@ public class ResultDetail {
                 .add("resultId", resultId)
                 .add("testCaseId", testCaseId)
                 .add("moves", moves)
+                .add("carMoves", carMoves)
                 .add("duration", duration)
                 .toString();
     }
