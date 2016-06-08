@@ -19,9 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
-/**
- * Created by shybovycha on 22/04/16.
- */
 public abstract class ExecutionTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecutionTask.class);
     protected String baseFileName;
@@ -51,17 +48,11 @@ public abstract class ExecutionTask {
         List<String> lines = Lists.newLinkedList();
         try {
             LOGGER.info("Started process with input " + inputFile.getName());
-            Process start = processBuilder.start();
-            try {
-                start.waitFor(CONFIG.getExecutionTimeoutInSec() / 2, TimeUnit.SECONDS);
-                start.destroy();
-            } catch (InterruptedException e) {
-                LOGGER.info("Caught InterruptedException inside Executor");
-            }
-            LOGGER.info("Finished process");
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(start.getInputStream()));
+            Process process = processBuilder.start();
+            new ProcessAwaitThread(process).start();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
-            while ((line = bufferedReader.readLine()) != null) {
+            while (process.isAlive() && (line = bufferedReader.readLine()) != null) {
                 lines.add(line);
             }
             LOGGER.info("Read lines: " + lines);
@@ -103,5 +94,23 @@ public abstract class ExecutionTask {
 
     public String getUniqueSolutionDir() {
         return uniqueSolutionDir;
+    }
+
+    class ProcessAwaitThread extends Thread {
+        private final Process process;
+
+        public ProcessAwaitThread(Process process) {
+            this.process = process;
+        }
+
+        @Override
+        public void run() {
+            try {
+                process.waitFor(CONFIG.getExecutionTimeoutInSec(), TimeUnit.SECONDS);
+                process.destroy();
+            } catch (InterruptedException e) {
+                LOGGER.info("Caught InterruptedException inside Executor");
+            }
+        }
     }
 }
