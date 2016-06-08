@@ -97,11 +97,20 @@ public class Scheduler extends Thread {
             try {
                 LOGGER.info("Waiting for solution of testCase " + testCaseDetails.getResultDetail().getTestCaseId());
                 TestResult testResult = testCaseDetails.getResultFuture().get(CONFIG.getExecutionTimeoutInSec() + 10, SECONDS);
+                String msg = testResult.getExecutionMessage().isEmpty()
+                        ?
+                        testResult.getDuration() > SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec())
+                                ?
+                                TIMED_OUT
+                                :
+                                EXECUTED
+                        :
+                        testResult.getExecutionMessage().substring(0, Math.min(128, testResult.getExecutionMessage().length()));
                 testCaseDetails.getResultDetail()
                         .withDuration(testResult.getDuration())
                         .withMoves(testResult.getStepsOfAllTestCases())
                         .withCarMoves(testResult.getCarMovesOfAllTestCases())
-                        .withMsg(testResult.getExecutionMessage().isEmpty() ? EXECUTED : testResult.getExecutionMessage().substring(0, Math.min(128, testResult.getExecutionMessage().length())));
+                        .withMsg(msg);
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Exception occurred during execution solution " + solutionId, e);
                 testCaseDetails.getResultDetail()
