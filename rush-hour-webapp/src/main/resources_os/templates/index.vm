@@ -14,6 +14,10 @@
     Wszystkie zestawy przypadkow testowych sa dostepne pod adressem:<br/>
     <a href="https://github.com/gauee/RushHour/tree/master/rush-hour-webapp/src/main/resources_os/testCases">https://github.com/gauee/RushHour/tree/master/rush-hour-webapp/src/main/resources_os/testCases</a>
 </p>
+<p>
+    <b>8/06/2016 17:20 - Musialem zrestartowac testerke aby rozszerzyc logowanie. Zakolejkowane rozwiazania niestety zostaly utracone. Zrobie ich
+        resubmit ale o innym id.</b>
+</p>
 <form action="/submit" method="post" enctype="multipart/form-data">
     <fieldset>
         <legend>Upload source code content</legend>
