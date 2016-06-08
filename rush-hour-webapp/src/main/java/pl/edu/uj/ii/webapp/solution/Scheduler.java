@@ -105,10 +105,11 @@ public class Scheduler extends Thread {
                         .withMsg(EXECUTION_ERROR);
             } catch (TimeoutException e) {
                 LOGGER.warn("Executing process for solution " + solutionId + " timed out");
-                testCaseDetails.getResultFuture().cancel(true);
                 testCaseDetails.getResultDetail()
                         .withMsg(TIMED_OUT)
                         .withDuration(SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec()));
+            } finally {
+                testCaseDetails.getResultFuture().cancel(true);
             }
             resultDao.update(testCaseDetails.getResultDetail());
         }
