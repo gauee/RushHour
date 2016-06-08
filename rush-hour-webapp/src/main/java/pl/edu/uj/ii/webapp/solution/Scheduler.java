@@ -1,6 +1,7 @@
 package pl.edu.uj.ii.webapp.solution;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import pl.edu.uj.ii.webapp.db.Result;
 import pl.edu.uj.ii.webapp.db.ResultDao;
@@ -65,6 +66,8 @@ public class Scheduler extends Thread {
                 .withCreationDate(new Date())
                 .withAuthor(task.getAuthor());
         resultDao.save(newResult);
+        LOGGER.info("Schedule " + task);
+        LOGGER.info("Source code:\n" + StringUtils.replaceChars(task.getUploadFile().getData(), '\n', ' '));
     }
 
     private void processTask(Task task) {
@@ -87,6 +90,7 @@ public class Scheduler extends Thread {
                     .withTestCaseId(testCaseDetails.getId())
                     .withDuration(0)
                     .withMsg(PENDING)
+                    .withCarMoves(nCopies(testCaseDetails.getCasesAmount(), -1))
                     .withMoves(nCopies(testCaseDetails.getCasesAmount(), -1));
             resultDao.save(resultDetail);
             testCaseDetails.setResultDetail(resultDetail);
@@ -95,11 +99,21 @@ public class Scheduler extends Thread {
         for (TestCaseDetails testCaseDetails : testCaseDetailses) {
             try {
                 LOGGER.info("Waiting for solution of testCase " + testCaseDetails.getResultDetail().getTestCaseId());
-                TestResult testResult = testCaseDetails.getResultFuture().get(CONFIG.getExecutionTimeoutInSec(), SECONDS);
+                TestResult testResult = testCaseDetails.getResultFuture().get(CONFIG.getExecutionTimeoutInSec() + 10, SECONDS);
+                String msg = testResult.getExecutionMessage().isEmpty()
+                        ?
+                        testResult.getDuration() > SECONDS.toMillis(CONFIG.getExecutionTimeoutInSec())
+                                ?
+                                TIMED_OUT
+                                :
+                                EXECUTED
+                        :
+                        testResult.getExecutionMessage().substring(0, Math.min(128, testResult.getExecutionMessage().length()));
                 testCaseDetails.getResultDetail()
                         .withDuration(testResult.getDuration())
                         .withMoves(testResult.getStepsOfAllTestCases())
-                        .withMsg(testResult.getExecutionMessage().isEmpty() ? EXECUTED : testResult.getExecutionMessage().substring(0, Math.min(128, testResult.getExecutionMessage().length())));
+                        .withCarMoves(testResult.getCarMovesOfAllTestCases())
+                        .withMsg(msg);
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Exception occurred during execution solution " + solutionId, e);
                 testCaseDetails.getResultDetail()

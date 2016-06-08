@@ -22,11 +22,18 @@ public class ResultDetailRowMapper implements RowMapper<ResultDetail> {
                 moves.add(Integer.valueOf(singleMove));
             }
         }
+        List<Integer> carMoves = Lists.newLinkedList();
+        for (String singleMove : resultSet.getString("car_moves").split(MOVES_SEPARATOR)) {
+            if (StringUtils.isNoneEmpty(singleMove)) {
+                carMoves.add(Integer.valueOf(singleMove));
+            }
+        }
 
         return new ResultDetail()
                 .withResultId(resultSet.getString("result_id"))
                 .withTestCaseId(resultSet.getString("test_case_id"))
                 .withMoves(moves)
+                .withCarMoves(carMoves)
                 .withDuration(resultSet.getLong("duration"))
                 .withMsg(resultSet.getString("msg"));
     }

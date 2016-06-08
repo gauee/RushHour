@@ -34,6 +34,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.join;
+import static pl.edu.uj.ii.verify.MovesChecker.ESCAPE_UNREACHABLE;
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
 /**
@@ -88,14 +89,17 @@ public class RushHourExecutor {
             }
             duration = System.currentTimeMillis() - duration;
             List<Integer> stepsForAllBoards = Lists.newLinkedList();
+            List<Integer> carMovesOfAllTestCases = Lists.newLinkedList();
             for (Board board : testCase.getBoards()) {
                 List<CarMove> carMoves = carMovesForAllBoards.isEmpty() ? emptyList() : carMovesForAllBoards.remove(0);
                 int steps = movesChecker.canSpecialCarEscapeBoard(board, carMoves);
                 stepsForAllBoards.add(steps);
+                carMovesOfAllTestCases.add(steps != ESCAPE_UNREACHABLE ? carMoves.size() : ESCAPE_UNREACHABLE);
             }
             return new TestResult(
                     testCase.getId(),
                     duration,
+                    carMovesOfAllTestCases,
                     stepsForAllBoards,
                     parseOutputMsg);
         });

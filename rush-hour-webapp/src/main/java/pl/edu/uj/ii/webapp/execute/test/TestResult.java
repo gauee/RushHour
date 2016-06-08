@@ -10,12 +10,14 @@ import java.util.List;
 public class TestResult {
     private final String testCaseId;
     private final long duration;
+    private final List<Integer> carMovesOfAllTestCases;
     private final List<Integer> stepsOfAllTestCases;
     private final String executionMessage;
 
-    public TestResult(String testCaseId, long duration, List<Integer> stepsOfAllTestCases, String executionMessage) {
+    public TestResult(String testCaseId, long duration, List<Integer> carMovesOfAllTestCases, List<Integer> stepsOfAllTestCases, String executionMessage) {
         this.testCaseId = testCaseId;
         this.duration = duration;
+        this.carMovesOfAllTestCases = carMovesOfAllTestCases;
         this.stepsOfAllTestCases = stepsOfAllTestCases;
         this.executionMessage = executionMessage;
     }
@@ -26,6 +28,10 @@ public class TestResult {
 
     public List<Integer> getStepsOfAllTestCases() {
         return stepsOfAllTestCases;
+    }
+
+    public List<Integer> getCarMovesOfAllTestCases() {
+        return carMovesOfAllTestCases;
     }
 
     public long getDuration() {
@@ -42,6 +48,7 @@ public class TestResult {
                 .add("testCaseId", testCaseId)
                 .add("duration", duration)
                 .add("stepsOfAllTestCases", stepsOfAllTestCases)
+                .add("carMovesOfAllTestCases", carMovesOfAllTestCases)
                 .toString();
     }
 }

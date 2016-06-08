@@ -13,9 +13,9 @@ import static pl.edu.uj.ii.webapp.db.ResultDetail.MOVES_SEPARATOR;
 
 public class ResultDao {
     public static final String CREATE_RESULT = "insert into result values(?,?,?,?,?);";
-    public static final String CREATE_RESULT_DETAIL = "insert into result_detail values(?,?,?,?,?);";
+    public static final String CREATE_RESULT_DETAIL = "insert into result_detail values(?,?,?,?,?,?);";
     public static final String UPDATE_RESULT = "update result set msg=? where id=?";
-    public static final String UPDATE_RESULT_DETAIL = "update result_detail set msg=?, moves=?, duration=? where result_id=? and test_case_id=?;";
+    public static final String UPDATE_RESULT_DETAIL = "update result_detail set msg=?, moves=?, car_moves=?, duration=? where result_id=? and test_case_id=?;";
     public static final String SELECT_RESULTS = "select * from result;";
     public static final String SELECT_RESULT = "select * from result where id=?;";
     public static final String SELECT_AUTHORS = "select distinct(author) from result;";
@@ -50,6 +50,7 @@ public class ResultDao {
                 .update(UPDATE_RESULT_DETAIL, new Object[]{
                         resultDetail.getMsg(),
                         StringUtils.join(resultDetail.getMoves(), MOVES_SEPARATOR),
+                        StringUtils.join(resultDetail.getCarMoves(), MOVES_SEPARATOR),
                         resultDetail.getDuration(),
                         resultDetail.getResultId(),
                         resultDetail.getTestCaseId()
