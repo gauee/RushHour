@@ -54,6 +54,7 @@ public abstract class ExecutionTask {
             Process start = processBuilder.start();
             try {
                 start.waitFor(CONFIG.getExecutionTimeoutInSec() / 2, TimeUnit.SECONDS);
+                start.destroy();
             } catch (InterruptedException e) {
                 LOGGER.info("Caught InterruptedException inside Executor");
             }
