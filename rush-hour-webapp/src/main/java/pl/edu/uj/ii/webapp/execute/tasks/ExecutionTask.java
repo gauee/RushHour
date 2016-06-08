@@ -57,11 +57,13 @@ public abstract class ExecutionTask {
             } catch (InterruptedException e) {
                 LOGGER.info("Caught InterruptedException inside Executor");
             }
+            LOGGER.info("Finished process");
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(start.getInputStream()));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 lines.add(line);
             }
+            LOGGER.info("Read lines: " + lines);
         } catch (IOException e) {
             LOGGER.error("Cannot execute process.", e);
         }
