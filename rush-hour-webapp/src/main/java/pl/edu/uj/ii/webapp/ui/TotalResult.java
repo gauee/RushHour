@@ -13,6 +13,7 @@ import static pl.edu.uj.ii.verify.MovesChecker.ESCAPE_UNREACHABLE;
 public class TotalResult {
     private final Result result;
     private long duration = 0;
+    private int carMoves = 0;
     private int moves = 0;
 
     public TotalResult(Result result) {
@@ -20,9 +21,16 @@ public class TotalResult {
         for (ResultDetail resultDetail : result.getDetails()) {
             this.duration += resultDetail.getDuration();
             for (int move : resultDetail.getMoves()) {
-                this.moves += move != ESCAPE_UNREACHABLE ? move : 0;
+                this.moves += getMoveCount(move);
+            }
+            for (int carMove : resultDetail.getCarMoves()) {
+                this.carMoves += getMoveCount(carMove);
             }
         }
+    }
+
+    private int getMoveCount(int carMove) {
+        return carMove != ESCAPE_UNREACHABLE ? carMove : 0;
     }
 
     public Result getResult() {
@@ -35,6 +43,10 @@ public class TotalResult {
 
     public int getMoves() {
         return moves;
+    }
+
+    public int getCarMoves() {
+        return carMoves;
     }
 
     @Override

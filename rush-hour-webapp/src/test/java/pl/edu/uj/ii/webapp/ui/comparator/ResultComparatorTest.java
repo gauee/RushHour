@@ -28,13 +28,12 @@ public class ResultComparatorTest {
         Result firstResult = new Result()
                 .withAuthor("looser")
                 .withDetails(asList(new ResultDetail()
-                        .withMoves(asList(1, 2, 3, 4, 5, 0))
+                        .withCarMoves(asList(1, 2, 3, 4, 5, 0))
                 ));
         Result secondResult = new Result()
                 .withAuthor("winner")
-                .withDetails(asList(
-                        new ResultDetail()
-                                .withMoves(asList(1, 2, 3, 4, 5, 6))
+                .withDetails(asList(new ResultDetail()
+                        .withCarMoves(asList(1, 2, 3, 4, 5, 6))
                 ));
 
         TotalResult looser = new TotalResult(firstResult);
@@ -54,13 +53,37 @@ public class ResultComparatorTest {
         Result firstResult = new Result()
                 .withAuthor("looser")
                 .withDetails(asList(new ResultDetail()
-                        .withMoves(asList(1, 2, 3, -1, -1, 0))
+                        .withCarMoves(asList(1, 2, 3, -1, -1, 0))
                 ));
         Result secondResult = new Result()
                 .withAuthor("winner")
-                .withDetails(asList(
-                        new ResultDetail()
-                                .withMoves(asList(1, 2, 3, 0, -1))
+                .withDetails(asList(new ResultDetail()
+                        .withCarMoves(asList(1, 2, 3, 0, -1))
+                ));
+
+        TotalResult looser = new TotalResult(firstResult);
+        TotalResult winner = new TotalResult(secondResult);
+        assertThat(comparator.compare(looser, winner), is(greaterThan(0)));
+
+        ArrayList<TotalResult> totalResults = new ArrayList<>(asList(looser, winner));
+        Collections.sort(totalResults, comparator);
+        for (TotalResult totalResult : totalResults) {
+            System.out.println(totalResult.getResult().getAuthor());
+        }
+        assertThat(totalResults.get(0).getResult().getAuthor(), is(equalTo("winner")));
+    }
+
+    @Test
+    public void returnPositiveValueWhenWinner_hasLessCarMoves() {
+        Result firstResult = new Result()
+                .withAuthor("looser")
+                .withDetails(asList(new ResultDetail()
+                        .withCarMoves(asList(10, 10, 10))
+                ));
+        Result secondResult = new Result()
+                .withAuthor("winner")
+                .withDetails(asList(new ResultDetail()
+                        .withCarMoves(asList(10, 10, 9))
                 ));
 
         TotalResult looser = new TotalResult(firstResult);

@@ -12,11 +12,11 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 public class ResultComparator implements Comparator<TotalResult> {
     private final TestCaseCount correctAnswersCount = totalResult -> totalResult.getResult().getDetails().stream()
-            .flatMap(resultDetail -> resultDetail.getMoves().stream())
+            .flatMap(resultDetail -> resultDetail.getCarMoves().stream())
             .filter(moves -> moves > 0)
             .count();
     private final TestCaseCount incorrectAnswersCount = totalResult -> totalResult.getResult().getDetails().stream()
-            .flatMap(resultDetail -> resultDetail.getMoves().stream())
+            .flatMap(resultDetail -> resultDetail.getCarMoves().stream())
             .filter(moves -> moves < 1)
             .count();
     private final LangPriority langPriority = totalResult -> {
@@ -40,19 +40,26 @@ public class ResultComparator implements Comparator<TotalResult> {
             return -testCaseAmount;
         }
 
-        int invalidMoves = ((Comparator<TotalResult>) (o1, o2) -> (int) (incorrectAnswersCount.count(o1) - incorrectAnswersCount.count(o2)))
+        int invalidMove = ((Comparator<TotalResult>) (o1, o2) -> (int) (incorrectAnswersCount.count(o1) - incorrectAnswersCount.count(o2)))
                 .compare(firstTotalResult, secondTotalResult);
-        if (invalidMoves != 0) {
-            return invalidMoves;
+        if (invalidMove != 0) {
+            return invalidMove;
         }
 
-        int movesCompare = ((Comparator<TotalResult>) (o1, o2) -> (int) (o1.getMoves() - o2.getMoves()))
+        int carMovesOrder = ((Comparator<TotalResult>) (o1, o2) -> (int) (o1.getCarMoves() - o2.getCarMoves()))
                 .compare(firstTotalResult, secondTotalResult);
-        if (movesCompare != 0) {
-            return movesCompare;
+        if (carMovesOrder != 0) {
+            return carMovesOrder;
         }
-        return ((Comparator<TotalResult>) (o1, o2) -> (int) (o1.getDuration() - o2.getDuration()))
+        int durationOrder = ((Comparator<TotalResult>) (o1, o2) -> (int) (o1.getDuration() - o2.getDuration()))
                 .compare(firstTotalResult, secondTotalResult);
+        if (durationOrder != 0) {
+            return durationOrder;
+        }
+
+        int movesOrder = ((Comparator<TotalResult>) (o1, o2) -> (int) (o1.getMoves() - o2.getMoves()))
+                .compare(firstTotalResult, secondTotalResult);
+        return movesOrder;
     }
 
 
