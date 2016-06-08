@@ -1,7 +1,6 @@
 package pl.edu.uj.ii.webapp.execute.tasks;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.edu.uj.ii.webapp.execute.UploadFile;
@@ -77,7 +76,6 @@ public abstract class ExecutionTask {
         this.sourceFile = Paths.get(root.toString(), getTempFileName());
         Files.createDirectories(sourceFile.getParent());
         this.sourceCode = uploadFile.getData();
-        LOGGER.info("Source code to compile:\n" + StringUtils.replaceChars(sourceCode, '\n', ' '));
     }
 
 

@@ -1,6 +1,7 @@
 package pl.edu.uj.ii.webapp.solution;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import pl.edu.uj.ii.webapp.db.Result;
 import pl.edu.uj.ii.webapp.db.ResultDao;
@@ -65,6 +66,8 @@ public class Scheduler extends Thread {
                 .withCreationDate(new Date())
                 .withAuthor(task.getAuthor());
         resultDao.save(newResult);
+        LOGGER.info("Schedule " + task);
+        LOGGER.info("Source code:\n" + StringUtils.replaceChars(task.getUploadFile().getData(), '\n', ' '));
     }
 
     private void processTask(Task task) {
