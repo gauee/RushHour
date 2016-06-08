@@ -94,6 +94,7 @@ public class Scheduler extends Thread {
         }
         for (TestCaseDetails testCaseDetails : testCaseDetailses) {
             try {
+                LOGGER.info("Waiting for solution of testCase " + testCaseDetails.getResultDetail().getTestCaseId());
                 TestResult testResult = testCaseDetails.getResultFuture().get(CONFIG.getExecutionTimeoutInSec(), SECONDS);
                 testCaseDetails.getResultDetail()
                         .withDuration(testResult.getDuration())
