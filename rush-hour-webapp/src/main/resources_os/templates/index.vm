@@ -18,6 +18,13 @@
     <b>8/06/2016 17:20 - Musialem zrestartowac testerke aby rozszerzyc logowanie. Zakolejkowane rozwiazania niestety zostaly utracone. Zrobie ich
         resubmit ale o innym id.</b>
 </p>
+<h3>Zmiana sposobu punktacji</h3>
+<p>
+    Zamiast zliczac jednostkowe przesuniecia kazdego samochodu, bedzie zliczana ilosc przesuniec samochodu nie zaleznie od ilosci przesuniec
+    jednostkowych samochodu, tj:
+    Ruch X R 4
+    nie bedzie traktowany jako 4 przesuniecia, tylko jako 1.
+</p>
 <form action="/submit" method="post" enctype="multipart/form-data">
     <fieldset>
         <legend>Upload source code content</legend>
