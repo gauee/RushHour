@@ -87,6 +87,7 @@ public class Scheduler extends Thread {
                     .withTestCaseId(testCaseDetails.getId())
                     .withDuration(0)
                     .withMsg(PENDING)
+                    .withCarMoves(nCopies(testCaseDetails.getCasesAmount(), -1))
                     .withMoves(nCopies(testCaseDetails.getCasesAmount(), -1));
             resultDao.save(resultDetail);
             testCaseDetails.setResultDetail(resultDetail);
@@ -99,6 +100,7 @@ public class Scheduler extends Thread {
                 testCaseDetails.getResultDetail()
                         .withDuration(testResult.getDuration())
                         .withMoves(testResult.getStepsOfAllTestCases())
+                        .withCarMoves(testResult.getCarMovesOfAllTestCases())
                         .withMsg(testResult.getExecutionMessage().isEmpty() ? EXECUTED : testResult.getExecutionMessage().substring(0, Math.min(128, testResult.getExecutionMessage().length())));
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Exception occurred during execution solution " + solutionId, e);
