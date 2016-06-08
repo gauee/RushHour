@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
@@ -51,6 +52,11 @@ public abstract class ExecutionTask {
         try {
             LOGGER.info("Started process with input " + inputFile.getName());
             Process start = processBuilder.start();
+            try {
+                start.waitFor(CONFIG.getExecutionTimeoutInSec() / 2, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                LOGGER.info("Caught InterruptedException inside Executor");
+            }
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(start.getInputStream()));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
