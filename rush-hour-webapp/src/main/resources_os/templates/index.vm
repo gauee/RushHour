@@ -1,22 +1,7 @@
 #* @vtlvariable name="supportedLang" type="pl.edu.uj.ii.webapp.execute.SupportedLang[]" *#
-#if($!message)
-<p>
-    $message
-</p>
-#end
-<p>
-    <b>
-        Rozwiazania w jezyku Java musza byc kompilowalne. Przyklad. Plik o nazwie "New Text Document" z zawartoscia class RushHour { ... }, nie jest
-        poprawnym plikiem.
-    </b>
-</p>
 <p>
     Wszystkie zestawy przypadkow testowych sa dostepne pod adressem:<br/>
     <a href="https://github.com/gauee/RushHour/tree/master/rush-hour-webapp/src/main/resources_os/testCases">https://github.com/gauee/RushHour/tree/master/rush-hour-webapp/src/main/resources_os/testCases</a>
-</p>
-<p>
-    <b>8/06/2016 17:20 - Musialem zrestartowac testerke aby rozszerzyc logowanie. Zakolejkowane rozwiazania niestety zostaly utracone. Zrobie ich
-        resubmit ale o innym id.</b>
 </p>
 <h3>Zmiana sposobu punktacji</h3>
 <p>
