@@ -20,12 +20,14 @@
 #if($!totalResult)
 <table style="width:100%">
     <tr>
+        <th>Total car moves</th>
         <th>Total moves</th>
         <th>Total duration</th>
         <th>Submission time</th>
         <th>Language</th>
     </tr>
     <tr>
+        <td>$totalResult.getCarMoves()</td>
         <td>$totalResult.getMoves()</td>
         <td>#printDuration($totalResult.getDuration())</td>
         <td>#printDate($totalResult.getResult().getCreationDate())</td>
@@ -43,7 +45,9 @@
     <th>TestCase id</th>
     <th>Status</th>
     <th>TestCase duration</th>
+    <th>Total car moves</th>
     <th>Total moves</th>
+    <th>TestCase car moves</th>
     <th>TestCase moves</th>
     #foreach($resultDetail in $totalResult.getResult().getDetails())
         <tr>
@@ -51,7 +55,19 @@
             <td>$resultDetail.getMsg()</td>
             <td>#printDuration($resultDetail.getDuration())</td>
             <td>
+                $stepsCounter.countSteps($resultDetail.getCarMoves())
+            </td>
+            <td>
                 $stepsCounter.countSteps($resultDetail.getMoves())
+            </td>
+            <td>
+                <table class="no-border" style="width: 100%">
+                    #foreach($move in $resultDetail.getCarMoves())
+                        <tr>
+                            <td class="no-border">$move</td>
+                        </tr>
+                    #end
+                </table>
             </td>
             <td>
                 <table class="no-border" style="width: 100%">
