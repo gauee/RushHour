@@ -75,4 +75,8 @@ public class AppConfig {
     public String getDbLocation() {
         return appProperties.getProperty("db.location");
     }
+
+    public int getTopSolutionAmount() {
+        return Integer.valueOf(appProperties.getProperty("top.solution.amount"));
+    }
 }

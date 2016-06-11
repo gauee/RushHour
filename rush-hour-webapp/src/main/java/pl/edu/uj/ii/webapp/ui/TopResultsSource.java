@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static pl.edu.uj.ii.webapp.AppConfig.CONFIG;
 
 /**
  * Created by gauee on 5/29/16.
  */
 public class TopResultsSource {
-    public static final int TOP_RESULTS_AMOUNT = 5;
     private final ResultComparator resultComparator = new ResultComparator();
     private final ResultDao resultDao;
 
@@ -40,11 +40,11 @@ public class TopResultsSource {
 
     private List<TotalResult> generateSortedResults(TotalResult totalResult, List<TotalResult> langResults) {
         int resultPosition = findResultPosition(totalResult, langResults);
-        if (resultPosition < TOP_RESULTS_AMOUNT) {
+        if (resultPosition < CONFIG.getTopSolutionAmount()) {
             langResults.add(resultPosition, totalResult);
             removeWorseResultsForAuthor(langResults);
-            if (langResults.size() > TOP_RESULTS_AMOUNT) {
-                langResults = langResults.subList(0, TOP_RESULTS_AMOUNT);
+            if (langResults.size() > CONFIG.getTopSolutionAmount()) {
+                langResults = langResults.subList(0, CONFIG.getTopSolutionAmount());
             }
         }
         return langResults;
